@@ -8,4 +8,6 @@ Change UUIDs:
   - /etc/machine-id
   - random seed somewhere?
 
+Add ansible.
+Install keepalived.
 

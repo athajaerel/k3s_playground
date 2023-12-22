@@ -1,0 +1,14 @@
+---
+all:
+  vars:
+    ansible_host: '10.20.0.{{ ip_fourth_byte }}'
+
+nodes:
+  hosts:
+    k3s-mother-001:
+      ip_fourth_byte: '101'
+    k3s-child-001:
+      ip_fourth_byte: '111'
+    k3s-child-002:
+      ip_fourth_byte: '112'
+...

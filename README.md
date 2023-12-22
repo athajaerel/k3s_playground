@@ -1,5 +1,5 @@
 Clone rhel86-playground three times:
-  - k3s-mother
+  - k3s-mother-001
   - k3s-child-001
   - k3s-child-002
 

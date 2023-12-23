@@ -17,6 +17,33 @@
         src: '{{ item[1:] }}.j2'
         dest: '{{ item }}'
 
+    - name: 'Set hostname (2)'
+      vars:
+        conf:
+          rhel: 'rhel'
+          void: 'openbsd' # apparently the best option for Void
+      hostname:
+        name: '{{ fqdn }}'
+        use: '{{ conf[distro] }}'
+
+    - name: 'Set random seed'
+      notify: 'Restart sshd'
+      become: yes
+      community.general.filesize:
+        path: '/var/lib/random-seed'
+        size: '{{ "4 KB" | human_to_bytes }}'
+        source: '/dev/urandom'
+
+    - name: 'Delete sshd private keys'
+      loop:
+        - 'ecdsa'
+        - 'dsa'
+        - 'ed25519'
+        - 'rsa'
+      file:
+        path: '/etc/ssh/ssh_host_{{ item }}_key'
+        state: 'absent'
+
     - name: 'Reboot'
       when: 'reg_hostname is changed'
       reboot:
@@ -56,6 +83,7 @@
           - '/bin/mount'
           - '/mnt/disc'
 
+    # when ugly
     - name: 'Install keepalived'
       when: 'distro == "rhel"'
       package:
@@ -78,6 +106,14 @@
       template:
         src: '{{ item[1:] }}.j2'
         dest: '{{ item }}'
+
+    - name: 'Ansible user has correct groups'
+      user:
+        name: 'ansible'
+        groups:
+          - 'kvm'
+          - 'libvirt'
+        append: yes
 
     - name: 'Copy legacy RPMs'
       loop:

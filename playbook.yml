@@ -95,11 +95,42 @@
           - '/bin/mount'
           - '/mnt/disc'
 
+    - name: 'Update xbps config'
+      when: 'distro == "void"'
+      loop:
+        - '/etc/xbps.d/00-repository-main.conf'
+      template:
+        src: '{{ item[1:] }}.j2'
+        dest: '{{ item }}'
+
+    - name: 'Add repo entry to hosts file'
+      when: 'distro == "void"'
+      lineinfile:
+        path: '/etc/hosts'
+        line: '65.21.160.177 repo-default.voidlinux.org'
+
     # when ugly
     - name: 'Install keepalived'
       when: 'distro == "rhel"'
       package:
         name: 'keepalived'
+
+    # TODO: failed_when
+    - name: 'Update xbps index'
+      when: 'distro == "void"'
+      command:
+        argv:
+          - '/bin/xbps-install'
+          - '-Sy'
+
+    # TODO: failed_when
+    - name: 'Update xbps'
+      when: 'distro == "void"'
+      command:
+        argv:
+          - '/bin/xbps-install'
+          - '-uy'
+          - 'xbps'
 
     # TODO: failed_when
     - name: 'Install keepalived'

@@ -1,0 +1,16 @@
+---
+nodes:
+  hosts:
+    k3s-mother-001:
+    k3s-child-001:
+    k3s-child-002:
+
+k3s_masters:
+  hosts:
+    k3s-mother-001:
+
+keepalived_primaries:
+  children:
+    k3s_masters:
+...
+# vim: set filetype=yaml

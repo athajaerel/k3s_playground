@@ -1,0 +1,30 @@
+---
+all:
+  vars:
+    distro: 'void'
+    domain: 'dreamtrack.test'
+    network: '10.11.0.0/24'
+    ansible_host: '{{ network | ipv4(ip_fourth_byte) | ipv4("address") }}'
+    keepalived_vip_address: '{{ network | ipv4(199) | ipv4("address") }}'
+    keepalived_notify_to: 'admin@{{ domain }}'
+    keepalived_notify_from: '{{ inventory_hostname }}@{{ domain }}'
+    ansible_user: 'ansible'
+
+nodes:
+  hosts:
+    k3s-mother-001:
+      ip_fourth_byte: '1'
+    k3s-child-001:
+      ip_fourth_byte: '11'
+    k3s-child-002:
+      ip_fourth_byte: '12'
+
+k3s_masters:
+  hosts:
+    k3s-mother-001:
+
+keepalived_primaries:
+  children:
+    k3s_masters:
+
+...

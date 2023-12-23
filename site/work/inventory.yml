@@ -1,0 +1,26 @@
+---
+all:
+  vars:
+    ansible_host: '10.20.0.{{ ip_fourth_byte }}'
+    keepalived_vip_address: '10.20.0.199'
+    keepalived_notify_to: 'admin@lab'
+    keepalived_notify_from: '{{ inventory_hostname }}@lab'
+
+nodes:
+  hosts:
+    k3s-mother-001:
+      ip_fourth_byte: '101'
+    k3s-child-001:
+      ip_fourth_byte: '111'
+    k3s-child-002:
+      ip_fourth_byte: '112'
+
+k3s_masters:
+  hosts:
+    k3s-mother-001:
+
+keepalived_primaries:
+  children:
+    k3s_masters:
+
+...

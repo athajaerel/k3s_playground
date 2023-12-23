@@ -163,6 +163,7 @@
         dest: '{{ item }}'
 
     - name: 'Copy legacy RPMs'
+      when: 'distro == "rhel"'
       loop:
         - 'iptables-libs-1.6.2-2.fc28.x86_64.rpm'
         - 'iptables-1.6.2-2.fc28.x86_64.rpm'
@@ -172,6 +173,7 @@
 
     # TODO: failed_when/changed_when
     - name: 'Install legacy RPMs'
+      when: 'distro == "rhel"'
       register: 'reg_iptables'
       vars:
         legacy_rpms:

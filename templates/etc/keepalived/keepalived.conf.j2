@@ -1,0 +1,25 @@
+!  {{ ansible_managed }}
+
+global_defs {
+   notification_email {
+      {{ keepalived_notify_to }}
+   }
+   notification_email_from {{ keepalived_notify_from }}
+   smtp_server localhost
+   smtp_connect_timeout 30
+}
+
+vrrp_instance VI_K3S {
+    state {{ 'MASTER' if 'keepalived_primaries' in group_names else 'BACKUP' }}
+    interface {{ keepalived_vip_interface }}
+    virtual_router_id 101
+    priority {{ '102' if 'keepalived_primaries' in group_names else '101' }}
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+        {{ keepalived_vip_address }}
+    }
+}

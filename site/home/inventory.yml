@@ -1,0 +1,17 @@
+---
+all:
+  hosts:
+    k3s-mother-001:
+      ip_fourth_byte: '1'
+    k3s-child-001:
+      ip_fourth_byte: '11'
+    k3s-child-002:
+      ip_fourth_byte: '12'
+  vars:
+    distro: 'void'
+    domain: 'dreamtrack.test'
+    network: '10.11.0.0/24'
+    keepalived_vip_fourth_byte: '199'
+    keepalived_vip_interface: 'eth0'
+...
+# vim: set filetype=yaml

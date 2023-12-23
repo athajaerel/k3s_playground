@@ -152,14 +152,6 @@
         src: '{{ item[1:] }}.j2'
         dest: '{{ item }}'
 
-    - name: 'Ansible user has correct groups'
-      user:
-        name: 'ansible'
-        groups:
-          - 'kvm'
-          - 'libvirt'
-        append: yes
-
     - name: 'Copy legacy RPMs'
       loop:
         - 'iptables-libs-1.6.2-2.fc28.x86_64.rpm'

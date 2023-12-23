@@ -219,9 +219,11 @@
     K3S_TOKEN_FILE: '{{ token_file }}'
   tasks:
     - name: 'Create random token file'
+      register: 'reg_create_token'
       copy:
         content: '{{ (now().microsecond ~ inventory_hostname) | password_hash("sha256") | b64encode }}'
         dest: '{{ token_file }}'
+        force: false  # if exists, don't recreate it
 
     - name: 'Copy install script'
       loop:

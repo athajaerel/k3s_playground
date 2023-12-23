@@ -44,6 +44,7 @@
     # guarantee to get our full 4K.
 
     - name: 'Delete sshd private keys'
+      notify: 'Restart sshd'
       loop:
         - 'ecdsa'
         - 'dsa'
@@ -52,6 +53,8 @@
       file:
         path: '/etc/ssh/ssh_host_{{ item }}_key'
         state: 'absent'
+
+    - meta: 'flush_handlers'
 
     - name: 'Reboot'
       when: 'reg_hostname is changed'

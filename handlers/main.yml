@@ -3,4 +3,16 @@
   service:
     name: 'keepalived'
     state: 'restarted'
+
+- name: 'Restart sshd'
+  become: yes
+  # service:
+  #   name: 'sshd'
+  #   state: 'restarted'
+  command:
+    argv:
+      - 'sv'
+      - 'restart'
+      - 'sshd'
 ...
+# vim: set filetype=yaml

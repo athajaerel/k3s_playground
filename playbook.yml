@@ -143,6 +143,16 @@
           - '-y'
           - 'keepalived'
 
+    - name: 'Set up keepalived service'
+      # service:
+      #   name: 'keepalived'
+      #   enabled: yes
+      when: 'distro == "void"'
+      file:
+        src: '/etc/sv/keepalived'
+        dest: '/var/service/keepalived'
+        state: link
+
     - name: 'Configure keepalived'
       notify:
         - 'Restart keepalived'
@@ -175,6 +185,16 @@
           - '-y'
       command:
         argv: '{{ command + legacy_rpms }}'
+
+    - name: 'Set up iptables service'
+      # service:
+      #   name: 'iptables'
+      #   enabled: yes
+      when: 'distro == "void"'
+      file:
+        src: '/etc/sv/iptables'
+        dest: '/var/service/iptables'
+        state: link
 
     - name: 'Reboot'
       when: 'reg_iptables is changed'

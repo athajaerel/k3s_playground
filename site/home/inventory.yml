@@ -12,5 +12,6 @@ all:
     domain: 'dreamtrack.test'
     network: '10.11.0.0/24'
     keepalived_vip_fourth_byte: '199'
+    keepalived_vip_interface: 'eth0'
 ...
 # vim: set filetype=yaml

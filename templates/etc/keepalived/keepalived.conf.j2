@@ -11,7 +11,7 @@ global_defs {
 
 vrrp_instance VI_K3S {
     state {{ 'MASTER' if 'keepalived_primaries' in group_names else 'BACKUP' }}
-    interface enp10s0
+    interface {{ keepalived_vip_interface }}
     virtual_router_id 101
     priority {{ '102' if 'keepalived_primaries' in group_names else '101' }}
     advert_int 1

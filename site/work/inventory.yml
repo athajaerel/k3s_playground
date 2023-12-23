@@ -12,5 +12,6 @@ all:
     domain: 'k3s.lab'
     network: '10.20.0.0/24'
     keepalived_vip_fourth_byte: '99'
+    keepalived_vip_interface: 'enp10s0'
 ...
 # vim: set filetype=yaml

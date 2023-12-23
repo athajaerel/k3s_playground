@@ -29,10 +29,19 @@
     - name: 'Set random seed'
       notify: 'Restart sshd'
       become: yes
-      community.general.filesize:
-        path: '/var/lib/random-seed'
-        size: '{{ "4 KB" | human_to_bytes }}'
-        source: '/dev/urandom'
+      vars:
+        file: '/var/lib/random-seed'
+      command:
+        argv:
+          - '/bin/dd'
+          - 'bs=1'
+          - 'count={{ "4 KB" | human_to_bytes }}'
+          - 'if=/dev/urandom'
+          - 'of={{ file }}'
+
+    # /dev/urandom is guaranteed to return at least one byte
+    # but can't guarantee more. By getting one at a time we
+    # guarantee to get our full 4K.
 
     - name: 'Delete sshd private keys'
       loop:

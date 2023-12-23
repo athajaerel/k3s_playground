@@ -214,7 +214,7 @@
   vars:
     token_file: '/etc/k3s-token-file'
     # /tmp and /var/tmp are mounted noexec so use /run
-    k3s_install_script: '/run/install_k3s.sh'
+    k3s_install_script: '/home/ansible/install_k3s.sh'
   environment:
     K3S_TOKEN_FILE: '{{ token_file }}'
   tasks:

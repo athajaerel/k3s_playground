@@ -18,6 +18,7 @@
         dest: '{{ item }}'
 
     - name: 'Set hostname (2)'
+      register: 'reg_hostname_2'
       vars:
         conf:
           rhel: 'rhel'
@@ -57,7 +58,8 @@
     - meta: 'flush_handlers'
 
     - name: 'Reboot'
-      when: 'reg_hostname is changed'
+      when: 'reg_hostname is changed
+             or reg_hostname_2 is changed'
       reboot:
 
     - name: 'Create local repo mountpoint'
@@ -109,7 +111,7 @@
         path: '/etc/hosts'
         line: '65.21.160.177 repo-default.voidlinux.org'
 
-    # when ugly
+    # All this when-ing is a bit ugly
     - name: 'Install keepalived'
       when: 'distro == "rhel"'
       package:

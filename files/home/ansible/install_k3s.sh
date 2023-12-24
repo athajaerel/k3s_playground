@@ -120,7 +120,11 @@ verify_system() {
         HAS_SYSTEMD=true
         return
     fi
-    fatal 'Can not find systemd or openrc to use as a process supervisor for k3s'
+    if [ -x /bin/runsvdir ]; then
+        HAS_RUNIT=true
+        return
+    fi
+    fatal 'Can not find runit, systemd or openrc to use as a process supervisor for k3s'
 }
 
 # --- add quotes to command arguments ---
@@ -245,13 +249,17 @@ setup_env() {
     UNINSTALL_K3S_SH=${UNINSTALL_K3S_SH:-${BIN_DIR}/${SYSTEM_NAME}-uninstall.sh}
     KILLALL_K3S_SH=${KILLALL_K3S_SH:-${BIN_DIR}/k3s-killall.sh}
 
-    # --- use service or environment location depending on systemd/openrc ---
+    # --- use service or environment location depending on systemd/openrc/runit ---
     if [ "${HAS_SYSTEMD}" = true ]; then
         FILE_K3S_SERVICE=${SYSTEMD_DIR}/${SERVICE_K3S}
         FILE_K3S_ENV=${SYSTEMD_DIR}/${SERVICE_K3S}.env
     elif [ "${HAS_OPENRC}" = true ]; then
         $SUDO mkdir -p /etc/rancher/k3s
         FILE_K3S_SERVICE=/etc/init.d/${SYSTEM_NAME}
+        FILE_K3S_ENV=/etc/rancher/k3s/${SYSTEM_NAME}.env
+    elif [ "${HAS_RUNIT}" = true ]; then
+        $SUDO mkdir -p /etc/rancher/k3s
+        FILE_K3S_SERVICE=/etc/sv/${SYSTEM_NAME}
         FILE_K3S_ENV=/etc/rancher/k3s/${SYSTEM_NAME}.env
     fi
 
@@ -487,6 +495,11 @@ setup_binary() {
 
 # --- setup selinux policy ---
 setup_selinux() {
+    if [ -n "${NO_SELINUX}" ]; then
+        info "Skipping SELinux setup"
+        return
+    fi
+
     case ${INSTALL_K3S_CHANNEL} in 
         *testing)
             rpm_channel=testing
@@ -715,6 +728,10 @@ for service in /etc/init.d/k3s*; do
     [ -x $service ] && $service stop
 done
 
+for service in /var/service/k3s*; do
+    [ -x $service ] && /bin/sv down $(basename $service)
+done
+
 pschildren() {
     ps -e -o ppid= -o pid= | \
     sed -e 's/^\s*//g; s/\s\s*/\t/g;' | \
@@ -812,6 +829,10 @@ fi
 if command -v rc-update; then
     rc-update delete ${SYSTEM_NAME} default
 fi
+if command -v runsvdir; then
+    rm /var/service/${SYSTEM_NAME}
+    rm -r /etc/sv/${SYSTEM_NAME}
+fi
 
 rm -f ${FILE_K3S_SERVICE}
 rm -f ${FILE_K3S_ENV}
@@ -853,6 +874,9 @@ elif type zypper >/dev/null 2>&1; then
     fi
     \$uninstall_cmd
     rm -f /etc/zypp/repos.d/rancher-k3s-common*.repo
+elif type xbps-remove >/dev/null 2>&1; then
+    xbps-remove -y k3s-selinux
+    rm -rf /etc/xbps.d/rancher-k3s-common*.conf
 fi
 EOF
     $SUDO chmod 755 ${UNINSTALL_K3S_SH}
@@ -959,10 +983,45 @@ ${LOG_FILE} {
 EOF
 }
 
-# --- write systemd or openrc service file ---
+# --- write runit service file ---
+create_runit_service_file() {
+    info "runit: Creating service file ${FILE_K3S_SERVICE}"
+    LOG_FILE=/var/log/${SYSTEM_NAME}
+    # We create some directories first
+    $SUDO mkdir -p ${FILE_K3S_SERVICE}/log
+    $SUDO tee ${FILE_K3S_SERVICE}/run >/dev/null << EOF
+#!/bin/sh
+
+[ -f ./conf ] && . ./conf
+
+modprobe br_netfilter overlay
+exec ${BIN_DIR}/k3s $(escape_dq "${CMD_K3S_EXEC}") 2>&1
+EOF
+    $SUDO tee ${FILE_K3S_SERVICE}/log/run >/dev/null << EOF
+#!/bin/sh
+exec tee -a ${LOGFILE} | vlogger -t ${SYSTEM_NAME} -p daemon
+EOF
+    $SUDO tee ${FILE_K3S_SERVICE}/finish >/dev/null << EOF
+#!/bin/sh
+rm -f /tmp/k3s.*
+EOF
+    $SUDO chmod 0755 ${FILE_K3S_SERVICE}/run ${FILE_K3S_SERVICE}/finish ${FILE_K3S_SERVICE}/log/run
+    # Add a logrotate config
+    $SUDO tee /etc/logrotate.d/${SYSTEM_NAME}/log/run >/dev/null << EOF
+#!/bin/sh
+${LOG_FILE} {
+	missingok
+	notifempty
+	copytruncate
+}
+EOF
+}
+
+# --- write systemd, runit or openrc service file ---
 create_service_file() {
     [ "${HAS_SYSTEMD}" = true ] && create_systemd_service_file && restore_systemd_service_file_context
     [ "${HAS_OPENRC}" = true ] && create_openrc_service_file
+    [ "${HAS_RUNIT}" = true ] && create_runit_service_file
     return 0
 }
 
@@ -999,6 +1058,20 @@ openrc_start() {
     $SUDO ${FILE_K3S_SERVICE} restart
 }
 
+# --- enable and start runit service ---
+runit_enable() {
+    # There's no canonical way to enable a service without starting it,
+    # but we can enable and stop.
+    info "runit: Enabling and stopping service ${SYSTEM_NAME}"
+    $SUDO ln -s /etc/sv/${SYSTEM_NAME} /var/service/
+    $SUDO sv down ${SYSTEM_NAME}
+}
+
+runit_start() {
+    info "runit: Starting ${SYSTEM_NAME}"
+    $SUDO sv up ${SYSTEM_NAME}
+}
+
 has_working_xtables() {
     if command -v "$1-save" 1> /dev/null && command -v "$1-restore" 1> /dev/null; then
         if $SUDO $1-save 2>/dev/null | grep -q '^-A CNI-HOSTPORT-MASQ -j MASQUERADE$'; then
@@ -1012,7 +1085,7 @@ has_working_xtables() {
     return 1
 }
 
-# --- startup systemd or openrc service ---
+# --- startup systemd, runit or openrc service ---
 service_enable_and_start() {
     if [ -f "/proc/cgroups" ] && [ "$(grep memory /proc/cgroups | while read -r n n n enabled; do echo $enabled; done)" -eq 0 ];
     then
@@ -1023,6 +1096,7 @@ service_enable_and_start() {
 
     [ "${HAS_SYSTEMD}" = true ] && systemd_enable
     [ "${HAS_OPENRC}" = true ] && openrc_enable
+    [ "${HAS_RUNIT}" = true ] && runit_enable
 
     [ "${INSTALL_K3S_SKIP_START}" = true ] && return
 
@@ -1040,6 +1114,7 @@ service_enable_and_start() {
 
     [ "${HAS_SYSTEMD}" = true ] && systemd_start
     [ "${HAS_OPENRC}" = true ] && openrc_start
+    [ "${HAS_RUNIT}" = true ] && runit_start
     return 0
 }
 
@@ -1051,7 +1126,7 @@ eval set -- $(escape "${INSTALL_K3S_EXEC}") $(quote "$@")
     verify_system
     setup_env "$@"
     download_and_verify
-    #setup_selinux
+    setup_selinux
     create_symlinks
     create_killall
     create_uninstall

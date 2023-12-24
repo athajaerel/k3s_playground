@@ -31,3 +31,7 @@ Setenforce 0. Don't need SEL for this but will on actual deployment. Probably.
 
 Had to download binary manually then run script with download disabled. Still not right.
 
+# Tutorials
+
+https://homeautomation.wiki/kubernetes-homelab-with-k3s-and-raspberry-pi-4/
+

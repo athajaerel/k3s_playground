@@ -1,0 +1,12 @@
+---
+dependencies:
+  - vars:
+      packages:
+        - 'keepalived'
+    role: 'meta_package_install'
+  - vars:
+      services:
+        - 'keepalived'
+    role: 'meta_service_enable'
+...
+# vim: set filetype=yaml

@@ -1,0 +1,27 @@
+---
+# The k3s project has taken the unusual decision to host built
+# binaries without any wrapper or compression at all. You just
+# download the actual binary and away you go. This is possible
+# since Go binaries famously have no dependencies.
+
+# This made me feel slimy and naked so I wrapped it up in a
+# tarball. It didn't even have a version number attached.
+- name: 'Unarchive the k3s binary'
+  unarchive:
+    src: 'binaries/k3s-{{ k3s_version }}.tgz'
+    dest: '/usr/local/bin/'
+
+- name: 'Permission the binary'
+  file:
+    path: '/usr/local/bin/k3s'
+    mode: '0755'
+
+- name: 'Copy install script'
+  loop:
+    - '{{ k3s_install_script }}'
+  copy:
+    src: '{{ item[1:] }}'
+    dest: '{{ item }}'
+    mode: '0755'
+...
+# vim: set filetype=yaml

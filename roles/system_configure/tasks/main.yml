@@ -1,0 +1,69 @@
+---
+- name: 'Create local repo mountpoint'
+  register: 'reg_mkdir'
+  vars:
+    e_readonly: 'Read-only file system'
+  failed_when:
+    - 'reg_mkdir.rc is defined'
+    - 'reg_mkdir.module_stdout is defined'
+    - 'reg_mkdir.rc != 0'
+    - 'e_readonly not in reg_mkdir.module_stdout'
+  file:
+    path: '/mnt/disc'
+    state: 'directory'
+    mode: '0000'
+
+- name: 'Set hostname'
+  register: 'reg_hostname'
+  loop:
+    - '/etc/hostname'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+
+- name: 'Set hostname (2)'
+  register: 'reg_hostname_2'
+  vars:
+    conf:
+      rhel: 'rhel'
+      void: 'openbsd' # apparently the best option for Void
+  hostname:
+    name: '{{ fqdn }}'
+    use: '{{ conf[distro] }}'
+
+- name: 'Set random seed'
+  notify: 'Restart sshd'
+  become: yes
+  vars:
+    file: '/var/lib/random-seed'
+  command:
+    argv:
+      - '/bin/dd'
+      - 'bs=1'
+      - 'count={{ "4 KB" | human_to_bytes }}'
+      - 'if=/dev/urandom'
+      - 'of={{ file }}'
+
+# /dev/urandom is guaranteed to return at least one byte
+# but can't guarantee more. By getting one at a time we
+# guarantee to get our full 4K.
+
+- name: 'Delete sshd private keys'
+  notify: 'Restart sshd'
+  loop:
+    - 'ecdsa'
+    - 'dsa'
+    - 'ed25519'
+    - 'rsa'
+  file:
+    path: '/etc/ssh/ssh_host_{{ item }}_key'
+    state: 'absent'
+
+- meta: 'flush_handlers'
+
+- name: 'Reboot'
+  when: 'reg_hostname is changed
+         or reg_hostname_2 is changed'
+  reboot:
+...
+# vim: set filetype=yaml

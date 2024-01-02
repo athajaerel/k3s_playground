@@ -105,6 +105,12 @@
         src: '{{ item[1:] }}.j2'
         dest: '{{ item }}'
 
+    - name: 'Add host entries to hosts file'
+      loop: '{{ groups.nodes }}'
+      lineinfile:
+        path: '/etc/hosts'
+        line: '{{ hostvars[item].ansible_host }} {{ item }}.{{ domain }} {{ item }}'
+
     - name: 'Add repo entry to hosts file'
       when: 'distro == "void"'
       lineinfile:
@@ -215,6 +221,8 @@
     token_file: '/etc/k3s-token-file'
     # /tmp and /var/tmp are mounted noexec so use /run
     k3s_install_script: '/home/ansible/install_k3s.sh'
+    k3s_version: 'v1.28.4+k3s2'
+    calicoctl_version: 'v3.27.0'
   environment:
     K3S_TOKEN_FILE: '{{ token_file }}'
   tasks:
@@ -240,9 +248,9 @@
 
     # This made me feel slimy and naked so I wrapped it up in a
     # tarball. It didn't even have a version number attached.
-    - name: 'Unarchive the binary'
+    - name: 'Unarchive the k3s binary'
       unarchive:
-        src: 'binaries/k3s-v1.28.4+k3s2.tgz'
+        src: 'binaries/k3s-{{ k3s_version }}.tgz'
         dest: '/usr/local/bin/'
 
     - name: 'Permission the binary'
@@ -275,19 +283,110 @@
         src: '/usr/local/bin/k3s.bak'
         dest: '/usr/local/bin/k3s'
 
-    # hmm, ends with error, api server not starting?
     - name: 'Run install script'
       environment:
-        K3S_KUBECONFIG_MODE: '644'
+        K3S_KUBECONFIG_MODE: '0644'
         NO_SELINUX: 'true'
         INSTALL_K3S_SKIP_DOWNLOAD: 'true'
-        INSTALL_K3S_EXEC: 'server --disable traefik --disable=servicelb --disable=traefik --flannel-backend=none --disable-network-policy --cluster-cidr=192.168.0.0/16'
+        INSTALL_K3S_EXEC: 'server --disable traefik --disable=servicelb --disable=traefik --flannel-backend=none --disable-network-policy --cluster-cidr=192.168.0.0/16 --write-kubeconfig-mode=0644'
       command:
         argv:
           - '{{ k3s_install_script }}'
           - '--cluster-init'
           - '--kube-apiserver-arg=feature-gates=RemoveSelfLink=false'
 
+    # - name: 'Fix permissions'
+    #   loop:
+    #     - '/etc/rancher/k3s/k3s.env'
+    #     - '/etc/rancher/k3s/k3s.yaml'
+    #   file:
+    #     path: '{{ item }}'
+    #     mode: '0644'
+
     - name: 'Reboot'
       reboot:
+
+    # TODO: Check resolv.conf first
+    - name: 'Apply Calico CNI'
+      command:
+        argv:
+          - 'kubectl'
+          - 'apply'
+          - '-f'
+          - 'https://docs.projectcalico.org/manifests/calico.yaml'
+
+    - name: 'Unarchive the calicoctl binary'
+      unarchive:
+        src: 'binaries/calicoctl-{{ calicoctl_version }}.tgz'
+        dest: '/usr/local/bin/'
+
+    - name: 'Permission the binary'
+      file:
+        path: '/usr/local/bin/calicoctl'
+        mode: '0755'
+
+    - name: 'Install nginx-ingress'
+      copy:
+        src: 'home/ansible/ingress-nginx.yaml'
+        dest: '/var/lib/rancher/k3s/server/manifests/ingress-nginx.yaml'
+
+- name: 'Bootstrap agents'
+  hosts: 'k3s_agents'
+  gather_facts: no
+  become: yes
+  tags:
+    - 'bootstrap'
+    - 'bootstrap_agents'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  vars:
+  #   token_file: '/etc/k3s-token-file'
+  #   # /tmp and /var/tmp are mounted noexec so use /run
+    k3s_install_script: '/home/ansible/install_k3s.sh'
+    k3s_version: 'v1.28.4+k3s2'
+  #   calicoctl_version: 'v3.27.0'
+  # environment:
+  #   K3S_TOKEN_FILE: '{{ token_file }}'
+  tasks:
+    # Duplicate tasks. Start using roles.
+    - name: 'Unarchive the k3s binary'
+      unarchive:
+        src: 'binaries/k3s-{{ k3s_version }}.tgz'
+        dest: '/usr/local/bin/'
+
+    - name: 'Permission the binary'
+      file:
+        path: '/usr/local/bin/k3s'
+        mode: '0755'
+
+    - name: 'Copy install script'
+      loop:
+        - '{{ k3s_install_script }}'
+      copy:
+        src: '{{ item[1:] }}'
+        dest: '{{ item }}'
+        mode: '0755'
+
+    - name: 'Copy server token'
+      register: 'reg_token'
+      delegate_to: 'k3s-mother-001'
+      slurp:
+        src: '/var/lib/rancher/k3s/server/node-token'
+
+    - name: 'Run install script'
+      environment:
+        K3S_KUBECONFIG_MODE: '0644'
+        NO_SELINUX: 'true'
+        INSTALL_K3S_SKIP_DOWNLOAD: 'true'
+        INSTALL_K3S_EXEC: 'agent --server https://{{ groups.k3s_masters | first }}.{{ domain }}:6443 --token {{ reg_token.content | b64decode }}'
+      command:
+        argv:
+          - '{{ k3s_install_script }}'
+
+# mkdir /var/lib/calico
+# hostname >/var/lib/calico/nodename
+
+# TODO: bootstrap secondary mother nodes 002 and 003
 ...
+# vim: set filetype=yaml

@@ -31,3 +31,15 @@ Setenforce 0. Don't need SEL for this but will on actual deployment. Probably.
 
 Had to download binary manually then run script with download disabled. Still not right.
 
+# Tutorials
+
+https://homeautomation.wiki/kubernetes-homelab-with-k3s-and-raspberry-pi-4/
+
+https://docs.tigera.io/calico/latest/getting-started/kubernetes/k3s/quickstart
+
+https://homeautomation.wiki/kubernetes-l4-loadbalancing-with-metallb/
+
+https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#backing-up-an-etcd-cluster
+
+https://itnext.io/the-ultimate-guide-to-building-your-personal-k3s-cluster-bf2643f31dd3?gi=87ab94d08382
+

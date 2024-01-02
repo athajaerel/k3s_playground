@@ -1,0 +1,101 @@
+---
+- name: 'Install all'
+  hosts: 'all'
+  gather_facts: no
+  become: yes
+  tags:
+    - 'install'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'system_configure'
+    - { name: 'yum_prepare', when: 'distro == "rhel"' }
+    - { name: 'xbps_prepare', when: 'distro == "void"' }
+    - 'iptables_legacy_install'
+
+- name: 'Bootstrap primary masters'
+  hosts: 'k3s_primary_masters'
+  gather_facts: no
+  become: yes
+  tags:
+    - 'bootstrap'
+    - 'bootstrap_primary_masters'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  vars:
+    token_file: '/etc/k3s-token-file'
+  environment:
+    K3S_TOKEN_FILE: '{{ token_file }}'
+  roles:
+    - 'keepalived_install'
+    - 'k3s_prepare'
+    - 'k3s_master_bootstrap'
+
+- name: 'Bootstrap secondary masters'
+  hosts: 'k3s_secondary_masters'
+  gather_facts: no
+  become: yes
+  tags:
+    - 'bootstrap'
+    - 'bootstrap_secondary_masters'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  vars:
+    token_file: '/etc/k3s-token-file'
+  environment:
+    K3S_TOKEN_FILE: '{{ token_file }}'
+  roles:
+    - 'keepalived_install'
+    - 'k3s_prepare'
+    - 'k3s_master_bootstrap'
+
+- name: 'Bootstrap agents'
+  hosts: 'k3s_agents'
+  gather_facts: no
+  become: yes
+  tags:
+    - 'bootstrap'
+    - 'bootstrap_agents'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  vars:
+  #   token_file: '/etc/k3s-token-file'
+  # environment:
+  #   K3S_TOKEN_FILE: '{{ token_file }}'
+  roles:
+    - 'keepalived_install'
+    - 'k3s_prepare'
+    - 'k3s_agent_bootstrap'
+
+# curl -sfL https://get.k3s.io | K3S_TOKEN=SECRET sh -s - server \
+#     --server https://<ip or hostname of server1>:6443
+# # --tls-san=<FIXED_IP> # Optional, needed if using a fixed registration address
+
+- name: 'Install Rancher Admin'
+  hosts: 'rancher'
+  gather_facts: no
+  become: yes
+  tags:
+    - 'rancher'
+    - 'rancher_admin'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  vars:
+  #   token_file: '/etc/k3s-token-file'
+  # environment:
+  #   K3S_TOKEN_FILE: '{{ token_file }}'
+  roles:
+    - 'rancher_install'
+
+# TODO: (other) 
+#    MetalLB instead of servicelb (optional).
+#    Longhorn as local distrubuted block storage and NFS External Provisioner as CSI (optional).
+#    Automatic SSL certificate management and renewals with cert-manager (optional).
+
+...
+# vim: set filetype=yaml

@@ -1,0 +1,10 @@
+---
+- name: 'Update xbps config'
+  # when: 'distro == "void"'
+  loop:
+    - '/etc/xbps.d/00-repository-main.conf'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+...
+# vim: set filetype=yaml

@@ -1,8 +1,13 @@
 ---
 - name: 'Restart keepalived'
-  service:
-    name: 'keepalived'
-    state: 'restarted'
+  # service:
+  #   name: 'keepalived'
+  #   state: 'restarted'
+  command:
+    argv:
+      - 'sv'
+      - 'restart'
+      - 'keepalived'
 
 - name: 'Restart sshd'
   become: yes

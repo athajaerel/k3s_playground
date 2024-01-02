@@ -1,0 +1,32 @@
+---
+opts_common:
+  - 'server'
+  #- '--disable'
+  #- 'traefik'
+  - '--disable=servicelb'
+  - '--disable=traefik'
+  - '--flannel-backend=none'
+  - '--disable-network-policy'
+  - '--cluster-cidr=192.168.0.0/16'
+  - '--write-kubeconfig-mode=0644'
+  - '--cluster-init'
+
+opts_is_primary: '{{ ("bootstrap_primary_masters" in tags) | bool }}'
+
+primary_host: '{{ groups["k3s_primary_masters"] | first }}'
+
+opts_secondary:
+  - '--token=$(more /var/lib/rancher/k3s/server/node-token)'
+  - '--server=https://{{ primary_host }}.{{ domain }}:6443'
+
+opts: '{{ opts_common
+          + ([] if opts_is_primary
+             else opts_secondary) | join(" ") }}'
+
+random_token: '(now().microsecond ~ inventory_hostname)
+               | password_hash("sha256") | b64encode'
+
+calico_manifest: 'https://docs.projectcalico.org/manifests/calico.yaml'
+nginx_manifest: '/var/lib/rancher/k3s/server/manifests/ingress-nginx.yaml'
+...
+# vim: set filetype=yaml

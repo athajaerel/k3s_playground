@@ -1,0 +1,11 @@
+---
+- name: 'Configure keepalived'
+  notify:
+    - 'Restart keepalived'
+  loop:
+    - '/etc/keepalived/keepalived.conf'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+...
+# vim: set filetype=yaml

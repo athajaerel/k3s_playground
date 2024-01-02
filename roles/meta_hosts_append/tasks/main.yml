@@ -1,0 +1,8 @@
+---
+- name: 'Add entries to hosts file'
+  loop: '{{ hosts }}'
+  lineinfile:
+    path: '/etc/hosts'
+    line: '{{ item.addr }} {{ item.names | join(" ") }}'
+...
+# vim: set filetype=yaml

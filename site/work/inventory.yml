@@ -7,6 +7,8 @@ all:
       ip_fourth_byte: '111'
     k3s-child-002:
       ip_fourth_byte: '112'
+    rancher-admin:
+      ip_fourth_byte: '110'
   vars:
     distro: 'rhel'
     domain: 'k3s.lab'

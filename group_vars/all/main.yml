@@ -6,5 +6,10 @@ fqdn: '{{ inventory_hostname }}.{{ domain }}'
 keepalived_vip_address: '{{ network | ipv4(keepalived_vip_fourth_byte) | ipv4("address") }}'
 keepalived_notify_to: 'admin@{{ domain }}'
 keepalived_notify_from: '{{ inventory_hostname }}@{{ domain }}'
+
+k3s_install_script: '/home/ansible/install_k3s.sh'
+k3s_version: 'v1.28.4+k3s2'
+
+calicoctl_version: 'v3.27.0'
 ...
 # vim: set filetype=yaml

@@ -1,0 +1,12 @@
+---
+- name: 'Set up service'
+  when: 'distro == "void"'
+  loop: '{{ services }}'
+  file:
+    src: '/etc/sv/{{ item }}'
+    dest: '/var/service/{{ item }}'
+    state: link
+
+# TODO rhel version
+...
+# vim: set filetype=yaml

@@ -1,0 +1,32 @@
+---
+- name: 'Copy legacy RPMs'
+  when: 'distro == "rhel"'
+  loop:
+    - 'iptables-libs-1.6.2-2.fc28.x86_64.rpm'
+    - 'iptables-1.6.2-2.fc28.x86_64.rpm'
+  copy:
+    src: 'rpms/{{ item }}'
+    dest: '/tmp/'
+
+# TODO: failed_when/changed_when
+- name: 'Install legacy RPMs'
+  when: 'distro == "rhel"'
+  register: 'reg_iptables'
+  vars:
+    legacy_rpms:
+      - '/tmp/iptables-libs-1.6.2-2.fc28.x86_64.rpm'
+      - '/tmp/iptables-1.6.2-2.fc28.x86_64.rpm'
+    command:
+      - '/bin/yum'
+      - 'localinstall'
+      - '--allowerasing'
+      - '--nogpgcheck'
+      - '-y'
+  command:
+    argv: '{{ command + legacy_rpms }}'
+
+- name: 'Reboot'
+  when: 'reg_iptables is changed'
+  reboot:
+...
+# vim: set filetype=yaml

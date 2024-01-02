@@ -1,16 +1,35 @@
 ---
-nodes:
+k3s_primary_masters:
   hosts:
     k3s-mother-001:
+
+k3s_secondary_masters:
+  hosts:
+    k3s-mother-002:
+    k3s-mother-003:
+
+k3s_agents:
+  hosts:
     k3s-child-001:
     k3s-child-002:
 
-k3s_masters:
+rancher:
   hosts:
-    k3s-mother-001:
+    rancher-admin:
 
+k3s_masters:
+  children:
+    k3s_primary_masters:
+    k3s_secondary_masters:
+
+# should be single host not group?
 keepalived_primaries:
   children:
+    k3s_primary_masters:
+
+nodes:
+  children:
     k3s_masters:
+    k3s_agents:
 ...
 # vim: set filetype=yaml

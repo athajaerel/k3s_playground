@@ -1,0 +1,23 @@
+---
+
+    - name: 'Copy server token'
+      register: 'reg_token'
+      delegate_to: 'k3s-mother-001'
+      slurp:
+        src: '/var/lib/rancher/k3s/server/node-token'
+
+    - name: 'Run install script'
+      environment:
+        K3S_KUBECONFIG_MODE: '0644'
+        NO_SELINUX: 'true'
+        INSTALL_K3S_SKIP_DOWNLOAD: 'true'
+        INSTALL_K3S_EXEC: 'agent --server https://{{ groups.k3s_masters | first }}.{{ domain }}:6443 --token {{ reg_token.content | b64decode }}'
+      command:
+        argv:
+          - '{{ k3s_install_script }}'
+
+# mkdir /var/lib/calico
+# hostname >/var/lib/calico/nodename
+
+...
+# vim: set filetype=yaml

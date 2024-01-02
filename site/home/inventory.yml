@@ -3,10 +3,16 @@ all:
   hosts:
     k3s-mother-001:
       ip_fourth_byte: '1'
+    k3s-mother-002:
+      ip_fourth_byte: '2'
+    k3s-mother-003:
+      ip_fourth_byte: '3'
     k3s-child-001:
       ip_fourth_byte: '11'
     k3s-child-002:
       ip_fourth_byte: '12'
+    rancher-admin:
+      ip_fourth_byte: '200'
   vars:
     distro: 'void'
     domain: 'dreamtrack.test'

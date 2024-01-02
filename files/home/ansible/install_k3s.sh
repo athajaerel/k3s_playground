@@ -983,31 +983,14 @@ ${LOG_FILE} {
 EOF
 }
 
-# --- write runit service file ---
+# --- write runit service files ---
 create_runit_service_file() {
-    info "runit: Creating service file ${FILE_K3S_SERVICE}"
+    info "runit: Creating service ${FILE_K3S_SERVICE}"
     LOG_FILE=/var/log/${SYSTEM_NAME}
-    # We create some directories first
-    $SUDO mkdir -p ${FILE_K3S_SERVICE}/log
-    $SUDO tee ${FILE_K3S_SERVICE}/run >/dev/null << EOF
-#!/bin/sh
 
-[ -f ./conf ] && . ./conf
-
-modprobe br_netfilter overlay
-exec ${BIN_DIR}/k3s $(escape_dq "${CMD_K3S_EXEC}") 2>&1
-EOF
-    $SUDO tee ${FILE_K3S_SERVICE}/log/run >/dev/null << EOF
-#!/bin/sh
-exec tee -a ${LOGFILE} | vlogger -t ${SYSTEM_NAME} -p daemon
-EOF
-    $SUDO tee ${FILE_K3S_SERVICE}/finish >/dev/null << EOF
-#!/bin/sh
-rm -f /tmp/k3s.*
-EOF
-    $SUDO chmod 0755 ${FILE_K3S_SERVICE}/run ${FILE_K3S_SERVICE}/finish ${FILE_K3S_SERVICE}/log/run
     # Add a logrotate config
-    $SUDO tee /etc/logrotate.d/${SYSTEM_NAME}/log/run >/dev/null << EOF
+    $SUDO mkdir -p /etc/logrotate.d
+    $SUDO tee /etc/logrotate.d/${SYSTEM_NAME} >/dev/null << EOF
 #!/bin/sh
 ${LOG_FILE} {
 	missingok
@@ -1015,6 +998,40 @@ ${LOG_FILE} {
 	copytruncate
 }
 EOF
+
+    # We create some directories first
+    $SUDO mkdir -p ${FILE_K3S_SERVICE}/log
+
+    # log/run file
+    $SUDO tee ${FILE_K3S_SERVICE}/log/run >/dev/null << EOF
+#!/bin/sh
+exec tee -a ${LOG_FILE} | vlogger -t ${SYSTEM_NAME} -p daemon
+EOF
+
+    # finish file
+    $SUDO tee ${FILE_K3S_SERVICE}/finish >/dev/null << EOF
+#!/bin/sh
+rm -f /tmp/k3s.*
+EOF
+
+    # conf file
+    $SUDO tee ${FILE_K3S_SERVICE}/conf >/dev/null << EOF
+OPTS="${CMD_K3S_EXEC}"
+EOF
+
+    # run file
+    $SUDO tee ${FILE_K3S_SERVICE}/run >/dev/null << EOF
+#!/bin/sh
+
+[ -f ./conf ] && . ./conf
+
+modprobe br_netfilter overlay
+exec ${BIN_DIR}/k3s \${OPTS:-} 2>&1
+EOF
+    # $ (escape_dq "${INSTALL_K3S_EXEC}")
+
+    $SUDO chmod 0755 ${FILE_K3S_SERVICE}/run ${FILE_K3S_SERVICE}/finish ${FILE_K3S_SERVICE}/log/run
+    $SUDO chmod 0644 ${FILE_K3S_SERVICE}/conf /etc/logrotate.d/${SYSTEM_NAME}
 }
 
 # --- write systemd, runit or openrc service file ---

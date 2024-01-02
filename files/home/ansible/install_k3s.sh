@@ -1077,15 +1077,17 @@ openrc_start() {
 
 # --- enable and start runit service ---
 runit_enable() {
-    # There's no canonical way to enable a service without starting it,
-    # but we can enable and stop.
-    info "runit: Enabling and stopping service ${SYSTEM_NAME}"
+    # There's no canonical way to enable a service without
+    # starting it, but this might work? Based on docs and
+    # a small amount of testing.
+    info "runit: Enabling (but not starting) service ${SYSTEM_NAME}"
+    $SUDO touch /etc/sv/${SYSTEM_NAME}/down
     $SUDO ln -s /etc/sv/${SYSTEM_NAME} /var/service/
-    $SUDO sv down ${SYSTEM_NAME}
 }
 
 runit_start() {
     info "runit: Starting ${SYSTEM_NAME}"
+    $SUDO rm -f /etc/sv/${SYSTEM_NAME}/down
     $SUDO sv up ${SYSTEM_NAME}
 }
 

@@ -11,17 +11,17 @@ opts_common:
   - '--write-kubeconfig-mode=0644'
   - '--cluster-init'
 
-opts_is_primary: '{{ ("bootstrap_primary_masters" in tags) | bool }}'
-
-primary_host: '{{ groups["k3s_primary_masters"] | first }}'
-
 opts_secondary:
   - '--token=$(more /var/lib/rancher/k3s/server/node-token)'
   - '--server=https://{{ primary_host }}.{{ domain }}:6443'
 
-opts: '{{ opts_common
+opts_is_primary: '{{ ("bootstrap_primary_masters" in ansible_run_tags) | bool }}'
+
+primary_host: '{{ groups["k3s_primary_masters"] | first }}'
+
+opts: '{{ (opts_common
           + ([] if opts_is_primary
-             else opts_secondary) | join(" ") }}'
+             else opts_secondary)) | join(" ") }}'
 
 random_token: '(now().microsecond ~ inventory_hostname)
                | password_hash("sha256") | b64encode'

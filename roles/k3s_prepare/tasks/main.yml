@@ -6,6 +6,75 @@
 
 # This made me feel slimy and naked so I wrapped it up in a
 # tarball. It didn't even have a version number attached.
+
+# TODO: meta this?
+
+- name: 'Ensure directory exists'
+  connection: 'local'
+  become: no
+  file:
+    path: '{{ playbook_dir }}/binaries'
+    state: 'directory'
+
+- name: 'Check if tarball exists already'
+  register: 'reg_tarball'
+  connection: 'local'
+  become: no
+  stat:
+    path: '{{ k3s_binaries_dir }}/k3s-{{ k3s_version }}.tgz'
+
+- name: 'Get checksum from tarballed file'
+  when: 'reg_tarball.stat.exists'
+  register: 'reg_checksum'
+  connection: 'local'
+  become: no
+  archived_checksum:
+    path: '{{ k3s_binaries_dir }}/k3s-{{ k3s_version }}.tgz'
+    archived_file: 'k3s'
+
+- name: 'Download specified binaries'
+  when: 'file_checksum != k3s_sha256_checksum
+         or not reg_tarball.stat.exists'
+  connection: 'local'
+  become: no
+  vars:
+    file_checksum: '{{ (reg_checksum.stdout_lines | first).split(" ")[0] }}'
+  loop: '{{ k3s_downloads }}'
+  loop_control:
+    label: '{{ item.url | basename }}'
+  get_url:
+    url: '{{ item.url }}'
+    dest: '{{ k3s_binaries_dir }}/'
+    checksum: '{{ item.checksum }}'
+
+# TODO: changed_when
+- name: 'Tarball up binaries'
+  when: 'file_checksum != k3s_sha256_checksum
+         or not reg_tarball.stat.exists'
+  connection: 'local'
+  become: no
+  vars:
+    file: '{{ k3s_binaries_dir }}/{{ item.url | basename }}'
+    file_checksum: '{{ (reg_checksum.stdout_lines | first).split(" ")[0] }}'
+  loop: '{{ k3s_downloads }}'
+  loop_control:
+    label: '{{ item.url | basename }}'
+  # Module doesn't work due to a bug.
+  # archive:
+  #   path: '{{ file }}'
+  #   dest: '{{ file }}-{{ k3s_version }}.tgz'
+  #   format: 'gz'
+  #   force_archive: yes
+  #   remove: yes
+  command:
+    argv:
+      - 'tar'
+      - 'cpzf'
+      - '{{ file }}-{{ k3s_version }}.tgz'
+      - '-C'
+      - '{{ file | dirname }}'
+      - '{{ file | basename }}'
+
 - name: 'Unarchive the k3s binary'
   unarchive:
     src: 'binaries/k3s-{{ k3s_version }}.tgz'

@@ -1,4 +1,7 @@
 ---
-
+k3s_binaries_dir: '{{ playbook_dir }}/binaries'
+k3s_downloads:
+  - url: 'https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s'
+    checksum: 'sha256:{{ k3s_sha256_checksum }}'
 ...
 # vim: set filetype=yaml

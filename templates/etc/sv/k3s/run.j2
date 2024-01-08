@@ -1,0 +1,6 @@
+#!/bin/sh
+
+[ -f ./conf ] && . ./conf
+
+modprobe br_netfilter overlay
+exec /usr/local/bin/k3s ${OPTS:-} 2>&1

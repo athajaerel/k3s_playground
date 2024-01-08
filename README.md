@@ -14,11 +14,9 @@ Current tags:
 
 - install
 - bootstrap
-- bootstrap_primary_masters
-- bootstrap_secondary_masters
+- bootstrap_masters
 - bootstrap_agents
 - rancher
-- rancher_admin
 
 ## Design Notes
 

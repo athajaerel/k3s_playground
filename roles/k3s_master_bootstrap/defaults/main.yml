@@ -1,4 +1,31 @@
 ---
+random_token_file: '/etc/k3s-token'
+
+clobber_ok: no
+
+k3s_clobber_files:
+  - '/etc/rancher/k3s'
+  - '/usr/local/bin/kubectl'
+  - '/usr/local/bin/crictl'
+  - '/usr/local/bin/ctr'
+  - '/run/k3s'
+  - '/run/flannel'
+  - '/var/lib/rancher'
+  - '/var/lib/kubelet'
+  - '/var/lib/cni'
+  - '/usr/local/bin/k3s-killall.sh'
+  - '/usr/local/bin/k3s-uninstall.sh'
+
+k3s_clobber_os_files:
+  void:
+    - '/etc/sv/k3s'
+    - '/etc/xbps.d/rancher-k3s-common*.conf'
+    - '/var/service/k3s'
+  rhel: [ ]
+
+primary_group: '{{ groups["k3s_primary_masters"] | list }}'
+is_primary: '{{ (inventory_hostname in primary_group) | bool }}'
+
 opts_common:
   - 'server'
   #- '--disable'
@@ -12,21 +39,10 @@ opts_common:
   - '--cluster-init'
 
 opts_secondary:
-  - '--token=$(more /var/lib/rancher/k3s/server/node-token)'
-  - '--server=https://{{ primary_host }}.{{ domain }}:6443'
+  - '--token=$(more /var/lib/rancher/k3s/server/token)'
+  - '--server=https://{{ primary_group[0] }}.{{ domain }}:6443'
 
-opts_is_primary: '{{ ("bootstrap_primary_masters" in ansible_run_tags) | bool }}'
-
-primary_host: '{{ groups["k3s_primary_masters"] | first }}'
-
-opts: '{{ (opts_common
-          + ([] if opts_is_primary
-             else opts_secondary)) | join(" ") }}'
-
-random_token: '(now().microsecond ~ inventory_hostname)
-               | password_hash("sha256") | b64encode'
-
-calico_manifest: 'https://docs.projectcalico.org/manifests/calico.yaml'
-nginx_manifest: '/var/lib/rancher/k3s/server/manifests/ingress-nginx.yaml'
+#calico_manifest: 'https://docs.projectcalico.org/manifests/calico.yaml'
+#nginx_manifest: '/var/lib/rancher/k3s/server/manifests/ingress-nginx.yaml'
 ...
 # vim: set filetype=yaml

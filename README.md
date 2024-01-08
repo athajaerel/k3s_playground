@@ -1,3 +1,27 @@
+# k3s_playground
+
+## Usage
+
+You need some VMs prepared with passwordless SSH login for user ansible set up. See inventories in site/.
+
+To run:
+
+$ ansible-playbook k3s.yml -i site/whatever --tags=install 
+
+Tags must be specified as all plays have the 'never' tag.
+
+Current tags:
+
+- install
+- bootstrap
+- bootstrap_primary_masters
+- bootstrap_secondary_masters
+- bootstrap_agents
+- rancher
+- rancher_admin
+
+## Design Notes
+
 Clone rhel86-playground three times:
   - k3s-mother-001
   - k3s-child-001

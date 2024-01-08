@@ -1,0 +1,126 @@
+---
+#    $SUDO systemctl disable ${SYSTEM_NAME} >/dev/null 2>&1 || true
+#    $SUDO rm -f /etc/systemd/system/${SERVICE_K3S} || true
+#    $SUDO rm -f /etc/systemd/system/${SERVICE_K3S}.env || true
+#
+#    info "env: Creating environment file ${FILE_K3S_ENV}"
+#    $SUDO touch ${FILE_K3S_ENV}
+#    $SUDO chmod 0600 ${FILE_K3S_ENV}
+#    sh -c export | while read x v; do echo $v; done | grep -E '^(K3S|CONTAINERD)_' | $SUDO tee ${FILE_K3S_ENV} >/dev/null
+#    sh -c export | while read x v; do echo $v; done | grep -Ei '^(NO|HTTP|HTTPS)_PROXY' | $SUDO tee -a ${FILE_K3S_ENV} >/dev/null
+#
+#    [ "${HAS_SYSTEMD}" = true ] && create_systemd_service_file && restore_systemd_service_file_context
+#    [ "${HAS_OPENRC}" = true ] && create_openrc_service_file
+#    [ "${HAS_RUNIT}" = true ] && create_runit_service_file
+#
+#    if [ -f "/proc/cgroups" ] && [ "$(grep memory /proc/cgroups | while read -r n n n enabled; do echo $enabled; done)" -eq 0 ];
+#    then
+#        info 'Failed to find memory cgroup, you may need to add "cgroup_memory=1 cgroup_enable=memory" to your linux cmdline (/boot/cmdline.txt on a Raspberry Pi)'
+#    fi
+#
+#    [ "${INSTALL_K3S_SKIP_ENABLE}" = true ] && return
+#
+#    [ "${HAS_SYSTEMD}" = true ] && systemd_enable
+#    [ "${HAS_OPENRC}" = true ] && openrc_enable
+#    [ "${HAS_RUNIT}" = true ] && runit_enable
+#
+#    [ "${INSTALL_K3S_SKIP_START}" = true ] && return
+#
+#    POST_INSTALL_HASHES=$(get_installed_hashes)
+#    if [ "${PRE_INSTALL_HASHES}" = "${POST_INSTALL_HASHES}" ] && [ "${INSTALL_K3S_FORCE_RESTART}" != true ]; then
+#        info 'No change detected so skipping service start'
+#        return
+#    fi
+#
+#    for XTABLES in iptables ip6tables; do
+#        if has_working_xtables ${XTABLES}; then
+#            $SUDO ${XTABLES}-save 2>/dev/null | grep -v KUBE- | grep -iv flannel | $SUDO ${XTABLES}-restore
+#        fi
+#    done
+#
+#    [ "${HAS_SYSTEMD}" = true ] && systemd_start
+#    [ "${HAS_OPENRC}" = true ] && openrc_start
+#    [ "${HAS_RUNIT}" = true ] && runit_start
+
+
+
+
+
+#- name: 'Copy token file from primary'
+#  when: 'not opts_is_primary'
+#  delegate_to: '{{ primary_host }}'
+#  register: 'reg_read_token'
+#  slurp:
+#    path: '/var/lib/rancher/k3s/server/node-token'
+#
+#- name: 'Write token file to secondary'
+#  when: 'not opts_is_primary'
+#  copy:
+#    path: '/var/lib/rancher/k3s/server/token'
+#
+## TODO: Ansiblise. It's too flaky to run like this.
+##- name: 'Run install script'
+##  environment:
+##    K3S_KUBECONFIG_MODE: '0644'
+##    NO_SELINUX: 'true'
+##    INSTALL_K3S_SKIP_DOWNLOAD: 'true'
+##    INSTALL_K3S_EXEC: '{{ opts }}'
+##  command:
+##    argv:
+##      - '{{ k3s_install_script }}'
+
+#    verify_system
+#    setup_env "$@"
+#    download_and_verify
+#    setup_selinux
+#    create_symlinks
+#    create_killall
+#    create_uninstall
+#    systemd_disable
+#    create_env_file
+#    create_service_file
+#    service_enable_and_start
+
+## TODO: Check resolv.conf first
+#- name: 'Apply Calico CNI'
+#  when: 'opts_is_primary'
+#  command:
+#    argv:
+#      - 'kubectl'
+#      - 'apply'
+#      - '-f'
+#      - '{{ calico_manifest }}'
+#
+##- name: 'Unarchive the calicoctl binary'
+##  when: 'opts_is_primary'
+##  unarchive:
+##    src: 'binaries/calicoctl-{{ calicoctl_version }}.tgz'
+##    dest: '/usr/local/bin/'
+#
+##- name: 'Permission the binary'
+##  when: 'opts_is_primary'
+##  file:
+##    path: '/usr/local/bin/calicoctl'
+##    mode: '0755'
+#
+#- name: 'Install nginx-ingress'
+#  when: 'opts_is_primary'
+#  copy:
+#    src: 'home/ansible/ingress-nginx.yaml'
+#    dest: '{{ nginx_manifest }}'
+#
+#
+
+# curl -sfL https://get.k3s.io | K3S_TOKEN=SECRET sh -s - server \
+#     --server https://<ip or hostname of server1>:6443
+# # --tls-san=<FIXED_IP> # Optional, needed if using a fixed registration address
+#
+
+# TODO: (other) 
+#    MetalLB instead of servicelb (optional).
+#    Longhorn as local distrubuted block storage and NFS External Provisioner as CSI (optional).
+#    Automatic SSL certificate management and renewals with cert-manager (optional).
+#
+#
+...
+# vim: set filetype=yaml

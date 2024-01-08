@@ -1,0 +1,2 @@
+#!/bin/sh
+exec tee -a {{ log_file }} | vlogger -t k3s -p daemon

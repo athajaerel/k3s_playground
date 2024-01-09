@@ -172,42 +172,27 @@
   when: 'not is_primary'
   reboot:
 
-## TODO: Check resolv.conf first
-#- name: 'Apply Calico CNI'
+- name: 'Apply manifests'
+  when: 'is_primary'
+  loop: '{{ manifests }}'
+  copy:
+    src: 'home/ansible/{{ item }}'
+    dest: '/var/lib/rancher/k3s/server/manifests/{{ item }}'
+
+#- name: 'Unarchive the calicoctl binary'
 #  when: 'opts_is_primary'
-#  command:
-#    argv:
-#      - 'kubectl'
-#      - 'apply'
-#      - '-f'
-#      - '{{ calico_manifest }}'
-#
-##- name: 'Unarchive the calicoctl binary'
-##  when: 'opts_is_primary'
-##  unarchive:
-##    src: 'binaries/calicoctl-{{ calicoctl_version }}.tgz'
-##    dest: '/usr/local/bin/'
-#
-##- name: 'Permission the binary'
-##  when: 'opts_is_primary'
-##  file:
-##    path: '/usr/local/bin/calicoctl'
-##    mode: '0755'
-#
-#- name: 'Install nginx-ingress'
+#  unarchive:
+#    src: 'binaries/calicoctl-{{ calicoctl_version }}.tgz'
+#    dest: '/usr/local/bin/'
+
+#- name: 'Permission the binary'
 #  when: 'opts_is_primary'
-#  copy:
-#    src: 'home/ansible/ingress-nginx.yaml'
-#    dest: '{{ nginx_manifest }}'
+#  file:
+#    path: '/usr/local/bin/calicoctl'
+#    mode: '0755'
 
 # curl -sfL https://get.k3s.io | K3S_TOKEN=SECRET sh -s - server \
 #     --server https://<ip or hostname of server1>:6443
 # # --tls-san=<FIXED_IP> # Optional, needed if using a fixed registration address
-#
-# TODO: (other) 
-#    MetalLB instead of servicelb (optional).
-#    Longhorn as local distrubuted block storage and NFS External Provisioner as CSI (optional).
-#    Automatic SSL certificate management and renewals with cert-manager (optional).
-
 ...
 # vim: set filetype=yaml

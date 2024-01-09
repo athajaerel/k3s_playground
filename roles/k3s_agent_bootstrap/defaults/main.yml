@@ -1,4 +1,11 @@
 ---
+is_primary: yes  # not actually, but needed
 
+opts_common:
+  - 'agent'
+  - '--server'
+  - 'https://{{ groups.k3s_primary_masters | first }}.{{ domain }}:6443'
+  - '--token'
+  - '{{ reg_token.content | b64decode }}'
 ...
 # vim: set filetype=yaml

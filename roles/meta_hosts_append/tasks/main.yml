@@ -3,6 +3,6 @@
   loop: '{{ hosts }}'
   lineinfile:
     path: '/etc/hosts'
-    line: '{{ item.addr }} {{ item.names | join(" ") }}'
+    line: '{{ hostvars[item].ansible_host }} {{ item }}.{{ domain }} {{ item }}'
 ...
 # vim: set filetype=yaml

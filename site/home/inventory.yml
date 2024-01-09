@@ -11,6 +11,20 @@ all:
       ip_fourth_byte: '11'
     k3s-child-002:
       ip_fourth_byte: '12'
+    k3s-child-003:
+      ip_fourth_byte: '13'
+    k3s-child-004:
+      ip_fourth_byte: '14'
+    k3s-child-005:
+      ip_fourth_byte: '15'
+    k3s-child-006:
+      ip_fourth_byte: '16'
+    k3s-child-007:
+      ip_fourth_byte: '17'
+    k3s-child-008:
+      ip_fourth_byte: '18'
+    k3s-child-009:
+      ip_fourth_byte: '19'
     rancher-admin:
       ip_fourth_byte: '200'
   vars:

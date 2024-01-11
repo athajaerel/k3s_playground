@@ -12,6 +12,13 @@ k3s_agents:
   hosts:
     k3s-child-001:
     k3s-child-002:
+    k3s-child-003:
+    k3s-child-004:
+    k3s-child-005:
+    k3s-child-006:
+    k3s-child-007:
+    k3s-child-008:
+    k3s-child-009:
 
 rancher:
   hosts:

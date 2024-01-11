@@ -1,0 +1,6 @@
+---
+- name: 'RHEL configuration tasks'
+  debug:
+    msg: 'Not implemented'
+...
+# vim: set filetype=yaml

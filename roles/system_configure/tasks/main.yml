@@ -1,4 +1,12 @@
 ---
+- name: 'Configure for RHEL'
+  when: 'distro == "rhel"'
+  import_tasks: 'rhel_configure.yml'
+
+- name: 'Configure for distro'
+  when: 'distro == "void"'
+  import_tasks: 'void_configure.yml'
+
 - name: 'Create local repo mountpoint'
   register: 'reg_mkdir'
   vars:
@@ -33,7 +41,6 @@
 
 - name: 'Set random seed'
   notify: 'Restart sshd'
-  become: yes
   vars:
     file: '/var/lib/random-seed'
   command:

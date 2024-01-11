@@ -1,0 +1,4 @@
+---
+all_hosts_records: '{{ groups.all }}'
+...
+# vim: set filetype=yaml

@@ -1,8 +1,15 @@
 ---
 - name: 'Add entries to hosts file'
   loop: '{{ hosts }}'
+  vars:
+    ip_address: '{{
+      hostvars[item].ansible_host
+      if item in hostvars
+      else (query("community.dns.lookup", item) | first) }}'
   lineinfile:
     path: '/etc/hosts'
-    line: '{{ item.addr }} {{ item.names | join(" ") }}'
+    line: '{{ ip_address }} {{ item }}{{
+      ("." ~ domain ~ " " ~ item)
+      if item in hostvars }}'
 ...
 # vim: set filetype=yaml

@@ -1,13 +1,7 @@
 ---
 dependencies:
   - vars:
-      hosts: '
-{%- set x = [] -%}
-{%- for node in groups.nodes -%}
-{%-   set x = x + [ node ~ "." ~ domain, node ] -%}
-{%- endfor -%}
-{{- x -}}
-'
+      hosts: '{{ all_hosts_records }}'
     role: 'meta_hosts_append'
 ...
 # vim: set filetype=yaml

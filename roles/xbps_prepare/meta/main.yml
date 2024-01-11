@@ -2,9 +2,7 @@
 dependencies:
   - vars:
       hosts:
-        - addr: '65.21.160.177'
-          names:
-            - 'repo-default.voidlinux.org'
+        - 'repo-default.voidlinux.org'
     role: 'meta_hosts_append'
 ...
 # vim: set filetype=yaml

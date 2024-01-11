@@ -20,10 +20,19 @@ Current tags:
 
 ## Design Notes
 
-Clone rhel86-playground three times:
+Clone rhel86-playground twelve times:
   - k3s-mother-001
+  - k3s-mother-002
+  - k3s-mother-003
   - k3s-child-001
   - k3s-child-002
+  - k3s-child-003
+  - k3s-child-004
+  - k3s-child-005
+  - k3s-child-006
+  - k3s-child-007
+  - k3s-child-008
+  - k3s-child-009
 
 Change UUIDs:
   - ifcfg-enp10s0 [actually, don't think we need to configure a UUID for these?]
@@ -34,6 +43,8 @@ Change UUIDs:
 Add ansible.
 Install keepalived.
 Template config for keepalived.
+
+Update hosts file.
 
 Stop password expiring.
 

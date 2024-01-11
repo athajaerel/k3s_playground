@@ -85,12 +85,12 @@
     path: '/usr/local/bin/k3s'
     mode: '0755'
 
-- name: 'Copy install script'
-  loop:
-    - '{{ k3s_install_script }}'
-  copy:
-    src: '{{ item[1:] }}'
-    dest: '{{ item }}'
-    mode: '0755'
+#- name: 'Copy install script'
+#  loop:
+#    - '{{ k3s_install_script }}'
+#  copy:
+#    src: '{{ item[1:] }}'
+#    dest: '{{ item }}'
+#    mode: '0755'
 ...
 # vim: set filetype=yaml

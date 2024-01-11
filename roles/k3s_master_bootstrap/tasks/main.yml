@@ -44,7 +44,6 @@
     state: 'absent'
 
 - name: 'Correct binary permissions'
-  become: yes
   file:
     path: '/usr/local/bin/k3s'
     mode: '0755'
@@ -52,7 +51,6 @@
     group: 'root'
 
 - name: 'Create symlinks'
-  become: yes
   loop:
     - 'kubectl'
     - 'crictl'
@@ -77,7 +75,6 @@
     group: 'root'
 
 - name: 'Ensure configuration directory exists'
-  become: yes
   file:
     path: '/etc/rancher/k3s'
     state: 'directory'
@@ -91,7 +88,6 @@
       - 'export'
 
 - name: 'Delete environment settings'
-  become: yes
   file:
     path: '/etc/rancher/k3s/k3s.env'
     state: 'absent'
@@ -109,7 +105,6 @@
          or "_proxy" in item
          or "K3S" in item
          or "CONTAINERD" in item'
-  become: yes
   loop: '{{ reg_environment.stdout_lines }}'
   lineinfile:
     line: '{{ item }}'
@@ -120,13 +115,11 @@
     mode: '0644'
 
 - name: 'Create logrotate directory'
-  become: yes
   file:
     path: '/etc/logrotate.d'
     state: 'directory'
 
 - name: 'Template in logrotate config'
-  become: yes
   vars:
     log_file: '/var/log/k3s'
   loop:
@@ -172,33 +165,43 @@
   when: 'not is_primary'
   reboot:
 
-## TODO: Check resolv.conf first
-#- name: 'Apply Calico CNI'
-#  when: 'opts_is_primary'
-#  command:
-#    argv:
-#      - 'kubectl'
-#      - 'apply'
-#      - '-f'
-#      - '{{ calico_manifest }}'
-#
-##- name: 'Unarchive the calicoctl binary'
-##  when: 'opts_is_primary'
-##  unarchive:
-##    src: 'binaries/calicoctl-{{ calicoctl_version }}.tgz'
-##    dest: '/usr/local/bin/'
-#
-##- name: 'Permission the binary'
-##  when: 'opts_is_primary'
-##  file:
-##    path: '/usr/local/bin/calicoctl'
-##    mode: '0755'
-#
-#- name: 'Install nginx-ingress'
-#  when: 'opts_is_primary'
+#- name: 'Apply manifests'
+#  when: 'is_primary'
+#  loop: '{{ manifests }}'
 #  copy:
-#    src: 'home/ansible/ingress-nginx.yaml'
-#    dest: '{{ nginx_manifest }}'
+#    src: 'home/ansible/{{ item }}'
+#    dest: '/var/lib/rancher/k3s/server/manifests/{{ item }}'
+
+- name: 'Install manifests'
+  when: 'is_primary'
+  block:
+    - name: 'Copy over manifests'
+      copy:
+        src: 'manifests'
+        dest: '.'
+
+    - name: 'Install Calico CNI'
+      loop:
+        - 'tigera-operator.yaml'
+        - 'custom-resources.yaml'
+      command:
+        argv:
+          - '/usr/local/bin/kubectl'
+          - 'create'
+          - '-f'
+          - 'manifests/calico/{{ item }}'
+
+#- name: 'Unarchive the calicoctl binary'
+#  when: 'opts_is_primary'
+#  unarchive:
+#    src: 'binaries/calicoctl-{{ calicoctl_version }}.tgz'
+#    dest: '/usr/local/bin/'
+
+#- name: 'Permission the binary'
+#  when: 'opts_is_primary'
+#  file:
+#    path: '/usr/local/bin/calicoctl'
+#    mode: '0755'
 
 # curl -sfL https://get.k3s.io | K3S_TOKEN=SECRET sh -s - server \
 #     --server https://<ip or hostname of server1>:6443

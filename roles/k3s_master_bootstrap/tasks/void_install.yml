@@ -6,7 +6,6 @@
 
 - name: 'Prevent service start'
   when: 'reg_stat.stat.exists'
-  become: yes
   file:
     state: 'touch'
     path: '/etc/sv/k3s/down'
@@ -16,7 +15,6 @@
 
 - name: 'Stop service'
   when: 'reg_stat.stat.exists'
-  become: yes
   failed_when: no
   #runit:
   #  name: 'k3s'
@@ -28,13 +26,11 @@
       - 'k3s'
 
 - name: 'Uninstall service'
-  become: yes
   file:
     path: '/etc/sv/k3s'
     state: 'absent'
 
 - name: 'Create service directories'
-  become: yes
   loop:
     - '/etc/sv/k3s/log'
   file:
@@ -42,7 +38,6 @@
     state: 'directory'
 
 - name: 'Template in runit service'
-  become: yes
   vars:
     log_file: '/var/log/k3s'
   loop:
@@ -60,7 +55,6 @@
     mode: '{{ item.mode }}'
 
 - name: 'Enable service'
-  become: yes
   file:
     state: 'link'
     src: '/etc/sv/k3s'

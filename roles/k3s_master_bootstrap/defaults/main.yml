@@ -42,7 +42,12 @@ opts_secondary:
   - '--token=$(more /var/lib/rancher/k3s/server/token)'
   - '--server=https://{{ primary_group[0] }}.{{ domain }}:6443'
 
-#calico_manifest: 'https://docs.projectcalico.org/manifests/calico.yaml'
-#nginx_manifest: '/var/lib/rancher/k3s/server/manifests/ingress-nginx.yaml'
+manifests:
+  - 'calico.yaml'
+  - 'ingress-nginx.yaml'
+  - 'metallb-native.yaml'
+  - 'longhorn.yaml'
+  - 'cert-manager.yaml'
+  - 'nfs_subdir.yaml'
 ...
 # vim: set filetype=yaml

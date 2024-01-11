@@ -11,6 +11,7 @@
   roles:
     - 'system_configure'
     - { name: 'yum_prepare', when: 'distro == "rhel"' }
+    - do_nothing
     - { name: 'xbps_prepare', when: 'distro == "void"' }
     - 'iptables_legacy_install'
 

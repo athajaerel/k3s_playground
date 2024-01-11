@@ -206,11 +206,5 @@
 # curl -sfL https://get.k3s.io | K3S_TOKEN=SECRET sh -s - server \
 #     --server https://<ip or hostname of server1>:6443
 # # --tls-san=<FIXED_IP> # Optional, needed if using a fixed registration address
-#
-# TODO: (other) 
-#    MetalLB instead of servicelb (optional).
-#    Longhorn as local distrubuted block storage and NFS External Provisioner as CSI (optional).
-#    Automatic SSL certificate management and renewals with cert-manager (optional).
-
 ...
 # vim: set filetype=yaml

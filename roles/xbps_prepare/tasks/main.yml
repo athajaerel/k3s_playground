@@ -1,6 +1,5 @@
 ---
 - name: 'Update xbps config'
-  # when: 'distro == "void"'
   loop:
     - '/etc/xbps.d/00-repository-main.conf'
   template:

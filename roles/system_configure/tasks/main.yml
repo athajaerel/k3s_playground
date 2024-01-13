@@ -7,6 +7,8 @@
   when: 'distro == "void"'
   import_tasks: 'void_configure.yml'
 
+# /etc/rancher/k3s/k3s.yaml ?
+
 # Not sure I can add this to the meta hosts role as it is.
 - name: 'Add k3s-vip to hosts file'
   vars:

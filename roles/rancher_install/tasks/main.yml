@@ -1,4 +1,10 @@
 ---
 # TODO: add Rancher Admin role
+
+# . A VM with Ubuntu 21.04 x86-64 as Rancher cluster manager to have a
+# nice management UI (optional).
+
+# $ sudo docker run --privileged -d --restart=unless-stopped -p 80:80
+#   -p 443:443 rancher/rancher
 ...
 # vim: set filetype=yaml

@@ -1,0 +1,13 @@
+---
+dependencies:
+  - vars:
+      packages:
+        - 'nghttp2'
+        - 'libssh2'
+        - 'bind-utils'
+        - 'icu'
+        - 'libstdc++'
+        - 'the_silver_searcher'
+    role: 'meta_package_install'
+...
+# vim: set filetype=yaml

@@ -165,13 +165,8 @@
   when: 'not is_primary'
   reboot:
 
-#- name: 'Apply manifests'
-#  when: 'is_primary'
-#  loop: '{{ manifests }}'
-#  copy:
-#    src: 'home/ansible/{{ item }}'
-#    dest: '/var/lib/rancher/k3s/server/manifests/{{ item }}'
-
+# Each can take a long time (>20m) to stabilise. Or my slow internet
+# connection takes forever to download the images. That might be it.
 - name: 'Install manifests'
   when: 'is_primary'
   block:
@@ -206,5 +201,53 @@
 # curl -sfL https://get.k3s.io | K3S_TOKEN=SECRET sh -s - server \
 #     --server https://<ip or hostname of server1>:6443
 # # --tls-san=<FIXED_IP> # Optional, needed if using a fixed registration address
+    - name: 'Install nginx-ingress'
+      loop:
+        - 'ingress-nginx.yaml'
+      command:
+        argv:
+          - '/usr/local/bin/kubectl'
+          - 'create'
+          - '-f'
+          - 'manifests/nginx-ingress/{{ item }}'
+
+# kubectl wait --namespace ingress-nginx --for=condition=ready --selector=app.kubernetes.io/component=controller --timeout=120s pod
+# hmm, doesn't work for other services
+
+    - name: 'Install MetalLB'
+      loop:
+        - 'metallb-native.yaml'
+      command:
+        argv:
+          - '/usr/local/bin/kubectl'
+          - 'create'
+          - '-f'
+          - 'manifests/metallb/{{ item }}'
+
+# for Longhorn:
+# sudo mount --make-rshared /
+# :shrug:
+
+    - name: 'Install Longhorn'
+      loop:
+        - 'longhorn.yaml'
+      command:
+        argv:
+          - '/usr/local/bin/kubectl'
+          - 'create'
+          - '-f'
+          - 'manifests/longhorn/{{ item }}'
+
+    - name: 'Install NFS external provisioner'
+      loop:
+        - 'nfs.yaml'
+      command:
+        argv:
+          - '/usr/local/bin/kubectl'
+          - 'create'
+          - '-f'
+          - 'manifests/nfs/{{ item }}'
+
+# . Automatic SSL certificate management and renewals with cert-manager (optional).
 ...
 # vim: set filetype=yaml

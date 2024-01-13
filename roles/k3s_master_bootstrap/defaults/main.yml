@@ -28,8 +28,6 @@ is_primary: '{{ (inventory_hostname in primary_group) | bool }}'
 
 opts_common:
   - 'server'
-  #- '--disable'
-  #- 'traefik'
   - '--disable=servicelb'
   - '--disable=traefik'
   - '--flannel-backend=none'
@@ -41,13 +39,5 @@ opts_common:
 opts_secondary:
   - '--token=$(more /var/lib/rancher/k3s/server/token)'
   - '--server=https://{{ primary_group[0] }}.{{ domain }}:6443'
-
-manifests:
-  - 'calico.yaml'
-  - 'ingress-nginx.yaml'
-  - 'metallb-native.yaml'
-  - 'longhorn.yaml'
-  - 'cert-manager.yaml'
-  - 'nfs_subdir.yaml'
 ...
 # vim: set filetype=yaml

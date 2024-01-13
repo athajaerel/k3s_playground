@@ -11,6 +11,7 @@
 
 - name: 'Ensure directory exists'
   connection: 'local'
+  run_once: yes
   become: no
   file:
     path: '{{ playbook_dir }}/binaries'
@@ -19,6 +20,7 @@
 - name: 'Check if tarball exists already'
   register: 'reg_tarball'
   connection: 'local'
+  run_once: yes
   become: no
   stat:
     path: '{{ k3s_binaries_dir }}/k3s-{{ k3s_version }}.tgz'
@@ -27,6 +29,7 @@
   when: 'reg_tarball.stat.exists'
   register: 'reg_checksum'
   connection: 'local'
+  run_once: yes
   become: no
   archived_checksum:
     path: '{{ k3s_binaries_dir }}/k3s-{{ k3s_version }}.tgz'
@@ -37,6 +40,7 @@
          or not reg_tarball.stat.exists'
   connection: 'local'
   become: no
+  run_once: yes
   vars:
     file_checksum: '{{ (reg_checksum.stdout_lines | first).split(" ")[0] }}'
   loop: '{{ k3s_downloads }}'
@@ -53,6 +57,7 @@
          or not reg_tarball.stat.exists'
   connection: 'local'
   become: no
+  run_once: yes
   vars:
     file: '{{ k3s_binaries_dir }}/{{ item.url | basename }}'
     file_checksum: '{{ (reg_checksum.stdout_lines | first).split(" ")[0] }}'

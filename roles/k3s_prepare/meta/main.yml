@@ -8,6 +8,17 @@ dependencies:
         - 'icu'
         - 'libstdc++'
         - 'the_silver_searcher'
+        - 'cronie'
+        - 'chrony'
+        - 'open-iscsi'
+        - 'tmux'
+        - 'logrotate'
     role: 'meta_package_install'
+  - vars:
+      services:
+        - 'chronyd'
+        - 'cronie'
+        - 'iscsid'
+    role: 'meta_service_enable'
 ...
 # vim: set filetype=yaml

@@ -7,6 +7,30 @@
   when: 'distro == "void"'
   import_tasks: 'void_configure.yml'
 
+# Not sure I can add this to the meta hosts role as it is.
+- name: 'Add k3s-vip to hosts file'
+  vars:
+    vip_name: 'k3s-vip'
+  lineinfile:
+    path: '/etc/hosts'
+    line: '{{ keepalived_vip_address }} {{ vip_name }}.{{ domain }} {{ vip_name }}'
+
+- name: 'Create machine-id file'
+  copy:
+    content: '{{ lookup("password", "/dev/null length=32", chars=["hexdigits"]) | lower }}'
+    dest: '/etc/machine-id'
+
+- name: 'Add DNS resolver'
+  vars:
+    replace_internal: '8.8.8.8 \1'
+    regex_negative_lookahead: '8\.8\.8\.8'
+    regex_prefix: '[ \t]+static domain_name_servers='
+    regex_suffix: ''
+  replace:
+    path: '/etc/dhcpcd.conf'
+    regexp: '^{{ regex_prefix }}((:?(?!{{ regex_negative_lookahead }}).)*?){{ regex_suffix }}$'
+    replace: '{{ regex_prefix }}{{ replace_internal }}{{ regex_suffix }}'
+
 - name: 'Create local repo mountpoint'
   register: 'reg_mkdir'
   vars:

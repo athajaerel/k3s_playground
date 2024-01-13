@@ -89,5 +89,33 @@
   file:
     path: '/usr/local/bin/k3s'
     mode: '0755'
+
+- name: 'Create logrotate directory'
+  file:
+    path: '/etc/logrotate.d'
+    state: 'directory'
+
+- name: 'Template in logrotate config'
+  loop:
+    - '/etc/logrotate.d/standard'
+    - '/etc/logrotate.d/k3s'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+    mode: '0644'
+
+- name: 'Set cron job for logrotate'
+  cron_legacy:
+    name: 'Logrotate'
+    cron_file: '/etc/crontab'
+    user: 'root'
+    job: '/usr/bin/logrotate /etc/logrotate.conf'
+    minute: '04'
+
+#    for XTABLES in iptables ip6tables; do
+#        if has_working_xtables ${XTABLES}; then
+#            $SUDO ${XTABLES}-save 2>/dev/null | grep -v KUBE- | grep -iv flannel | grep -iv cali | $SUDO ${XTABLES}-restore
+#        fi
+#    done
 ...
 # vim: set filetype=yaml

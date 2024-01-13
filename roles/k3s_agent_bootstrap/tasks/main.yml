@@ -77,27 +77,6 @@
     group: 'root'
     mode: '0644'
 
-- name: 'Create logrotate directory'
-  file:
-    path: '/etc/logrotate.d'
-    state: 'directory'
-
-- name: 'Template in logrotate config'
-  vars:
-    log_file: '/var/log/k3s'
-  loop:
-    - '/etc/logrotate.d/k3s'
-  template:
-    src: '{{ item[1:] }}.j2'
-    dest: '{{ item }}'
-    mode: '0644'
-
-#    for XTABLES in iptables ip6tables; do
-#        if has_working_xtables ${XTABLES}; then
-#            $SUDO ${XTABLES}-save 2>/dev/null | grep -v KUBE- | grep -iv flannel | $SUDO ${XTABLES}-restore
-#        fi
-#    done
-
 - name: 'Install for RHEL'
   when: 'distro == "rhel"'
   import_tasks: 'rhel_install.yml'

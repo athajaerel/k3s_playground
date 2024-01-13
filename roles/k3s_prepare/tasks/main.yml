@@ -90,6 +90,31 @@
     path: '/usr/local/bin/k3s'
     mode: '0755'
 
+- name: 'Add shell to /etc/shells'
+  loop:
+    - '/sbin/bash'
+    - '/usr/bin/tmux'
+  lineinfile:
+    path: '/etc/shells'
+    line: '/sbin/bash'
+    insertbefore: 'EOF'
+
+- name: 'Change ansible user shell'
+  command:
+    argv:
+      - '/usr/bin/chsh'
+      - '-s'
+      - '/usr/bin/tmux'
+      - 'ansible'
+
+- name: 'Write tmux config'
+  copy:
+    content: 'set-option -g default-shell "/bin/bash"'
+    dest: '/home/ansible/.tmux.conf'
+    owner: 'ansible'
+    group: 'ansible'
+    mode: '0644'
+
 - name: 'Create logrotate directory'
   file:
     path: '/etc/logrotate.d'

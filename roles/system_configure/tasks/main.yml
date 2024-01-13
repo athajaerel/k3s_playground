@@ -3,7 +3,7 @@
   when: 'distro == "rhel"'
   import_tasks: 'rhel_configure.yml'
 
-- name: 'Configure for distro'
+- name: 'Configure for Void'
   when: 'distro == "void"'
   import_tasks: 'void_configure.yml'
 

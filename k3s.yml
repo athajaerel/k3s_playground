@@ -65,5 +65,17 @@
     - import_tasks: 'handlers/main.yml'
   roles:
     - 'rancher_install'
+
+- name: 'Rolling restart cluster'
+  hosts: 'nodes'
+  gather_facts: no
+  become: yes
+  tags:
+    - 'rolling_restart'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'rolling_restart'
 ...
 # vim: set filetype=yaml

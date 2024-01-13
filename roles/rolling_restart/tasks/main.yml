@@ -1,0 +1,6 @@
+---
+- name: 'Reboot'
+  throttle: 1
+  reboot:
+...
+# vim: set filetype=yaml

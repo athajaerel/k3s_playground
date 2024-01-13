@@ -17,6 +17,7 @@ Current tags:
 - bootstrap_masters
 - bootstrap_agents
 - rancher
+- rolling_restart
 
 ## Design Notes
 
@@ -77,4 +78,6 @@ https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#back
 https://itnext.io/the-ultimate-guide-to-building-your-personal-k3s-cluster-bf2643f31dd3?gi=87ab94d08382
 
 https://github.com/kelseyhightower/kubernetes-the-hard-way
+
+https://www.vmguru.com/2021/04/how-to-install-rancher-on-k3s/
 

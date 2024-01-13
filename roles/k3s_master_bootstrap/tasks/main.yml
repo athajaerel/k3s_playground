@@ -165,21 +165,6 @@
           - '-f'
           - 'manifests/calico/{{ item }}'
 
-#- name: 'Unarchive the calicoctl binary'
-#  when: 'opts_is_primary'
-#  unarchive:
-#    src: 'binaries/calicoctl-{{ calicoctl_version }}.tgz'
-#    dest: '/usr/local/bin/'
-
-#- name: 'Permission the binary'
-#  when: 'opts_is_primary'
-#  file:
-#    path: '/usr/local/bin/calicoctl'
-#    mode: '0755'
-
-# curl -sfL https://get.k3s.io | K3S_TOKEN=SECRET sh -s - server \
-#     --server https://<ip or hostname of server1>:6443
-# # --tls-san=<FIXED_IP> # Optional, needed if using a fixed registration address
     - name: 'Install nginx-ingress'
       loop:
         - 'ingress-nginx.yaml'

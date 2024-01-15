@@ -21,5 +21,15 @@
       - '/mnt/disc'
 
 # TODO: add yum config
+# sudo install /mnt/disc/media.repo /etc/yum.repos.d/ -m0644
+# change title to AppStream
+# add lines:
+#enabled=1
+#baseurl=file:///mnt/disc/AppStream
+#gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+# Set gpgcheck to 1
+# Duplicate and change AppStream to BaseOS wherever you see it
+# sudo yum clean all
+# sudo yum updates
 ...
 # vim: set filetype=yaml

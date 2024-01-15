@@ -2,15 +2,16 @@
 dependencies:
   - vars:
       packages:
-        - 'nghttp2'
-        - 'libssh2'
+# commented packages not available in RHEL disc but needed for Void.
+#        - 'nghttp2'
+#        - 'libssh2'
         - 'bind-utils'
         - 'icu'
         - 'libstdc++'
-        - 'the_silver_searcher'
+#        - 'the_silver_searcher'  # ok, not so much needed as liked ;)
         - 'cronie'
         - 'chrony'
-        - 'open-iscsi'
+#        - 'open-iscsi'
         - 'tmux'
         - 'logrotate'
     role: 'meta_package_install'

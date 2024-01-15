@@ -16,9 +16,9 @@ k3s_secondary_masters:
   hosts: { }
 
 rancher:
-  hosts:
-    rancher-admin:
-      ip_fourth_byte: '110'
+  hosts: { }
+#    rancher-admin:
+#      ip_fourth_byte: '110'
 
 k3s_agents:
   hosts:

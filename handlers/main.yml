@@ -3,9 +3,13 @@
   # service:
   #   name: 'keepalived'
   #   state: 'restarted'
+  vars:
+    service_command:
+      void: 'sv'
+      rhel: 'systemctl'
   command:
     argv:
-      - 'sv'
+      - '{{ service_command[distro] }}'
       - 'restart'
       - 'keepalived'
 
@@ -14,9 +18,13 @@
   # service:
   #   name: 'sshd'
   #   state: 'restarted'
+  vars:
+    service_command:
+      void: 'sv'
+      rhel: 'systemctl'
   command:
     argv:
-      - 'sv'
+      - '{{ service_command[distro] }}'
       - 'restart'
       - 'sshd'
 ...

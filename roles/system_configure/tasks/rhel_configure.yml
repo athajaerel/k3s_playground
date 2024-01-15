@@ -1,6 +1,20 @@
 ---
-- name: 'RHEL configuration tasks'
-  debug:
-    msg: 'Not implemented'
+# ...?
+
+- name: 'Update network configuration'
+  lineinfile:
+    path: '/etc/sysconfig/network'
+    line: 'HOSTNAME={{ fqdn }}'
+
+#- name: 'Add DNS resolver'
+#  vars:
+#    replace_internal: '8.8.8.8 \1'
+#    regex_negative_lookahead: '8\.8\.8\.8'
+#    regex_prefix: '[ \t]+static domain_name_servers='
+#    regex_suffix: ''
+#  replace:
+#    path: '/etc/resolv.conf'
+#    regexp: '^{{ regex_prefix }}((:?(?!{{ regex_negative_lookahead }}).)*?){{ regex_suffix }}$'
+#    replace: '{{ regex_prefix }}{{ replace_internal }}{{ regex_suffix }}'
 ...
 # vim: set filetype=yaml

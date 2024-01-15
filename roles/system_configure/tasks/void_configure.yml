@@ -34,16 +34,6 @@
     path: '{{ item }}'
     state: 'absent'
 
-- name: 'Enable sysctl settings'
-  loop:
-    - 'net.bridge.bridge-nf-call-iptables = 1'
-    - 'net.bridge.bridge-nf-call-ip6tables = 1'
-    - 'net.ipv4.ip_forward = 1'
-  lineinfile:
-    path: '/etc/sysctl.conf'
-    line: '{{ item }}'
-    insertbefore: 'EOF'
-
 - name: 'Create empty iptables settings file'
   copy:
     remote_src: yes
@@ -55,5 +45,16 @@
     state: 'link'
     src: '/etc/sv/iptables'
     dest: '/var/service/iptables'
+
+- name: 'Add DNS resolver'
+  vars:
+    replace_internal: '8.8.8.8 \1'
+    regex_negative_lookahead: '8\.8\.8\.8'
+    regex_prefix: '[ \t]+static domain_name_servers='
+    regex_suffix: ''
+  replace:
+    path: '/etc/dhcpcd.conf'
+    regexp: '^{{ regex_prefix }}((:?(?!{{ regex_negative_lookahead }}).)*?){{ regex_suffix }}$'
+    replace: '{{ regex_prefix }}{{ replace_internal }}{{ regex_suffix }}'
 ...
 # vim: set filetype=yaml

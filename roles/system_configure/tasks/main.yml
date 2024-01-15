@@ -7,6 +7,16 @@
   when: 'distro == "void"'
   import_tasks: 'void_configure.yml'
 
+- name: 'Enable sysctl settings'
+  loop:
+    - 'net.bridge.bridge-nf-call-iptables = 1'
+    - 'net.bridge.bridge-nf-call-ip6tables = 1'
+    - 'net.ipv4.ip_forward = 1'
+  lineinfile:
+    path: '/etc/sysctl.conf'
+    line: '{{ item }}'
+    insertbefore: 'EOF'
+
 # /etc/rancher/k3s/k3s.yaml ?
 
 # Not sure I can add this to the meta hosts role as it is.
@@ -21,17 +31,6 @@
   copy:
     content: '{{ lookup("password", "/dev/null length=32", chars=["hexdigits"]) | lower }}'
     dest: '/etc/machine-id'
-
-- name: 'Add DNS resolver'
-  vars:
-    replace_internal: '8.8.8.8 \1'
-    regex_negative_lookahead: '8\.8\.8\.8'
-    regex_prefix: '[ \t]+static domain_name_servers='
-    regex_suffix: ''
-  replace:
-    path: '/etc/dhcpcd.conf'
-    regexp: '^{{ regex_prefix }}((:?(?!{{ regex_negative_lookahead }}).)*?){{ regex_suffix }}$'
-    replace: '{{ regex_prefix }}{{ replace_internal }}{{ regex_suffix }}'
 
 - name: 'Create local repo mountpoint'
   register: 'reg_mkdir'
@@ -59,7 +58,7 @@
   register: 'reg_hostname_2'
   vars:
     conf:
-      rhel: 'rhel'
+      rhel: 'redhat'
       void: 'openbsd' # apparently the best option for Void
   hostname:
     name: '{{ fqdn }}'

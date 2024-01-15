@@ -1,12 +1,31 @@
 ---
 all:
+  vars:
+    distro: 'void'
+    domain: 'dreamtrack.test'
+    network: '10.11.0.0/24'
+    keepalived_vip_fourth_byte: '199'
+    keepalived_vip_interface: 'eth0'
+
+k3s_primary_masters:
   hosts:
     k3s-mother-001:
       ip_fourth_byte: '1'
+
+k3s_secondary_masters:
+  hosts:
     k3s-mother-002:
       ip_fourth_byte: '2'
     k3s-mother-003:
       ip_fourth_byte: '3'
+
+rancher:
+  hosts:
+    rancher-admin:
+      ip_fourth_byte: '200'
+
+k3s_agents:
+  hosts:
     k3s-child-001:
       ip_fourth_byte: '11'
     k3s-child-002:
@@ -25,13 +44,5 @@ all:
       ip_fourth_byte: '18'
     k3s-child-009:
       ip_fourth_byte: '19'
-    rancher-admin:
-      ip_fourth_byte: '200'
-  vars:
-    distro: 'void'
-    domain: 'dreamtrack.test'
-    network: '10.11.0.0/24'
-    keepalived_vip_fourth_byte: '199'
-    keepalived_vip_interface: 'eth0'
 ...
 # vim: set filetype=yaml

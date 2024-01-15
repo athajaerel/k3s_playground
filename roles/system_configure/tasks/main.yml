@@ -32,6 +32,17 @@
     content: '{{ lookup("password", "/dev/null length=32", chars=["hexdigits"]) | lower }}'
     dest: '/etc/machine-id'
 
+- name: 'Add rshared option to root partition'
+  vars:
+    replace_internal: '\2,rshared'
+    regex_negative_lookahead: 'rshared'
+    regex_prefix: '([^ ]* \/ [^ ]* )'
+    regex_suffix: '( \d \d)'
+  replace:
+    path: '/etc/fstab'
+    regexp: '^{{ regex_prefix }}((:?(?!{{ regex_negative_lookahead }}).)*?){{ regex_suffix }}$'
+    replace: '\1{{ replace_internal }}\4'
+
 - name: 'Create local repo mountpoint'
   register: 'reg_mkdir'
   vars:

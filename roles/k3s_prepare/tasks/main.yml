@@ -7,7 +7,7 @@
 # This made me feel slimy and naked so I wrapped it up in a
 # tarball. It didn't even have a version number attached.
 
-# TODO: meta this?
+# TODO: meta this? The whole 'download and tar' section is heavily distro-dependent.
 
 - name: 'Ensure directory exists'
   connection: 'local'

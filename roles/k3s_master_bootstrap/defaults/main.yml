@@ -21,7 +21,9 @@ k3s_clobber_os_files:
     - '/etc/sv/k3s'
     - '/etc/xbps.d/rancher-k3s-common*.conf'
     - '/var/service/k3s'
-  rhel: [ ]
+  rhel:
+    - '/etc/systemd/system/k3s'
+    - '/etc/systemd/system/k3s.env'
 
 primary_group: '{{ groups["k3s_primary_masters"] | list }}'
 is_primary: '{{ (inventory_hostname in primary_group) | bool }}'

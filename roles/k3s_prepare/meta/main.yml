@@ -1,19 +1,23 @@
 ---
 dependencies:
   - vars:
-      packages:
-# commented packages not available in RHEL disc but needed for Void.
-#        - 'nghttp2'
-#        - 'libssh2'
+      distro_pkgs:
+        rhel:
+          - 'util-linux-user'
+        void:
+          - 'nghttp2'
+          - 'libssh2'
+          - 'the_silver_searcher'  # ok, not so much needed as liked ;)
+          - 'open-iscsi'
+      common_pkgs:
         - 'bind-utils'
         - 'icu'
         - 'libstdc++'
-#        - 'the_silver_searcher'  # ok, not so much needed as liked ;)
         - 'cronie'
         - 'chrony'
-#        - 'open-iscsi'
         - 'tmux'
         - 'logrotate'
+      packages: '{{ common_pkgs + distro_pkgs[distro] }}'
     role: 'meta_package_install'
   - vars:
       services:

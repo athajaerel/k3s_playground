@@ -9,6 +9,8 @@ dependencies:
           - 'libssh2'
           - 'the_silver_searcher'  # ok, not so much needed as liked ;)
           - 'open-iscsi'
+          - 'nfs-utils'
+          - 'jq'
       common_pkgs:
         - 'bind-utils'
         - 'icu'

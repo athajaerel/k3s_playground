@@ -25,7 +25,6 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'keepalived_install'
     - 'k3s_prepare'
 
 - name: 'Bootstrap k3s master nodes'
@@ -39,6 +38,7 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
+    - 'keepalived_install'
     - 'k3s_master_bootstrap'
 
 - name: 'Bootstrap agents'

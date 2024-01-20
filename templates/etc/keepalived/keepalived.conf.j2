@@ -20,6 +20,6 @@ vrrp_instance VI_K3S {
         auth_pass 1111
     }
     virtual_ipaddress {
-        {{ keepalived_vip_address }}
+        {{ keepalived_vip_address }}/{{ keepalived_vip_prefix }}
     }
 }

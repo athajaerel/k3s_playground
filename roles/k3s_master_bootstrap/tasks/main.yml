@@ -220,7 +220,15 @@
           - '-f'
           - 'manifests/nfs/{{ item }}'
 
-# . Automatic SSL certificate management and renewals with cert-manager (optional).
+    - name: 'Install cert-manager for automatic TLS management/renewals'
+      loop:
+        - 'cert-manager.yaml'
+      command:
+        argv:
+          - '/usr/local/bin/kubectl'
+          - 'create'
+          - '-f'
+          - 'manifests/cert-manager/{{ item }}'
 
     - name: 'Install dashboard original UI'
       register: 'reg_helm_chart'

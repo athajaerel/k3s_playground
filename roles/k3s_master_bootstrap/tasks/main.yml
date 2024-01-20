@@ -154,6 +154,13 @@
         src: 'manifests'
         dest: '.'
 
+    - name: 'Template in manifests'
+      loop:
+        - '/home/ansible/manifests/metallb/metallb-pool.yaml'
+      template:
+        src: '{{ item[1:] }}.j2'
+        dest: '{{ item }}'
+
     - name: 'Install Calico CNI'
       loop:
         - 'tigera-operator.yaml'
@@ -181,6 +188,7 @@
     - name: 'Install MetalLB'
       loop:
         - 'metallb-native.yaml'
+        - 'metallb-pool.yaml'
       command:
         argv:
           - '/usr/local/bin/kubectl'

@@ -6,6 +6,8 @@ all:
     network: '10.11.0.0/24'
     keepalived_vip_fourth_byte: '199'
     keepalived_vip_interface: 'eth0'
+    loadbalancer_pool_network: '10.11.1.0/24'
+    loadbalancer_pool_name: 'dreamtrack-service-ip-pool'
 
 k3s_primary_masters:
   hosts:

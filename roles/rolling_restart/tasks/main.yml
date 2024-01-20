@@ -2,5 +2,6 @@
 - name: 'Reboot'
   throttle: 1
   reboot:
+    post_reboot_delay: 60
 ...
 # vim: set filetype=yaml

@@ -221,5 +221,25 @@
           - 'manifests/nfs/{{ item }}'
 
 # . Automatic SSL certificate management and renewals with cert-manager (optional).
+
+    - name: 'Install dashboard original UI'
+      register: 'reg_helm_chart'
+      vars:
+        e_already: 'Error from server (AlreadyExists): error when creating'
+      loop:
+        - 'recommended.yaml'
+        - 'make_token.yaml'
+      # ok : rc=0, no change
+      changed_when:
+        - 'reg_helm_chart.rc == 0'
+      failed_when:
+        - 'reg_helm_chart.rc != 0'
+        - 'e_already not in reg_helm_chart.stderr'
+      command:
+        argv:
+          - '/usr/local/bin/kubectl'
+          - 'create'
+          - '-f'
+          - 'manifests/dashboard/{{ item }}'
 ...
 # vim: set filetype=yaml

@@ -90,5 +90,14 @@
     remote_src: yes
     src: '/etc/hostname'
     dest: '/var/lib/calico/nodename'
+
+# needs the cluster to be accessible
+- name: 'Set labels'
+  loop:
+    - 'node-role.kubernetes.io/worker=true'
+    - 'node-type=worker'
+  command:
+    argv:
+      - 'kubectl label nodes {{ fqdn }} {{ item }}'
 ...
 # vim: set filetype=yaml

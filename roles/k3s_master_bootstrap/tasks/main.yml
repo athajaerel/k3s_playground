@@ -146,108 +146,43 @@
 
 # Each can take a long time (>20m) to stabilise. Or my slow internet
 # connection takes forever to download the images. That might be it.
-- name: 'Install manifests'
+- name: 'Install internal manifests'
   when: 'is_primary'
+  vars:
+    manifests_path_prefix: '/home/ansible/manifests'
+    manifests_internal:
+      - 'calico/tigera-operator.yaml'
+      - 'nginx-ingress/nginx-ingress.yaml'
+      - 'metallb/metallb-native.yaml'
+      - 'longhorn/longhorn.yaml'
+      - 'cert-manager/cert-manager.yaml'
+    manifests_custom:
+      - 'calico/custom-resources.yaml'
+      - 'metallb/metallb-pool.yaml'
   block:
-    - name: 'Copy over manifests'
-      copy:
-        src: 'manifests'
-        dest: '.'
-
-    - name: 'Template in manifests'
-      loop:
-        - '/home/ansible/manifests/metallb/metallb-pool.yaml'
-      template:
-        src: '{{ item[1:] }}.j2'
-        dest: '{{ item }}'
-
-    - name: 'Install Calico CNI'
-      loop:
-        - 'tigera-operator.yaml'
-        - 'custom-resources.yaml'
-      command:
-        argv:
-          - '/usr/local/bin/kubectl'
-          - 'create'
-          - '-f'
-          - 'manifests/calico/{{ item }}'
-
-    - name: 'Install nginx-ingress'
-      loop:
-        - 'ingress-nginx.yaml'
-      command:
-        argv:
-          - '/usr/local/bin/kubectl'
-          - 'create'
-          - '-f'
-          - 'manifests/nginx-ingress/{{ item }}'
-
-# kubectl wait --namespace ingress-nginx --for=condition=ready --selector=app.kubernetes.io/component=controller --timeout=120s pod
-# hmm, doesn't work for other services
-
-    - name: 'Install MetalLB'
-      loop:
-        - 'metallb-native.yaml'
-        - 'metallb-pool.yaml'
-      command:
-        argv:
-          - '/usr/local/bin/kubectl'
-          - 'create'
-          - '-f'
-          - 'manifests/metallb/{{ item }}'
-
-# for Longhorn:
-# sudo mount --make-rshared /
-# :shrug:
-
-    - name: 'Install Longhorn'
-      loop:
-        - 'longhorn.yaml'
-      command:
-        argv:
-          - '/usr/local/bin/kubectl'
-          - 'create'
-          - '-f'
-          - 'manifests/longhorn/{{ item }}'
-
-    - name: 'Install NFS external provisioner'
-      loop:
-        - 'nfs.yaml'
-      command:
-        argv:
-          - '/usr/local/bin/kubectl'
-          - 'create'
-          - '-f'
-          - 'manifests/nfs/{{ item }}'
-
-    - name: 'Install cert-manager for automatic TLS management/renewals'
-      loop:
-        - 'cert-manager.yaml'
-      command:
-        argv:
-          - '/usr/local/bin/kubectl'
-          - 'create'
-          - '-f'
-          - 'manifests/cert-manager/{{ item }}'
-
-    - name: 'Install dashboard original UI'
-      register: 'reg_helm_chart'
+    - name: 'Template in internal manifests'
       vars:
-        e_already: 'Error from server (AlreadyExists): error when creating'
-      loop:
-        - 'recommended.yaml'
-        - 'make_token.yaml'
-      # ok : rc=0, no change
-      changed_when:
-        - 'reg_helm_chart.rc == 0'
-      failed_when:
-        - 'reg_helm_chart.rc != 0'
-        - 'e_already not in reg_helm_chart.stderr'
+      loop: '{{ manifests_internal }}'
+      template:
+        src: '{{ manifests_path_prefix[1:] }}/{{ item }}.j2'
+        dest: '{{ manifests_path_prefix }}/{{ item }}'
+
+    - name: 'Install internal manifests'
+      loop: '{{ manifests_internal }}'
       command:
         argv:
           - '/usr/local/bin/kubectl'
           - 'create'
           - '-f'
-          - 'manifests/dashboard/{{ item }}'
+          - '{{ manifests_path_prefix }}/{{ item }}'
+
+    - name: 'Install custom manifests'
+      loop: '{{ manifests_custom }}'
+      command:
+        argv:
+          - '/usr/local/bin/kubectl'
+          - 'create'
+          - '-f'
+          - '{{ manifests_path_prefix }}/{{ item }}'
 ...
 # vim: set filetype=yaml

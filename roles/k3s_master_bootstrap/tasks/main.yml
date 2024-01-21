@@ -114,6 +114,13 @@
     group: 'root'
     mode: '0644'
 
+- name: 'Template in some files'
+  loop:
+    - '/etc/environment'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+
 - name: 'Install for RHEL'
   when: 'distro == "rhel"'
   import_tasks: 'rhel_install.yml'

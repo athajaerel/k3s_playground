@@ -36,6 +36,7 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
+    - 'helm_install'
     - 'keepalived_install'
     - 'k3s_master_bootstrap'
 

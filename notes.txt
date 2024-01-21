@@ -13,12 +13,12 @@ Devlaptop Lab Design:
 Home Lab Design:
     Void Linux.
     3 server/mother (master and worker) + 9 agent/child (worker) nodes. (3x4)
-    Keepalived cluster between K3S nodes.
+    Keepalived cluster between K3S master nodes.
     Calico instead of Flannel (K3S default) as CNI.
     Nginx Ingress instead of Traefik (K3S default) Ingress.
     Etcd instead of SQLite (K3S default).
-    A VM with RHEL 8.6 as Rancher cluster manager to have a nice management UI.
+    A VM with Void as Rancher cluster manager to have a nice management UI.
     MetalLB instead of servicelb.
-    Longhorn as local distrubuted block storage and NFS External Provisioner as CSI.
+    Longhorn as local distrubuted block storage (and NFS External Provisioner as CSI?).
     Automatic SSL certificate management and renewals with cert-manager.
 

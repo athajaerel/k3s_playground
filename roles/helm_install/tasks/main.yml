@@ -1,0 +1,14 @@
+---
+- name: 'Create directories'
+  loop: '{{ helm_configs }}'
+  file:
+    path: '{{ item | dirname }}'
+    state: 'directory'
+
+- name: 'Configure helm'
+  loop: '{{ helm_configs }}'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+...
+# vim: set filetype=yaml

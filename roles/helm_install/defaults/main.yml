@@ -1,0 +1,5 @@
+---
+helm_configs:
+  - '/home/ansible/.config/helm/repositories.yaml'
+...
+# vim: set filetype=yaml

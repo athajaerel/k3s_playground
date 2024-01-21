@@ -1,0 +1,12 @@
+---
+dependencies:
+  - vars:
+      distro_pkgs:
+        rhel:
+          - '?'  # TODO
+        void:
+          - 'kubernetes-helm'
+      packages: '{{ distro_pkgs[distro] }}'
+    role: 'meta_package_install'
+...
+# vim: set filetype=yaml

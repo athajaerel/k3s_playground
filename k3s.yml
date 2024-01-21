@@ -9,10 +9,9 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
+    - { name: 'rhel_prepare', when: 'distro == "rhel"' }
+    - { name: 'void_prepare', when: 'distro == "void"' }
     - 'system_configure'
-    # - 'iptables_legacy_install'
-    - { name: 'yum_prepare', when: 'distro == "rhel"' }
-    - { name: 'xbps_prepare', when: 'distro == "void"' }
 
 - name: 'Prepare node hosts for k3s'
   hosts: 'nodes'

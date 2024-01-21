@@ -3,5 +3,13 @@ dependencies:
   - vars:
       hosts: '{{ all_hosts_records }}'
     role: 'meta_hosts_append'
+  - vars:
+      packages:
+        - 'iptables'
+    role: 'meta_package_install'
+  - vars:
+      services:
+        - 'iptables'
+    role: 'meta_service_enable'
 ...
 # vim: set filetype=yaml

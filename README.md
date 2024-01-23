@@ -18,6 +18,7 @@ Current tags:
 - bootstrap_agents
 - rancher
 - rolling_restart
+- delete_cluster
 
 ## Design Notes
 

@@ -76,5 +76,18 @@
     - import_tasks: 'handlers/main.yml'
   roles:
     - 'rolling_restart'
+
+- name: 'Purge k3s cluster'
+  hosts: 'all'
+  gather_facts: no
+  become: yes
+  ignore_errors: yes
+  tags:
+    - 'delete_cluster'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'cluster_delete'
 ...
 # vim: set filetype=yaml

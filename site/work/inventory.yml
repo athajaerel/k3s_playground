@@ -6,6 +6,9 @@ all:
     network: '10.20.0.0/24'
     keepalived_vip_fourth_byte: '99'
     keepalived_vip_interface: 'enp10s0'
+    loadbalancer_pool_network: '10.20.1.0/24'
+    loadbalancer_pool_name: 'cysafa-service-ip-pool'
+    network_gateway: '10.20.0.253'
 
 k3s_primary_masters:
   hosts:

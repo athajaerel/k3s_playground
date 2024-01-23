@@ -1,0 +1,16 @@
+---
+# - name: 'Set labels'
+#   become: yes
+#   delegate_to: 'k3s-mother-001'
+#   loop:
+#     - 'node-role.kubernetes.io/worker=true'
+#     - 'node-type=worker'
+#   command:
+#     argv:
+#       - '/usr/local/bin/kubectl'
+#       - 'label'
+#       - 'nodes'
+#       - '{{ fqdn }}'
+#       - '{{ item }}'
+...
+# vim: set filetype=yaml

@@ -1,0 +1,224 @@
+---
+# If we don't do this here, nodes never show as Ready since they don't
+# have a CNI (because Flannel is disabled)
+- name: 'Install Calico CNI'
+  when: 'is_primary'
+  vars:
+    manifests_path_prefix: '/home/ansible/manifests'
+    manifests_calico:
+      - 'calico/tigera-operator.yaml'
+      - 'calico/custom-resources.yaml'
+  block:
+    - name: 'Ensure manifest directory exists'
+      loop:
+        - '{{ manifests_path_prefix }}/{{ manifests_calico | first }}'
+      file:
+        path: '{{ item | dirname }}'
+        state: 'directory'
+
+    - name: 'Template in manifests'
+      loop: '{{ manifests_calico }}'
+      template:
+        src: '{{ manifests_path_prefix[1:] }}/{{ item }}.j2'
+        dest: '{{ manifests_path_prefix }}/{{ item }}'
+
+    - name: 'Install manifests'
+      register: 'reg_install_manifests'
+      vars:
+        e_already: 'Error from server (AlreadyExists): error when creating'
+      loop: '{{ manifests_calico }}'
+      failed_when:
+        - 'reg_install_manifests.rc != 0'
+        - 'e_already not in reg_install_manifests.stderr'
+      command:
+        argv:
+          - '/usr/local/bin/kubectl'
+          - 'create'
+          - '-f'
+          - '{{ manifests_path_prefix }}/{{ item }}'
+
+# do repeat-until for long waits
+- name: 'Wait for all nodes'
+  vars:
+    timeout: '3600s'
+    e_ok: 'condition met'  # if needed
+  loop: '{{ groups["nodes"] }}'
+  run_once: yes
+  command:
+    argv:
+      - '/usr/local/bin/kubectl'
+      - 'wait'
+      - '--timeout={{ timeout }}'
+      - '--for=condition=Ready'
+      - 'node'
+      - '{{ item }}.{{ domain }}'
+
+# do repeat-until for long waits
+- name: 'Wait for core services'
+  vars:
+    timeout: '3600s'
+    e_ok: 'condition met'  # if needed
+  loop:
+    - 'k8s-app=kube-dns'
+    - 'k8s-app=metrics-server'
+    - 'app=local-path-provisioner'
+  run_once: yes
+  command:
+    argv:
+      - '/usr/local/bin/kubectl'
+      - 'wait'
+      - '--timeout={{ timeout }}'
+      - '--for=condition=Ready'
+      - 'pod'
+      - '-n'
+      - 'kube-system'
+      - '--selector={{ item }}'
+
+- name: 'Install MetalLB'
+  when: 'is_primary'
+  vars:
+    manifests_path_prefix: '/home/ansible/manifests'
+    manifests_metallb:
+      - 'metallb/metallb-native.yaml'
+  block:
+    - name: 'Ensure manifest directory exists'
+      loop:
+        - '{{ manifests_path_prefix }}/{{ manifests_metallb | first }}'
+      file:
+        path: '{{ item | dirname }}'
+        state: 'directory'
+
+    - name: 'Template in manifests'
+      loop: '{{ manifests_metallb }}'
+      template:
+        src: '{{ manifests_path_prefix[1:] }}/{{ item }}.j2'
+        dest: '{{ manifests_path_prefix }}/{{ item }}'
+
+    - name: 'Install manifests'
+      register: 'reg_install_manifests'
+      vars:
+        e_already: 'Error from server (AlreadyExists): error when creating'
+      loop: '{{ manifests_metallb }}'
+      failed_when:
+        - 'reg_install_manifests.rc != 0'
+        - 'e_already not in reg_install_manifests.stderr'
+      command:
+        argv:
+          - '/usr/local/bin/kubectl'
+          - 'create'
+          - '-f'
+          - '{{ manifests_path_prefix }}/{{ item }}'
+
+# do repeat-until for long waits
+- name: 'Wait for MetalLB services'
+  vars:
+    timeout: '3600s'
+    e_ok: 'condition met'  # if needed
+  loop:
+    - 'component=speaker'
+    - 'component=controller'
+  run_once: yes
+  command:
+    argv:
+      - '/usr/local/bin/kubectl'
+      - 'wait'
+      - '--timeout={{ timeout }}'
+      - '--for=condition=Ready'
+      - '--selector={{ item }}'
+      - '-n'
+      - 'metallb-system'
+      - 'pods'
+
+- name: 'Install MetalLB pool'
+  when: 'is_primary'
+  vars:
+    manifests_path_prefix: '/home/ansible/manifests'
+    manifests_metallb:
+      - 'metallb/metallb-pool.yaml'
+  block:
+    - name: 'Template in manifests'
+      loop: '{{ manifests_metallb }}'
+      template:
+        src: '{{ manifests_path_prefix[1:] }}/{{ item }}.j2'
+        dest: '{{ manifests_path_prefix }}/{{ item }}'
+
+    - name: 'Install manifests'
+      register: 'reg_install_manifests'
+      vars:
+        e_already: 'Error from server (AlreadyExists): error when creating'
+      loop: '{{ manifests_metallb }}'
+      failed_when:
+        - 'reg_install_manifests.rc != 0'
+        - 'e_already not in reg_install_manifests.stderr'
+      command:
+        argv:
+          - '/usr/local/bin/kubectl'
+          - 'create'
+          - '-f'
+          - '{{ manifests_path_prefix }}/{{ item }}'
+
+- name: 'Install manifests'
+  when: 'is_primary'
+  vars:
+    manifests_path_prefix: '/home/ansible/manifests'
+    manifests_custom:
+      - 'nginx-ingress/nginx-ingress.yaml'
+      - 'longhorn/longhorn.yaml'
+      - 'cert-manager/cert-manager.yaml'
+  block:
+    - name: 'Ensure manifest directory exists'
+      loop: '{{ manifests_custom }}'
+      file:
+        path: '{{ manifests_path_prefix }}/{{ item | dirname }}'
+        state: 'directory'
+
+    - name: 'Template in manifests'
+      loop: '{{ manifests_custom }}'
+      template:
+        src: '{{ manifests_path_prefix[1:] }}/{{ item }}.j2'
+        dest: '{{ manifests_path_prefix }}/{{ item }}'
+
+    - name: 'Install manifests'
+      register: 'reg_install_manifests'
+      vars:
+        e_already: 'Error from server (AlreadyExists): error when creating'
+      loop: '{{ manifests_custom }}'
+      failed_when:
+        - 'reg_install_manifests.rc != 0'
+        - 'e_already not in reg_install_manifests.stderr'
+      command:
+        argv:
+          - '/usr/local/bin/kubectl'
+          - 'create'
+          - '-f'
+          - '{{ manifests_path_prefix }}/{{ item }}'
+
+# do repeat-until for long waits
+- name: 'Wait for remaining services'
+  vars:
+    timeout: '86400s'
+    e_ok: 'condition met'  # if needed
+  loop:
+    - selector: 'app.kubernetes.io/instance=cert-manager'
+      namespace: 'cert-manager'
+    - selector: 'job-name=helm-install-ingress-nginx'
+      namespace: 'kube-system'
+    - selector: 'app.kubernetes.io/instance=longhorn'
+      namespace: 'longhorn-system'
+    - selector: 'longhorn.io/component=engine-image'
+      namespace: 'longhorn-system'
+    - selector: 'longhorn.io/component=instance-manager'
+      namespace: 'longhorn-system'
+  run_once: yes
+  command:
+    argv:
+      - '/usr/local/bin/kubectl'
+      - 'wait'
+      - '--timeout={{ timeout }}'
+      - '--for=condition=Ready'
+      - '--selector={{ item.selector }}'
+      - '-n'
+      - '{{ item.namespace }}'
+      - 'pods'
+...
+# vim: set filetype=yaml

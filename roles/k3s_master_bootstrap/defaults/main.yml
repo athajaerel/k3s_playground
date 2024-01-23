@@ -3,9 +3,6 @@ random_token_file: '/etc/k3s-token'
 
 clobber_ok: no
 
-primary_group: '{{ groups["k3s_primary_masters"] | list }}'
-is_primary: '{{ (inventory_hostname in primary_group) | bool }}'
-
 opts_common:
   - 'server'
   - '--disable=servicelb'

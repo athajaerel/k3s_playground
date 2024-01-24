@@ -220,5 +220,19 @@
       - '-n'
       - '{{ item.namespace }}'
       - 'pods'
+
+- name: 'Delete completed jobs'
+  loop:
+    - job: 'helm-install-ingress-nginx'
+      namespace: 'kube-system'
+  run_once: yes
+  command:
+    argv:
+      - '/usr/local/bin/kubectl'
+      - 'delete'
+      - 'job'
+      - '{{ item.job }}'
+      - '-n'
+      - '{{ item.namespace }}'
 ...
 # vim: set filetype=yaml

@@ -9,7 +9,7 @@
 
 - name: 'Install service'
   vars:
-    k3s_options: "{{ (opts_common + (opts_secondary if not is_primary else [])) | join(' ') }}"
+    k3s_options: "{{ (opts_common + ([] if is_primary else opts_secondary)) | join(' ') }}"
   loop:
     - '/etc/systemd/system/k3s.service'
   template:

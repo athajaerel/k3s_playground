@@ -13,9 +13,13 @@
       ::1 localhost.localdomain localhost ip6-localhost
     dest: '/etc/hosts'
 
-# fatal: [rancher-admin]: FAILED! => {"changed": false, "msg": "Error, could not touch target: [Errno 2] No such file or directory: b'/etc/sv/k3s/down'", "path": "/etc/sv/k3s/down"}
-# ...ignoring
 - name: 'Prevent service start'
+  register: 'reg_prevent_start'
+  vars:
+    e_fail: 'could not touch target'
+  failed_when:
+    - 'reg_prevent_start is failed'
+    - 'e_fail not in reg_prevent_start.msg'
   file:
     state: 'touch'
     path: '/etc/sv/k3s/down'

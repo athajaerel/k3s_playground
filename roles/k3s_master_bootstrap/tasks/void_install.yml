@@ -6,6 +6,12 @@
 
 - name: 'Prevent service start'
   when: 'reg_stat.stat.exists'
+  register: 'reg_prevent_start'
+  vars:
+    e_fail: 'could not touch target'
+  failed_when:
+    - 'reg_prevent_start is failed'
+    - 'e_fail not in reg_prevent_start.msg'
   file:
     state: 'touch'
     path: '/etc/sv/k3s/down'

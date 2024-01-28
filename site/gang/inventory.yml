@@ -29,9 +29,9 @@ rancher:
 
 # hmm, do I actually need agent nodes at all?
 k3s_agents:
-  hosts:
-    k3s-child-001:
-      ip_fourth_byte: '215'
+  hosts: { }
+#    k3s-child-001:
+#      ip_fourth_byte: '215'
     # theoretically possible 'gamma' device but broken
     # k3s-child-002:
     #   ip_fourth_byte: '211'

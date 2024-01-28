@@ -4,7 +4,6 @@
 - name: 'Install Calico CNI'
   when: 'is_primary'
   vars:
-    manifests_path_prefix: '/home/ansible/manifests'
     manifests_calico:
       - 'calico/tigera-operator.yaml'
       - 'calico/custom-resources.yaml'
@@ -77,7 +76,6 @@
 - name: 'Install MetalLB'
   when: 'is_primary'
   vars:
-    manifests_path_prefix: '/home/ansible/manifests'
     manifests_metallb:
       - 'metallb/metallb-native.yaml'
   block:
@@ -132,7 +130,6 @@
 - name: 'Install MetalLB pool'
   when: 'is_primary'
   vars:
-    manifests_path_prefix: '/home/ansible/manifests'
     manifests_metallb:
       - 'metallb/metallb-pool.yaml'
   block:
@@ -160,7 +157,6 @@
 - name: 'Install manifests'
   when: 'is_primary'
   vars:
-    manifests_path_prefix: '/home/ansible/manifests'
     manifests_custom:
       - 'nginx-ingress/nginx-ingress.yaml'
       - 'longhorn/longhorn.yaml'

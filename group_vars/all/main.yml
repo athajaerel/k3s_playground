@@ -14,6 +14,8 @@ k3s_sha256_checksum: '9014535a4cd20c788282d60398a06279983562093455b53ab76701539c
 primary_group: '{{ groups["k3s_primary_masters"] | list }}'
 is_primary: '{{ (inventory_hostname in primary_group) | bool }}'
 
+manifests_path_prefix: '/home/ansible/manifests'
+
 calico_network: '192.168.0.0/16'
 
 k3s_clobber_files:

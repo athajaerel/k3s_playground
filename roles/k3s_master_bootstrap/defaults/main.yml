@@ -9,7 +9,7 @@ opts_common:
   - '--disable=traefik'
   - '--flannel-backend=none'
   - '--disable-network-policy'
-  - '--cluster-cidr=192.168.0.0/16'
+  - '--cluster-cidr={{ calico_network }}'
   - '--write-kubeconfig-mode=0644'
   - '--cluster-init'
 

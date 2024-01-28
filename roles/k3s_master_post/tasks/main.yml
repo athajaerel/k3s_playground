@@ -2,41 +2,20 @@
 # If we don't do this here, nodes never show as Ready since they don't
 # have a CNI (because Flannel is disabled)
 - name: 'Install Calico CNI'
-  when: 'is_primary'
   vars:
-    manifests_calico:
+    manifests:
       - 'calico/tigera-operator.yaml'
       - 'calico/custom-resources.yaml'
-  block:
-    - name: 'Ensure manifest directory exists'
-      loop:
-        - '{{ manifests_path_prefix }}/{{ manifests_calico | first }}'
-      file:
-        path: '{{ item | dirname }}'
-        state: 'directory'
-
-    - name: 'Template in manifests'
-      loop: '{{ manifests_calico }}'
-      template:
-        src: '{{ manifests_path_prefix[1:] }}/{{ item }}.j2'
-        dest: '{{ manifests_path_prefix }}/{{ item }}'
-
-    - name: 'Install manifests'
-      register: 'reg_install_manifests'
-      vars:
-        e_already: 'Error from server (AlreadyExists): error when creating'
-      loop: '{{ manifests_calico }}'
-      failed_when:
-        - 'reg_install_manifests.rc != 0'
-        - 'e_already not in reg_install_manifests.stderr'
-      command:
-        argv:
-          - '/usr/local/bin/kubectl'
-          - 'create'
-          - '-f'
-          - '{{ manifests_path_prefix }}/{{ item }}'
+      - 'calico/calicoctl.yaml'
+    namespace: 'kube-system'
+    wait_selectors:
+      - 'k8s-app=kube-dns'
+      - 'k8s-app=metrics-server'
+      - 'app=local-path-provisioner'
+  import_tasks: 'install_and_wait.yml'
 
 # do repeat-until for long waits
+# TODO: failed_when
 - name: 'Wait for all nodes'
   vars:
     timeout: '3600s'
@@ -52,148 +31,86 @@
       - 'node'
       - '{{ item }}.{{ domain }}'
 
-# do repeat-until for long waits
-- name: 'Wait for core services'
+# Need Longhorn before Registry
+- name: 'Install Longhorn'
   vars:
-    timeout: '3600s'
-    e_ok: 'condition met'  # if needed
-  loop:
-    - 'k8s-app=kube-dns'
-    - 'k8s-app=metrics-server'
-    - 'app=local-path-provisioner'
-  run_once: yes
-  command:
-    argv:
-      - '/usr/local/bin/kubectl'
-      - 'wait'
-      - '--timeout={{ timeout }}'
-      - '--for=condition=Ready'
-      - 'pod'
-      - '-n'
-      - 'kube-system'
-      - '--selector={{ item }}'
+    manifests:
+      - 'longhorn/longhorn.yaml'
+    namespace: 'longhorn-system'
+    wait_timeout: '86400s'
+    wait_selectors:
+      - 'app.kubernetes.io/instance=longhorn'
+      - 'longhorn.io/component=engine-image'
+      - 'longhorn.io/component=instance-manager'
+      - 'app=csi-attacher'
+      - 'app=csi-provisioner'
+      - 'app=csi-resizer'
+      - 'app=csi-snapshotter'
+      - 'longhorn.io/component=instance-manager'
+      - 'app=longhorn-csi-plugin'
+  import_tasks: 'install_and_wait.yml'
+
+- name: 'Install registry configuration'
+  blockinfile:
+    block: |
+      mirrors:
+        docker.io:
+          endpoint:
+            - 'http://127.0.0.1:{{ registry_service_node_port }}'
+    dest: '/etc/rancher/k3s/registries.yaml'
+    create: yes
+    marker: '# {mark} ANSIBLE MANAGED BLOCK --- registry'
+
+# This should be first after Calico. I'd be tempted to install before
+# Calico, but I don't think that'd work.
+# Might need to set up some storage.
+# https://thomasdegraaff.eu/notes/2021/12/04/k3s_docker_pull_through_registry/
+- name: 'Install Registry'
+  vars:
+    manifests:
+      - 'docker-registry/docker-registry.yaml'
+    namespace: 'docker-registry'
+    wait_selectors:
+      - 'app=docker-registry'
+  import_tasks: 'install_and_wait.yml'
 
 - name: 'Install MetalLB'
-  when: 'is_primary'
   vars:
-    manifests_metallb:
+    manifests:
       - 'metallb/metallb-native.yaml'
-  block:
-    - name: 'Ensure manifest directory exists'
-      loop:
-        - '{{ manifests_path_prefix }}/{{ manifests_metallb | first }}'
-      file:
-        path: '{{ item | dirname }}'
-        state: 'directory'
-
-    - name: 'Template in manifests'
-      loop: '{{ manifests_metallb }}'
-      template:
-        src: '{{ manifests_path_prefix[1:] }}/{{ item }}.j2'
-        dest: '{{ manifests_path_prefix }}/{{ item }}'
-
-    - name: 'Install manifests'
-      register: 'reg_install_manifests'
-      vars:
-        e_already: 'Error from server (AlreadyExists): error when creating'
-      loop: '{{ manifests_metallb }}'
-      failed_when:
-        - 'reg_install_manifests.rc != 0'
-        - 'e_already not in reg_install_manifests.stderr'
-      command:
-        argv:
-          - '/usr/local/bin/kubectl'
-          - 'create'
-          - '-f'
-          - '{{ manifests_path_prefix }}/{{ item }}'
-
-# do repeat-until for long waits
-- name: 'Wait for MetalLB services'
-  vars:
-    timeout: '3600s'
-    e_ok: 'condition met'  # if needed
-  loop:
-    - 'component=speaker'
-    - 'component=controller'
-  run_once: yes
-  command:
-    argv:
-      - '/usr/local/bin/kubectl'
-      - 'wait'
-      - '--timeout={{ timeout }}'
-      - '--for=condition=Ready'
-      - '--selector={{ item }}'
-      - '-n'
-      - 'metallb-system'
-      - 'pods'
+    namespace: 'metallb-system'
+    wait_selectors:
+      - 'component=controller'
+      - 'component=speaker'
+  import_tasks: 'install_and_wait.yml'
 
 - name: 'Install MetalLB pool'
-  when: 'is_primary'
   vars:
-    manifests_metallb:
+    manifests:
       - 'metallb/metallb-pool.yaml'
-  block:
-    - name: 'Template in manifests'
-      loop: '{{ manifests_metallb }}'
-      template:
-        src: '{{ manifests_path_prefix[1:] }}/{{ item }}.j2'
-        dest: '{{ manifests_path_prefix }}/{{ item }}'
+  import_tasks: 'install_and_wait.yml'
 
-    - name: 'Install manifests'
-      register: 'reg_install_manifests'
-      vars:
-        e_already: 'Error from server (AlreadyExists): error when creating'
-      loop: '{{ manifests_metallb }}'
-      failed_when:
-        - 'reg_install_manifests.rc != 0'
-        - 'e_already not in reg_install_manifests.stderr'
-      command:
-        argv:
-          - '/usr/local/bin/kubectl'
-          - 'create'
-          - '-f'
-          - '{{ manifests_path_prefix }}/{{ item }}'
-
-- name: 'Install manifests'
-  when: 'is_primary'
+- name: 'Install nginx ingress'
   vars:
-    manifests_custom:
+    manifests:
       - 'nginx-ingress/nginx-ingress.yaml'
-      - 'longhorn/longhorn.yaml'
+  import_tasks: 'install_and_wait.yml'
+
+- name: 'Install cert-manager'
+  vars:
+    manifests:
       - 'cert-manager/cert-manager.yaml'
-  block:
-    - name: 'Ensure manifest directory exists'
-      loop: '{{ manifests_custom }}'
-      file:
-        path: '{{ manifests_path_prefix }}/{{ item | dirname }}'
-        state: 'directory'
-
-    - name: 'Template in manifests'
-      loop: '{{ manifests_custom }}'
-      template:
-        src: '{{ manifests_path_prefix[1:] }}/{{ item }}.j2'
-        dest: '{{ manifests_path_prefix }}/{{ item }}'
-
-    - name: 'Install manifests'
-      register: 'reg_install_manifests'
-      vars:
-        e_already: 'Error from server (AlreadyExists): error when creating'
-      loop: '{{ manifests_custom }}'
-      failed_when:
-        - 'reg_install_manifests.rc != 0'
-        - 'e_already not in reg_install_manifests.stderr'
-      command:
-        argv:
-          - '/usr/local/bin/kubectl'
-          - 'create'
-          - '-f'
-          - '{{ manifests_path_prefix }}/{{ item }}'
+    namespace: 'cert-manager'
+    wait_selectors:
+      - 'app.kubernetes.io/instance=cert-manager'
+  import_tasks: 'install_and_wait.yml'
 
 # do repeat-until for long waits
 - name: 'Wait for remaining services (mostly Longhorn)'
   vars:
     timeout: '86400s'
     e_ok: 'condition met'  # if needed
+    namespace: 'kube-system'
   loop:
     - selector: 'app.kubernetes.io/instance=longhorn'
       namespace: 'longhorn-system'
@@ -226,7 +143,7 @@
       - '--for=condition=Ready'
       - '--selector={{ item.selector }}'
       - '-n'
-      - '{{ item.namespace }}'
+      - '{{ namespace }}'
       - 'pods'
 
 - name: 'Delete completed jobs'

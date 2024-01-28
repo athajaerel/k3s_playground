@@ -1,0 +1,53 @@
+---
+- name: 'Ensure manifests directory exists'
+  when: 'is_primary'
+  loop: '{{ manifests }}'
+  file:
+    path: '{{ (manifests_path_prefix, item) | path_join | dirname }}'
+    state: 'directory'
+
+- name: 'Template in manifests'
+  when: 'is_primary'
+  loop: '{{ manifests }}'
+  template:
+    src: '{{ (manifests_path_prefix[1:], item) | path_join }}.j2'
+    dest: '{{ (manifests_path_prefix, item) | path_join }}'
+
+- name: 'Install manifests'
+  register: 'reg_install_manifests'
+  when: 'is_primary'
+  vars:
+    e_already: 'Error from server (AlreadyExists)'
+  loop: '{{ manifests }}'
+  failed_when:
+    - 'reg_install_manifests.rc != 0'
+    - 'e_already not in reg_install_manifests.stderr'
+  command:
+    argv:
+      - '/usr/local/bin/kubectl'
+      - 'create'
+      - '-f'
+      - '{{ (manifests_path_prefix, item) | path_join }}'
+
+# do repeat-until for long waits
+# TODO: failed_when
+- name: 'Wait for pods'
+  when:
+    - 'wait_selectors is defined'
+    - 'wait_selectors'
+  vars:
+    e_ok: 'condition met'  # if needed
+  loop: '{{ wait_selectors }}'
+  run_once: yes
+  command:
+    argv:
+      - '/usr/local/bin/kubectl'
+      - 'wait'
+      - '--timeout={{ wait_timeout | default("3600s") }}'
+      - '--for=condition=Ready'
+      - 'pod'
+      - '-n'
+      - '{{ namespace }}'
+      - '--selector={{ item }}'
+...
+# vim: set filetype=yaml

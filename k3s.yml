@@ -59,7 +59,7 @@
   become: yes
   tags:
     - 'bootstrap'
-    - 'bootstrap_masters'
+    - 'bootstrap_masters_post'
     - 'never'
   handlers:
     - import_tasks: 'handlers/main.yml'
@@ -72,7 +72,7 @@
   become: yes
   tags:
     - 'bootstrap'
-    - 'bootstrap_agents'
+    - 'bootstrap_agents_post'
     - 'never'
   handlers:
     - import_tasks: 'handlers/main.yml'
@@ -107,7 +107,6 @@
   hosts: 'all'
   gather_facts: no
   become: yes
-  ignore_errors: yes
   tags:
     - 'delete_cluster'
     - 'never'

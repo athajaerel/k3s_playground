@@ -106,58 +106,40 @@
   import_tasks: 'install_and_wait.yml'
 
 # do repeat-until for long waits
-- name: 'Wait for remaining services (mostly Longhorn)'
+# TODO: failed_when
+# TODO: fix
+- name: 'Wait for jobs to complete'
   vars:
     timeout: '86400s'
     e_ok: 'condition met'  # if needed
     namespace: 'kube-system'
   loop:
-    - selector: 'app.kubernetes.io/instance=longhorn'
-      namespace: 'longhorn-system'
-    - selector: 'longhorn.io/component=engine-image'
-      namespace: 'longhorn-system'
-    - selector: 'longhorn.io/component=instance-manager'
-      namespace: 'longhorn-system'
-    - selector: 'app=csi-attacher'
-      namespace: 'longhorn-system'
-    - selector: 'app=csi-provisioner'
-      namespace: 'longhorn-system'
-    - selector: 'app=csi-resizer'
-      namespace: 'longhorn-system'
-    - selector: 'app=csi-snapshotter'
-      namespace: 'longhorn-system'
-    - selector: 'longhorn.io/component=instance-manager'
-      namespace: 'longhorn-system'
-    - selector: 'app=longhorn-csi-plugin'
-      namespace: 'longhorn-system'
-    - selector: 'job-name=helm-install-ingress-nginx'
-      namespace: 'kube-system'
-    - selector: 'app.kubernetes.io/instance=cert-manager'
-      namespace: 'cert-manager'
+    - 'job-name=helm-install-ingress-nginx'
   run_once: yes
   command:
     argv:
       - '/usr/local/bin/kubectl'
       - 'wait'
       - '--timeout={{ timeout }}'
-      - '--for=condition=Ready'
-      - '--selector={{ item.selector }}'
+      - '--for=condition=Completed'
+      - '--selector={{ item }}'
       - '-n'
       - '{{ namespace }}'
       - 'pods'
 
 - name: 'Delete completed jobs'
+  vars:
+    namespace: 'kube-system'
   loop:
-    - job: 'helm-install-ingress-nginx'
-      namespace: 'kube-system'
+    - 'helm-install-ingress-nginx'
   run_once: yes
   command:
     argv:
       - '/usr/local/bin/kubectl'
       - 'delete'
       - 'job'
-      - '{{ item.job }}'
+      - '{{ item }}'
       - '-n'
-      - '{{ item.namespace }}'
+      - '{{ namespace }}'
 ...
 # vim: set filetype=yaml

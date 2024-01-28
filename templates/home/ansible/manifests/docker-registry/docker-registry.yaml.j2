@@ -1,0 +1,78 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ registry_namespace }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ registry_pvc_name }}
+  namespace: {{ registry_namespace }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ registry_pvc_size_gb }}Gi
+  storageClassName: {{ registry_pvc_storage_class_name }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ registry_service_name }}
+  namespace: {{ registry_namespace }}
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: http
+      nodePort: {{ registry_service_node_port }}
+  selector:
+    app: {{ registry_app_name }}
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ registry_deployment_name }}
+  namespace: {{ registry_namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ registry_app_name }}
+  template:
+    metadata:
+      labels:
+        app: {{ registry_app_name }}
+    spec:
+      containers:
+        - name: {{ registry_container_name }}
+          image: '{{ registry_container_image }}'
+#          env:
+#            - name: REGISTRY_USERNAME
+#              value: {{ registry_container_user }}
+#            - name: REGISTRY_PASSWORD
+#              valueFrom:
+#                secretKeyRef:
+#                  name: docker-registry-password
+#                  key: '{{ registry_container_pwd }}'
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              port: http
+            initialDelaySeconds: 60
+          readinessProbe:
+            httpGet:
+              port: http
+            initialDelaySeconds: 10
+          volumeMounts:
+            - mountPath: {{ registry_volume_mount_path }}
+              name: {{ registry_volume_name }}
+      volumes:
+        - name: {{ registry_volume_name }}
+          persistentVolumeClaim:
+            claimName: {{ registry_pvc_name }}

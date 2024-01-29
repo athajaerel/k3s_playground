@@ -39,8 +39,9 @@
     - 'helm_install'
     - 'keepalived_install'
     - 'k3s_master_bootstrap'
+    - 'k3s_master_post'
 
-- name: 'Bootstrap agents'
+- name: 'Bootstrap k3s agents nodes'
   hosts: 'k3s_agents'
   gather_facts: no
   become: yes
@@ -52,31 +53,6 @@
     - import_tasks: 'handlers/main.yml'
   roles:
     - 'k3s_agent_bootstrap'
-
-- name: 'Post k3s master nodes'
-  hosts: 'k3s_masters'
-  gather_facts: no
-  become: yes
-  tags:
-    - 'bootstrap'
-    - 'bootstrap_masters_post'
-    - 'never'
-  handlers:
-    - import_tasks: 'handlers/main.yml'
-  roles:
-    - 'k3s_master_post'
-
-- name: 'Post agents'
-  hosts: 'k3s_agents'
-  gather_facts: no
-  become: yes
-  tags:
-    - 'bootstrap'
-    - 'bootstrap_agents_post'
-    - 'never'
-  handlers:
-    - import_tasks: 'handlers/main.yml'
-  roles:
     - 'k3s_agent_post'
 
 - name: 'Install Rancher Admin'

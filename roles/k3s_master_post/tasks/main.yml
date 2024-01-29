@@ -20,7 +20,7 @@
   vars:
     timeout: '3600s'
     e_ok: 'condition met'  # if needed
-  loop: '{{ groups["nodes"] }}'
+#  loop: '{{ groups["nodes"] }}'
   run_once: yes
   command:
     argv:
@@ -29,7 +29,8 @@
       - '--timeout={{ timeout }}'
       - '--for=condition=Ready'
       - 'node'
-      - '{{ item }}.{{ domain }}'
+      - '{{ inventory_hostname }}.{{ domain }}'
+#      - '{{ item }}.{{ domain }}'
 
 # Need Longhorn before Registry
 - name: 'Install Longhorn'

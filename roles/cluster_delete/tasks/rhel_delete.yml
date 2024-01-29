@@ -1,0 +1,14 @@
+---
+- name: 'Restore blank iptables config'
+  copy:
+    src: '/dev/null'
+    dest: '/etc/sysconfig/nftables.conf'
+
+- name: 'Disable and stop k3s service'
+  systemd:
+    enabled: no
+    state: 'stopped'
+    force: yes
+    name: 'k3s'
+...
+# vim: set filetype=yaml

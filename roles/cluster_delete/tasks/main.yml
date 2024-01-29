@@ -1,10 +1,11 @@
 ---
-# a bit void specific?
-- name: 'Create empty iptables settings file'
-  copy:
-    remote_src: yes
-    src: '/etc/iptables/empty.rules'
-    dest: '/etc/iptables/iptables.rules'
+- name: 'Delete for RHEL'
+  when: 'distro == "rhel"'
+  import_tasks: 'rhel_delete.yml'
+
+- name: 'Delete for Void'
+  when: 'distro == "void"'
+  import_tasks: 'void_delete.yml'
 
 - name: 'Blank hosts file'
   copy:
@@ -13,40 +14,10 @@
       ::1 localhost.localdomain localhost ip6-localhost
     dest: '/etc/hosts'
 
-- name: 'Prevent service start'
-  register: 'reg_prevent_start'
-  vars:
-    e_fail: 'could not touch target'
-  failed_when:
-    - 'reg_prevent_start is failed'
-    - 'e_fail not in reg_prevent_start.msg'
-  file:
-    state: 'touch'
-    path: '/etc/sv/k3s/down'
-    owner: 'root'
-    group: 'root'
-    mode: '0444'
-
-- name: 'Stop service'
-  failed_when: no
-  #runit:
-  #  name: 'k3s'
-  #  state: 'stopped'
-  command:
-    argv:
-      - '/usr/bin/sv'
-      - 'down'
-      - 'k3s'
-
-- name: 'Uninstall service'
-  file:
-    path: '/etc/sv/k3s'
-    state: 'absent'
-
-- name: 'Reboot'
+- name: 'Reboot to unmount kubelet and nfs'
   reboot:
 
-- name: 'Unmount kubelet'
+- name: 'Unmount kubelet and nfs'
   register: 'reg_unmount'
   become: yes
   failed_when:
@@ -56,10 +27,13 @@
   vars:
     e_notfound: 'no mount point specified'  # crappy inaccurate error
     e_already: 'not mounted'
+  loop:
+    - '/var/lib/kubelet'
+    - '/var/lib/nfs/rpc_pipefs'  # RHEL only?
   command:
     argv:
       - '/usr/bin/umount'
-      - '/var/lib/kubelet'
+      - '{{ item }}'
 
 - name: 'Remove existing configuration'
   loop: '{{ k3s_clobber_files + k3s_clobber_os_files[distro] }}'

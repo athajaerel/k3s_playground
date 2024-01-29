@@ -141,6 +141,12 @@
   slurp:
     path: '/var/lib/rancher/k3s/server/node-token'
 
+- name: 'Create token directory'
+  when: 'not is_primary'
+  file:
+    path: '/var/lib/rancher/k3s/server'
+    state: 'directory'
+
 - name: 'Write token file to secondary'
   when: 'not is_primary'
   copy:

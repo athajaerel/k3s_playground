@@ -16,7 +16,11 @@ k3s_primary_masters:
       ip_fourth_byte: '101'
 
 k3s_secondary_masters:
-  hosts: { }
+  hosts:
+    k3s-mother-002:
+      ip_fourth_byte: '102'
+    k3s-mother-003:
+      ip_fourth_byte: '103'
 
 rancher:
   hosts: { }

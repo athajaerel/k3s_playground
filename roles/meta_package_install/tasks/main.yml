@@ -33,8 +33,23 @@
 - name: 'For Red Hat Enterprise Linux, ...'
   when: 'distro == "rhel"'
   block:
+    # TODO: check if we need to do this actually
+    - name: 'Mount disc'
+      register: 'reg_mount'
+      failed_when:
+        - 'reg_mount.rc != 0'
+        - 'e_already not in reg_mount.stderr'
+        # - 'e_notfound not in reg_mount.stderr'
+      vars:
+        # e_notfound: 'no mount point specified'  # crappy inaccurate error
+        e_already: 'already mounted'
+      command:
+        argv:
+          - 'mount'
+          - '/mnt/disc'
+
     # todo : UPDATE YUM
-    - name: 'Install keepalived'
+    - name: 'Install packages'
       loop: '{{ packages }}'
       package:
         name: '{{ item }}'

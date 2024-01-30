@@ -146,6 +146,12 @@
 #    done
 
 - name: 'Disable SELinux'
+  register: 'reg_selinux'
+  vars:
+    e_notexists: 'does not exist'
+  failed_when:
+    - 'reg_selinux.rc != 0'
+    - 'e_notexists not in reg_selinux.msg'
   replace:
     path: '/etc/selinux/config'
     regexp: '^SELINUX=enforcing$'

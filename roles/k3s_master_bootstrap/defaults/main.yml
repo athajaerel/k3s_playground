@@ -1,6 +1,4 @@
 ---
-random_token_file: '/etc/k3s-token'
-
 clobber_ok: no
 
 opts_common:

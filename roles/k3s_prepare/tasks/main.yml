@@ -89,6 +89,8 @@
   file:
     path: '/usr/local/bin/k3s'
     mode: '0755'
+    owner: 'root'
+    group: 'root'
 
 - name: 'Add shell to /etc/shells'
   loop:

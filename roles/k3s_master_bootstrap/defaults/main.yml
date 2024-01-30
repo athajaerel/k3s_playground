@@ -13,9 +13,8 @@ opts_common:
   - '--write-kubeconfig-mode=0644'
   - '--cluster-init'
 
-# TODO: this (--token) is awkward. Do it better? Systemd doesn't execute bash, so subshells don't work as expected.
 opts_secondary:
-  - '--token=$(more /var/lib/rancher/k3s/server/token)'
+  - '--token={{ server_token }}'
   - '--server=https://{{ primary_group[0] }}.{{ domain }}:6443'
 ...
 # vim: set filetype=yaml

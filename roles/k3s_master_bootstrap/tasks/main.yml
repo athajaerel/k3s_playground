@@ -1,20 +1,4 @@
 ---
-- name: 'Generate random token'
-  run_once: yes
-  vars:
-    spec: '/dev/null chars=ascii_letters,digits length=64'
-    seed: '{{ inventory_hostname ~ now().microsecond }}'
-  set_fact:
-    random_token: '{{ lookup("password", spec, seed=seed)
-                      | password_hash("sha256")
-                      | b64encode }}'
-
-- name: 'Copy token to masters'
-  copy:
-    content: '{{ random_token }}'
-    dest: '{{ random_token_file }}'
-    mode: '0400'  # hmm?
-
 # Remove old configuration
 - name: 'Unmount kubelet'
   when: 'clobber_ok'
@@ -43,13 +27,6 @@
     path: '{{ item }}'
     state: 'absent'
 
-- name: 'Correct binary permissions'
-  file:
-    path: '/usr/local/bin/k3s'
-    mode: '0755'
-    owner: 'root'
-    group: 'root'
-
 - name: 'Create symlinks'
   loop:
     - 'kubectl'
@@ -74,9 +51,12 @@
     owner: 'root'
     group: 'root'
 
-- name: 'Ensure configuration directory exists'
+- name: 'Ensure k3s directories exist'
+  loop:
+    - '/etc/rancher/k3s'
+    - '/var/lib/rancher/k3s/server'   # ?
   file:
-    path: '/etc/rancher/k3s'
+    path: '{{ item }}'
     state: 'directory'
 
 - name: 'Export environment to file'
@@ -121,6 +101,17 @@
     src: '{{ item[1:] }}.j2'
     dest: '{{ item }}'
 
+- name: 'Copy token file from primary'
+  when: 'is_primary'
+  register: 'reg_read_token'
+  run_once: yes
+  slurp:
+    path: '/var/lib/rancher/k3s/server/token'
+
+- name: 'Set server_token fact'
+  set_fact:
+    server_token: '{{ (reg_read_token.content | b64decode).split("\n")[0] }}'
+
 - name: 'Install for RHEL'
   when: 'distro == "rhel"'
   import_tasks: 'rhel_install.yml'
@@ -132,38 +123,11 @@
 - name: 'Reboot'
   when: 'is_primary'
   reboot:
-
-- name: 'Copy token file from primary'
-  when: 'is_primary'
-  register: 'reg_read_token'
-  run_once: yes
-  # delegate_to: '{{ primary_group | first }}'
-  slurp:
-    path: '/var/lib/rancher/k3s/server/node-token'
-
-- name: 'Create token directory'
-  when: 'not is_primary'
-  file:
-    path: '/var/lib/rancher/k3s/server'
-    state: 'directory'
-
-- name: 'Write token file to secondary'
-  when: 'not is_primary'
-  copy:
-    content: '{{ reg_read_token.content | b64decode }}'
-    dest: '/var/lib/rancher/k3s/server/token'
-
-# TODO: this bit is awkward. Do it better? Also, DRY with the "--token" line.
-# TODO: remove newline(s) from token variable.
-- name: 'Fettle RHEL service'
-  when: 'distro == "rhel"'
-  replace:
-    path: '/etc/systemd/system/k3s.service'
-    regexp: '^ExecStart=/usr/local/bin/k3s (.*)--token=\$\(more /var/lib/rancher/k3s/server/token\)(.*)$'
-    replace: 'ExecStart=/usr/local/bin/k3s \1--token={{ reg_read_token.content | b64decode }} \2'
+    post_reboot_delay: 30
 
 - name: 'Reboot'
   when: 'not is_primary'
   reboot:
+    post_reboot_delay: 10
 ...
 # vim: set filetype=yaml

@@ -153,6 +153,15 @@
     content: '{{ reg_read_token.content | b64decode }}'
     dest: '/var/lib/rancher/k3s/server/token'
 
+# TODO: this bit is awkward. Do it better? Also, DRY with the "--token" line.
+# TODO: remove newline(s) from token variable.
+- name: 'Fettle RHEL service'
+  when: 'distro == "rhel"'
+  replace:
+    path: '/etc/systemd/system/k3s.service'
+    regexp: '^ExecStart=/usr/local/bin/k3s (.*)--token=\$\(more /var/lib/rancher/k3s/server/token\)(.*)$'
+    replace: 'ExecStart=/usr/local/bin/k3s \1--token={{ reg_read_token.content | b64decode }} \2'
+
 - name: 'Reboot'
   when: 'not is_primary'
   reboot:

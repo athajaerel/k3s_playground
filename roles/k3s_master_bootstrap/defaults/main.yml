@@ -12,7 +12,7 @@ opts_common:
   - '--cluster-init'
 
 opts_secondary:
-  - '--token={{ server_token }}'
   - '--server=https://{{ primary_group[0] }}.{{ domain }}:6443'
+  - '--token={{ server_token }}'  # seems to have newlines at the end, so don't add after this
 ...
 # vim: set filetype=yaml

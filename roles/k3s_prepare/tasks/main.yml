@@ -144,5 +144,17 @@
 #            $SUDO ${XTABLES}-save 2>/dev/null | grep -v KUBE- | grep -iv flannel | grep -iv cali | $SUDO ${XTABLES}-restore
 #        fi
 #    done
+
+- name: 'Disable SELinux'
+  replace:
+    path: '/etc/selinux/config'
+    regexp: '^SELINUX=enforcing$'
+    replace: 'SELINUX=disabled'
+
+- name: 'Disable swap'
+  replace:
+    path: '/etc/fstab'
+    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+    replace: '# \1'
 ...
 # vim: set filetype=yaml

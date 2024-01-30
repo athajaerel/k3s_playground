@@ -16,18 +16,6 @@
     src: '{{ item[1:] }}.j2'
     dest: '{{ item }}'
 
-# TODO: failed_when
-- name: 'Reset SELinux context on service file'
-  loop:
-    - '/etc/systemd/system/k3s.service'
-    - '/etc/rancher/k3s/k3s.env'
-  command:
-    argv:
-      - 'restorecon'
-      - '-R'
-      - '-i'
-      - '{{ item }}'
-
 - name: 'Start service'
   systemd:
     name: 'k3s'

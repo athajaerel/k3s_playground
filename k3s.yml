@@ -55,8 +55,8 @@
     - 'k3s_agent_bootstrap'
     - 'k3s_agent_post'
 
-- name: 'Install Rancher Admin'
-  hosts: 'rancher'
+- name: 'Install user interface'
+  hosts: 'interface'
   gather_facts: no
   become: yes
   tags:

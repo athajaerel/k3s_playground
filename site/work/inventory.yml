@@ -22,7 +22,7 @@ k3s_secondary_masters:
     k3s-mother-003:
       ip_fourth_byte: '103'
 
-rancher:
+interface:
   hosts: { }
 #    rancher-admin:
 #      ip_fourth_byte: '110'

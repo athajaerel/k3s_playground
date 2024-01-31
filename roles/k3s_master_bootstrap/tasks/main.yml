@@ -52,6 +52,14 @@
     path: '{{ item }}'
     state: 'directory'
 
+# Not sure I can add this to the meta hosts role as it is.
+- name: 'Add k3s-vip to hosts file'
+  vars:
+    vip_name: 'k3s-vip'
+  lineinfile:
+    path: '/etc/hosts'
+    line: '{{ keepalived_vip_address }} {{ vip_name }}.{{ domain }} {{ vip_name }}'
+
 - name: 'Export environment to file'
   register: 'reg_environment'
   command:

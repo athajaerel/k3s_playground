@@ -2,50 +2,5 @@
 ansible_user: 'ansible'
 ansible_host: '{{ network | ipv4(ip_fourth_byte) | ipv4("address") }}'
 fqdn: '{{ inventory_hostname }}.{{ domain }}'
-
-keepalived_vip_address: '{{ network | ipv4(keepalived_vip_fourth_byte) | ipv4("address") }}'
-keepalived_vip_prefix: '{{ network | ipv4(keepalived_vip_fourth_byte) | ipv4("prefix") }}'
-keepalived_notify_to: 'admin@{{ domain }}'
-keepalived_notify_from: '{{ inventory_hostname }}@{{ domain }}'
-
-k3s_version: 'v1.28.4+k3s2'
-k3s_sha256_checksum: '9014535a4cd20c788282d60398a06279983562093455b53ab76701539ce67acf'
-
-primary_group: '{{ groups["k3s_primary_masters"] | list }}'
-is_primary: '{{ (inventory_hostname in primary_group) | bool }}'
-
-manifests_path_prefix: '/home/ansible/manifests'
-
-calico_network: '192.168.0.0/16'
-
-k3s_clobber_files:
-  - '/etc/rancher'
-  - '/usr/local/bin/kubectl'
-  - '/usr/local/bin/crictl'
-  - '/usr/local/bin/ctr'
-  - '/run/k3s'
-  - '/run/flannel'
-  - '/var/lib/rancher'
-  - '/var/lib/kubelet'
-  - '/var/lib/calico'
-  - '/var/lib/cni'
-  - '/var/lib/longhorn'
-  - '/var/lib/nfs'
-  - '/usr/local/bin/k3s-killall.sh'
-  - '/usr/local/bin/k3s-uninstall.sh'
-  - '/usr/local/bin/calicoctl'
-  - '/usr/local/bin/k3s'
-  - '/usr/local/bin/k3s.bak'
-  - '/home/ansible/manifests'
-  - '/home/ansible/.kube'
-
-k3s_clobber_os_files:
-  void:
-    - '/etc/sv/k3s'
-    - '/etc/xbps.d/rancher-k3s-common*.conf'
-    - '/var/service/k3s'
-  rhel:
-    - '/etc/systemd/system/k3s'
-    - '/etc/systemd/system/k3s.env'
 ...
 # vim: set filetype=yaml

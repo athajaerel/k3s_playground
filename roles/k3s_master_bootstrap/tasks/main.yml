@@ -1,7 +1,7 @@
 ---
 # Remove old configuration
 - name: 'Unmount kubelet'
-  when: 'clobber_ok'
+  when: 'is_clobbering_time'
 # Looks like the whole posix collection is messed up
 #  mount:
 #    name: '/var/lib/kubelet'
@@ -19,13 +19,6 @@
     argv:
       - '/usr/bin/umount'
       - '/var/lib/kubelet'
-
-- name: 'Remove existing configuration'
-  when: 'clobber_ok'
-  loop: '{{ k3s_clobber_files + k3s_clobber_os_files[distro] }}'
-  file:
-    path: '{{ item }}'
-    state: 'absent'
 
 - name: 'Create symlinks'
   loop:

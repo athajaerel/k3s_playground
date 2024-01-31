@@ -1,5 +1,5 @@
 ---
-clobber_ok: no
+is_clobbering_time: no
 
 opts_common:
   - 'server'

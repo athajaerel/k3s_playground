@@ -36,7 +36,8 @@
       - '{{ item }}'
 
 - name: 'Remove existing configuration'
-  loop: '{{ k3s_clobber_files + k3s_clobber_os_files[distro] }}'
+  when: 'is_clobbering_time'
+  loop: '{{ k3s_clobber_files.common + k3s_clobber_files[distro] }}'
   file:
     path: '{{ item }}'
     state: 'absent'

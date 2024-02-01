@@ -6,5 +6,18 @@
 
 # $ sudo docker run --privileged -d --restart=unless-stopped -p 80:80
 #   -p 443:443 rancher/rancher
+
+# Things I can do now:
+# open up Longhorn interface - can specify an IP in the range I gave to MLB
+
+#longhorn-system    longhorn-frontend                    LoadBalancer   10.43.19.33     10.20.1.1     80:32010/TCP             22h
+
+#/
+
+#docker-registry    docker-registry                      LoadBalancer   10.43.54.47     10.20.1.2     80:30555/TCP             6h31m
+
+#/v2/_catalog
+
+
 ...
 # vim: set filetype=yaml

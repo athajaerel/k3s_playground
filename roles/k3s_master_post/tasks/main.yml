@@ -107,41 +107,6 @@
       - 'app.kubernetes.io/instance=cert-manager'
   import_tasks: 'install_and_wait.yml'
 
-# do repeat-until for long waits
-# TODO: failed_when
-# TODO: fix
-- name: 'Wait for jobs to complete'
-  vars:
-    timeout: '86400s'
-    e_ok: 'condition met'  # if needed
-    namespace: 'kube-system'
-  loop:
-    - 'job-name=helm-install-ingress-nginx'
-  run_once: yes
-  command:
-    argv:
-      - '/usr/local/bin/kubectl'
-      - 'wait'
-      - '--timeout={{ timeout }}'
-      - '--for=condition=Completed'
-      - '--selector={{ item }}'
-      - '-n'
-      - '{{ namespace }}'
-      - 'pods'
-
-- name: 'Delete completed jobs'
-  vars:
-    namespace: 'kube-system'
-  loop:
-    - 'helm-install-ingress-nginx'
-  run_once: yes
-  command:
-    argv:
-      - '/usr/local/bin/kubectl'
-      - 'delete'
-      - 'job'
-      - '{{ item }}'
-      - '-n'
-      - '{{ namespace }}'
+# Removed deletion of completed jobs. There's no reliable way to wait for completion --- the wait is never triggered by the condition and Google knows nothing.
 ...
 # vim: set filetype=yaml

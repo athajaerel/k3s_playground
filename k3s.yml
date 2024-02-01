@@ -73,12 +73,12 @@
   gather_facts: no
   become: yes
   tags:
-    - 'rancher'
+    - 'interface'
     - 'never'
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'rancher_install'
+    - 'interface_install'
 
 - name: 'Rolling restart cluster'
   hosts: 'nodes'

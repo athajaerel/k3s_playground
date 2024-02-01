@@ -16,7 +16,7 @@ Current tags:
 - bootstrap
 - bootstrap_masters
 - bootstrap_agents
-- rancher
+- interface
 - rolling_restart
 - delete_cluster
 

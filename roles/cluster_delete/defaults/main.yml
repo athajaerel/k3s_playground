@@ -1,6 +1,9 @@
 ---
 is_clobbering_time: yes
 
+blank_templates:
+  - '/etc/hosts'
+
 k3s_clobber_files:
   void:
     - '/etc/sv/k3s'

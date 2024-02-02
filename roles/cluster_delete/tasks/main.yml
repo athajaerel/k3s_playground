@@ -7,12 +7,11 @@
   when: 'distro == "void"'
   import_tasks: 'void_delete.yml'
 
-- name: 'Blank hosts file'
-  copy:
-    content: |
-      127.0.0.1 localhost.localdomain localhost
-      ::1 localhost.localdomain localhost ip6-localhost
-    dest: '/etc/hosts'
+- name: 'Blank templates'
+  loop: '{{ blank_templates }}'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
 
 - name: 'Reboot to unmount kubelet and nfs'
   reboot:

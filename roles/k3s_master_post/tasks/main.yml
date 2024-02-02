@@ -3,9 +3,9 @@
 # have a CNI (because Flannel is disabled)
 - name: 'Install Calico CNI'
   vars:
-    manifests: '{{ manifests["calico"] }}'
-    namespace: '{{ namespaces["core"] }}'
-    wait_selectors: '{{ selectors["core"] }}'
+    manifests: '{{ k3s_manifests.calico }}'
+    namespace: '{{ k3s_namespaces.core }}'
+    wait_selectors: '{{ k3s_selectors.core }}'
   import_tasks: 'install_and_wait.yml'
 
 # TODO: see what effect async and poll have on this task, maybe use it more
@@ -24,9 +24,10 @@
 # Need Longhorn before Registry
 - name: 'Install Longhorn'
   vars:
-    manifests: '{{ manifests["longhorn"] }}'
-    namespace: '{{ namespaces["longhorn"] }}'
-    wait_selectors: '{{ selectors["longhorn"] }}'
+    manifests: '{{ k3s_manifests.longhorn }}'
+    namespace: '{{ k3s_namespaces.longhorn }}'
+    wait_selectors: '{{ k3s_selectors.longhorn }}'
+    wait_timeout: '{{ longhorn_timeout }}'
   import_tasks: 'install_and_wait.yml'
 
 - name: 'Install registry configuration'
@@ -46,33 +47,34 @@
 # https://thomasdegraaff.eu/notes/2021/12/04/k3s_docker_pull_through_registry/
 - name: 'Install Registry'
   vars:
-    manifests: '{{ manifests["registry"] }}'
-    namespace: '{{ namespaces["registry"] }}'
-    wait_selectors: '{{ selectors["registry"] }}'
+    manifests: '{{ k3s_manifests.registry }}'
+    namespace: '{{ k3s_namespaces.registry }}'
+    wait_selectors: '{{ k3s_selectors.registry }}'
   import_tasks: 'install_and_wait.yml'
 
 - name: 'Install MetalLB'
   vars:
-    manifests: '{{ manifests["metallb"] }}'
-    namespace: '{{ namespaces["metallb"] }}'
-    wait_selectors: '{{ selectors["metallb"] }}'
+    manifests: '{{ k3s_manifests.metallb }}'
+    namespace: '{{ k3s_namespaces.metallb }}'
+    wait_selectors: '{{ k3s_selectors.metallb }}'
   import_tasks: 'install_and_wait.yml'
 
 - name: 'Install MetalLB pool'
   vars:
-    manifests: '{{ manifests["metallb_pool"] }}'
+    manifests: '{{ k3s_manifests.metallb_pool }}'
   import_tasks: 'install_and_wait.yml'
 
 - name: 'Install nginx ingress'
   vars:
-    manifests: '{{ manifests["nginx-ingress"] }}'
+    manifests: '{{ k3s_manifests.nginx_ingress }}'
   import_tasks: 'install_and_wait.yml'
 
 - name: 'Install cert-manager'
   vars:
-    manifests: '{{ manifests["cert-manager"] }}'
-    namespace: '{{ namespaces["cert-manager"] }}'
-    wait_selectors: '{{ selectors["cert-manager"] }}'
+    manifests: '{{ k3s_manifests.cert_manager }}'
+    namespace: '{{ k3s_namespaces.cert_manager }}'
+    wait_selectors: '{{ k3s_selectors.cert_manager }}'
+    wait_timeout: '{{ cert_manager_timeout }}'
   import_tasks: 'install_and_wait.yml'
 
 # Removed deletion of completed jobs. There's no reliable way to wait

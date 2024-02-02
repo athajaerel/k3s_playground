@@ -23,7 +23,7 @@
     src: '/etc/sv/iptables'
     dest: '/var/service/iptables'
 
-- name: 'Add DNS resolver'
+- name: 'Add DNS resolver in dhcpcd'
   vars:
     replace_internal: '8.8.8.8 \1'
     regex_negative_lookahead: '8\.8\.8\.8'

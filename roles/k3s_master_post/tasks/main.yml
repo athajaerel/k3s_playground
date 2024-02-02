@@ -12,6 +12,8 @@
 # TODO: figure out failed_when condition for kubectl wait
 - name: 'Wait for all nodes'
   run_once: yes
+  async: '{{ (nodes_timeout[:-1] | int) + 1 }}'
+  poll: 1
   command:
     argv:
       - '/usr/local/bin/kubectl'

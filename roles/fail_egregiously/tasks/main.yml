@@ -1,0 +1,4 @@
+---
+- fail:
+...
+# vim: set filetype=yaml

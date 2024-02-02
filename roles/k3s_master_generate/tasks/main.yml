@@ -1,26 +1,23 @@
 ---
-- name: 'Generate random token'
-  vars:
-    spec: '/dev/null chars=ascii_letters,digits length=64'
-    seed: '{{ inventory_hostname ~ now().microsecond }}'
-  set_fact:
-    random_token: '{{ lookup("password", spec, seed=seed)
-                      | password_hash("sha256")
-                      | b64encode }}'
-
 - name: 'Write random token'
+  vars:
+    seed: '{{ inventory_hostname ~ now().microsecond }}'
   copy:
-    content: '{{ random_token }}'
+    content: '{{ lookup("password", random_spec, seed=seed)
+                 | password_hash("sha256")
+                 | b64encode }}'
     dest: '{{ random_token_file }}'
-    mode: '0400'  # hmm?
+    mode: '0400'
+    owner: 'root'
+    group: 'root'
 
 - name: 'Generate server token from random token'
   failed_when: no  # TODO, figure out fail conditions
-  async: 120
+  async: '{{ token_timeout | int }}'
   poll: 0
   command:
     argv:
-      - '/usr/local/bin/k3s'
+      - '{{ k3s_binary }}'
       - 'server'
       - '--token-file'
       - '{{ random_token_file }}'
@@ -28,14 +25,14 @@
 - name: 'Wait for file to exist'
   wait_for:
     delay: 1  # give it a second
-    path: '/var/lib/rancher/k3s/server/token'
-    timeout: 120
+    path: '{{ actual_token_file }}'
+    timeout: '{{ token_timeout | int }}'
 
 - name: 'End the token generation process'
   failed_when: no  # TODO, figure out fail conditions
   command:
     argv:
       - '/bin/pkill'
-      - 'k3s'
+      - '{{ k3s_binary | basename }}'
 ...
 # vim: set filetype=yaml

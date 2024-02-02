@@ -1,4 +1,13 @@
 ---
+random_spec: '/dev/null chars=ascii_letters,digits length=64'
 random_token_file: '/etc/k3s-token'
+
+token_timeout: 120
+
+# masters?
+actual_token_file: '/var/lib/rancher/k3s/server/token'
+
+# nodes?
+k3s_binary: '/usr/local/bin/k3s'
 ...
 # vim: set filetype=yaml

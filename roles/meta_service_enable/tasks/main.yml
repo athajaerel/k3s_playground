@@ -5,7 +5,7 @@
   file:
     src: '/etc/sv/{{ item }}'
     dest: '/var/service/{{ item }}'
-    state: link
+    state: 'link'
 
 # TODO rhel version (issue #39)
 ...

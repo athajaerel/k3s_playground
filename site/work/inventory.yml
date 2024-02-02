@@ -10,6 +10,15 @@ all:
     loadbalancer_pool_name: 'cysafa-service-ip-pool'
     network_gateway: '10.20.0.253'
 
+rhel:
+  children:
+    nodes:
+    interface:
+
+# no Void hosts here
+void:
+  children: { }
+
 k3s_primary_masters:
   hosts:
     k3s-mother-001:

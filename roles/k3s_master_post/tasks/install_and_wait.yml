@@ -45,7 +45,7 @@
     argv:
       - '/usr/local/bin/kubectl'
       - 'wait'
-      - '--timeout={{ wait_timeout | default("3600s") }}'
+      - '--timeout={{ wait_timeout | default(default_wait_timeout) }}'
       - '--for=condition=Ready'
       - 'pod'
       - '-n'

@@ -7,5 +7,24 @@ opts_common:
   - '{{ reg_token.content | b64decode }}'
 
 opts_secondary: []
+
+k3s_token_file: '/var/lib/rancher/k3s/server/token'
+
+k3s_binary_dir: '/usr/local/bin'
+k3s_binary: '{{ k3s_binary_dir }}/k3s'
+
+k3s_scripts:
+  - '{{ k3s_binary_dir }}/k3s-killall.sh'
+  - '{{ k3s_binary_dir }}/k3s-uninstall.sh'
+
+config_dir: '/etc/rancher/k3s'
+calico_dir: '/var/lib/calico'
+
+data_dirs:
+  - '{{ config_dir }}'
+  - '{{ calico_dir }}'
+
+nodename_file: '{{ calico_dir }}/nodename'
+environment_file: '{{ config_dir }}/k3s.env'
 ...
 # vim: set filetype=yaml

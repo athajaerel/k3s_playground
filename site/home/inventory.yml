@@ -10,6 +10,15 @@ all:
     loadbalancer_pool_name: 'dreamtrack-service-ip-pool'
 #    network_gateway: ''
 
+# no RHEL hosts here
+rhel:
+  children: { }
+
+void:
+  children:
+    nodes:
+    interface:
+
 k3s_primary_masters:
   hosts:
     k3s-mother-001:

@@ -1,7 +1,6 @@
 ---
 - name: 'Update xbps config'
-  loop:
-    - '/etc/xbps.d/00-repository-main.conf'
+  loop: '{{ void_templates }}'
   template:
     src: '{{ item[1:] }}.j2'
     dest: '{{ item }}'

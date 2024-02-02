@@ -2,5 +2,9 @@
 ansible_user: 'ansible'
 ansible_host: '{{ network | ipv4(ip_fourth_byte) | ipv4("address") }}'
 fqdn: '{{ inventory_hostname }}.{{ domain }}'
+
+# nodes?
+registry_pvc_storage_class: 'local-path-storage'
+registry_volume_mount_path: '/var/lib/registry'
 ...
 # vim: set filetype=yaml

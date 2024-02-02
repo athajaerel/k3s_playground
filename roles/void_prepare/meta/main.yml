@@ -1,8 +1,7 @@
 ---
 dependencies:
   - vars:
-      hosts:
-        - 'repo-default.voidlinux.org'
+      hosts: '{{ void_hosts }}'
     role: 'meta_hosts_append'
 ...
 # vim: set filetype=yaml

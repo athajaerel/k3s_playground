@@ -14,21 +14,21 @@
     - name: 'Update xbps index'
       command:
         argv:
-          - '/bin/xbps-install'
+          - '{{ xbps_command }}'
           - '-Sy'
 
     # TODO: failed_when
     - name: 'Update xbps'
       command:
         argv:
-          - '/bin/xbps-install'
+          - '{{ xbps_command }}'
           - '-uy'
           - 'xbps'
 
     # TODO: failed_when
     - name: 'Install packages with xbps'
       command:
-        argv: '{{ [ "/bin/xbps-install", "-y" ] + packages }}'
+        argv: '{{ [ xbps_command, "-y" ] + packages }}'
 
 - name: 'For Red Hat Enterprise Linux, ...'
   when: 'distro == "rhel"'
@@ -38,11 +38,8 @@
       register: 'reg_mount'
       failed_when:
         - 'reg_mount.rc != 0'
-        - 'e_already not in reg_mount.stderr'
-        # - 'e_notfound not in reg_mount.stderr'
-      vars:
-        # e_notfound: 'no mount point specified'  # crappy inaccurate error
-        e_already: 'already mounted'
+        - 'e_mount_already not in reg_mount.stderr'
+        # - 'e_mount_notfound not in reg_mount.stderr'
       command:
         argv:
           - 'mount'

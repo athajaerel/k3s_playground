@@ -1,10 +1,8 @@
 ---
-- name: 'Set labels'
+- name: 'Set agent labels'
   become: yes
   delegate_to: 'k3s-mother-001'
-  loop:
-    - 'node-role.kubernetes.io/worker=true'
-    - 'node-type=worker'
+  loop: '{{ agent_labels }}'
   command:
     argv:
       - '/usr/local/bin/kubectl'

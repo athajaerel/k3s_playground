@@ -14,7 +14,7 @@
   run_once: yes
   become: no
   file:
-    path: '{{ playbook_dir }}/binaries'
+    path: '{{ k3s_binaries_dir }}'
     state: 'directory'
 
 - name: 'Check if tarball exists already'
@@ -23,7 +23,7 @@
   run_once: yes
   become: no
   stat:
-    path: '{{ k3s_binaries_dir }}/k3s-{{ k3s_version }}.tgz'
+    path: '{{ k3s_tarball }}'
 
 - name: 'Get checksum from tarballed file'
   when: 'reg_tarball.stat.exists'
@@ -32,7 +32,7 @@
   run_once: yes
   become: no
   archived_checksum:
-    path: '{{ k3s_binaries_dir }}/k3s-{{ k3s_version }}.tgz'
+    path: '{{ k3s_tarball }}'
     archived_file: 'k3s'
 
 - name: 'Download specified binaries'
@@ -82,37 +82,38 @@
 
 - name: 'Unarchive the k3s binary'
   unarchive:
-    src: 'binaries/k3s-{{ k3s_version }}.tgz'
-    dest: '/usr/local/bin/'
+    src: '{{ k3s_tarball }}'
+    dest: '{{ k3s_destdir }}/'
 
 - name: 'Permission the binary'
   file:
-    path: '/usr/local/bin/k3s'
+    path: '{{ k3s_destdir }}/k3s'
     mode: '0755'
     owner: 'root'
     group: 'root'
 
 - name: 'Add shell to /etc/shells'
-  loop:
-    - '/sbin/bash'
-    - '/usr/bin/tmux'
+  loop: '{{ k3s_shells}}'
   lineinfile:
     path: '/etc/shells'
-    line: '/sbin/bash'
-    insertbefore: 'EOF'
+    line: '{{ item }}'
+    insertafter: 'EOF'
 
+# TODO: figure out failed_when for chsh
 - name: 'Change ansible user shell'
   command:
     argv:
-      - '/usr/bin/chsh'
+      - '{{ k3s_chsh }}'
       - '-s'
-      - '/usr/bin/tmux'
+      - '{{ k3s_shells | first }}'
       - 'ansible'
 
 - name: 'Write tmux config'
-  copy:
-    content: 'set-option -g default-shell "/bin/bash"'
-    dest: '/home/ansible/.tmux.conf'
+  loop:
+    - '/home/ansible/.tmux.conf'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
     owner: 'ansible'
     group: 'ansible'
     mode: '0644'
@@ -123,9 +124,7 @@
     state: 'directory'
 
 - name: 'Template in logrotate config'
-  loop:
-    - '/etc/logrotate.d/standard'
-    - '/etc/logrotate.d/k3s'
+  loop: '{{ k3s_logrotate_configs }}'
   template:
     src: '{{ item[1:] }}.j2'
     dest: '{{ item }}'
@@ -147,11 +146,9 @@
 
 - name: 'Disable SELinux'
   register: 'reg_selinux'
-  vars:
-    e_notexists: 'does not exist'
   failed_when:
     - 'reg_selinux.rc != 0'
-    - 'e_notexists not in reg_selinux.msg'
+    - 'e_selinux_notexists not in reg_selinux.msg'
   replace:
     path: '/etc/selinux/config'
     regexp: '^SELINUX=enforcing$'

@@ -1,4 +1,21 @@
 ---
 all_hosts_records: '{{ groups.all }}'
+
+sysctl_settings:
+  - 'net.bridge.bridge-nf-call-iptables = 1'
+  - 'net.bridge.bridge-nf-call-ip6tables = 1'
+  - 'net.ipv4.ip_forward = 1'
+
+e_mkdir_readonly: 'Read-only file system'
+
+config_templates:
+  - '/etc/machine-id'
+  - '/etc/hostname'
+
+sshd_private_key_types:
+  - 'ecdsa'
+  - 'dsa'
+  - 'ed25519'
+  - 'rsa'
 ...
 # vim: set filetype=yaml

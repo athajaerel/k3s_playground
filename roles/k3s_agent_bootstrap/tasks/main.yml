@@ -4,7 +4,7 @@
   delegate_to: 'k3s-mother-001'
   run_once: yes
   slurp:
-    src: '/var/lib/rancher/k3s/server/node-token'
+    src: '{{ k3s_token_file }}'
 
 - name: 'Create symlinks'
   loop:
@@ -12,17 +12,15 @@
     - 'crictl'
     - 'ctr'
   file:
-    src: '/usr/local/bin/k3s'
-    dest: '/usr/local/bin/{{ item }}'
+    src: '{{ k3s_binary }}'
+    dest: '{{ k3s_binary_dir }}/{{ item }}'
     state: 'link'
     mode: '0755'
     owner: 'root'
     group: 'root'
 
 - name: 'Create scripts'
-  loop:
-    - '/usr/local/bin/k3s-killall.sh'
-    - '/usr/local/bin/k3s-uninstall.sh'
+  loop: '{{ k3s_scripts }}'
   copy:
     src: '{{ item[1:] }}'
     dest: '{{ item }}'
@@ -30,9 +28,10 @@
     owner: 'root'
     group: 'root'
 
-- name: 'Ensure configuration directory exists'
+- name: 'Ensure configuration directories exist'
+  loop: '{{ data_dirs }}'
   file:
-    path: '/etc/rancher/k3s'
+    path: '{{ item }}'
     state: 'directory'
 
 - name: 'Export environment to file'
@@ -45,12 +44,12 @@
 
 - name: 'Delete environment settings'
   file:
-    path: '/etc/rancher/k3s/k3s.env'
+    path: '{{ environment_file }}'
     state: 'absent'
 
 - name: 'Touch environment settings'
   file:
-    path: '/etc/rancher/k3s/k3s.env'
+    path: '{{ environment_file }}'
     state: 'touch'
     owner: 'root'
     group: 'root'
@@ -64,11 +63,8 @@
   loop: '{{ reg_environment.stdout_lines }}'
   lineinfile:
     line: '{{ item }}'
-    dest: '/etc/rancher/k3s/k3s.env'
+    dest: '{{ environment_file }}'
     create: yes
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
 
 - name: 'Install for RHEL'
   when: 'distro == "rhel"'
@@ -81,15 +77,10 @@
 - name: 'Reboot'
   reboot:
 
-- name: 'Create calico data directory'
-  file:
-    path: '/var/lib/calico'
-    state: 'directory'
-
 - name: 'Copy hostname to nodename'
   copy:
     remote_src: yes
     src: '/etc/hostname'
-    dest: '/var/lib/calico/nodename'
+    dest: '{{ nodename_file }}'
 ...
 # vim: set filetype=yaml

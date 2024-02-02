@@ -1,42 +1,16 @@
 ---
-# Remove old configuration
-- name: 'Unmount kubelet'
-  when: 'is_clobbering_time'
-# Looks like the whole posix collection is messed up
-#  mount:
-#    name: '/var/lib/kubelet'
-#    state: 'unmounted'
-  register: 'reg_unmount'
-  become: yes
-  failed_when:
-    - 'reg_unmount.rc != 0'
-    - 'e_notfound not in reg_unmount.stderr'
-    - 'e_already not in reg_unmount.stderr'
-  vars:
-    e_notfound: 'no mount point specified'  # crappy inaccurate error
-    e_already: 'not mounted'
-  command:
-    argv:
-      - '/usr/bin/umount'
-      - '/var/lib/kubelet'
-
 - name: 'Create symlinks'
-  loop:
-    - 'kubectl'
-    - 'crictl'
-    - 'ctr'
+  loop: '{{ k3s_symlinks }}'
   file:
-    src: '/usr/local/bin/k3s'
-    dest: '/usr/local/bin/{{ item }}'
+    src: '{{ k3s_binary }}'
+    dest: '{{ k3s_binary_dir }}/{{ item }}'
     state: 'link'
     mode: '0755'
     owner: 'root'
     group: 'root'
 
 - name: 'Create scripts'
-  loop:
-    - '/usr/local/bin/k3s-killall.sh'
-    - '/usr/local/bin/k3s-uninstall.sh'
+  loop: '{{ k3s_scripts }}'
   copy:
     src: '{{ item[1:] }}'
     dest: '{{ item }}'
@@ -45,9 +19,7 @@
     group: 'root'
 
 - name: 'Ensure k3s directories exist'
-  loop:
-    - '/etc/rancher/k3s'
-    - '/var/lib/rancher/k3s/server'   # ?
+  loop: '{{ k3s_data_dirs }}'
   file:
     path: '{{ item }}'
     state: 'directory'
@@ -58,7 +30,7 @@
     vip_name: 'k3s-vip'
   lineinfile:
     path: '/etc/hosts'
-    line: '{{ keepalived_vip_address }} {{ vip_name }}.{{ domain }} {{ vip_name }}'
+    line: '{{ k3s_vip_hosts_line }}'
 
 - name: 'Export environment to file'
   register: 'reg_environment'
@@ -75,7 +47,7 @@
 
 - name: 'Touch environment settings'
   file:
-    path: '/etc/rancher/k3s/k3s.env'
+    path: '{{ environment_file }}'
     state: 'touch'
     owner: 'root'
     group: 'root'
@@ -89,15 +61,11 @@
   loop: '{{ reg_environment.stdout_lines }}'
   lineinfile:
     line: '{{ item }}'
-    dest: '/etc/rancher/k3s/k3s.env'
+    dest: '{{ environment_file }}'
     create: yes
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
 
 - name: 'Template in some files'
-  loop:
-    - '/etc/environment'
+  loop: '{{ bootstrap_templates }}'
   template:
     src: '{{ item[1:] }}.j2'
     dest: '{{ item }}'
@@ -107,7 +75,7 @@
   register: 'reg_read_token'
   run_once: yes
   slurp:
-    path: '/var/lib/rancher/k3s/server/token'
+    path: '{{ k3s_token_file }}'
 
 - name: 'Set server_token fact'
   set_fact:

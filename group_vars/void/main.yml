@@ -1,0 +1,42 @@
+---
+k3s_service_dir: '/etc/sv/k3s'
+
+k3s_down_file: '{{ k3s_service_dir }}/down'
+
+k3s_service_files:
+  - file: '{{ k3s_service_dir }}/log/run'
+    mode: '0755'
+  - file: '{{ k3s_service_dir }}/finish'
+    mode: '0755'
+  - file: '{{ k3s_service_dir }}/conf'
+  - file: '{{ k3s_service_dir }}/run'
+    mode: '0755'
+
+unneeded_services:
+  - 'agetty-hvc0'
+  - 'agetty-hvsi0'
+  - 'agetty-tty4'
+  - 'agetty-tty5'
+  - 'agetty-tty6'
+  - 'agetty-ttyAMA0'
+  - 'agetty-ttyUSB0'
+  - 'wpa_supplicant'
+
+unneeded_paths:
+  - '/etc/k3s-token'
+  - '/etc/k3s-token-file'
+  - '/etc/issue.new-0.140_8'
+  - '/etc/rc.conf.new-20210314_1'
+  - '/etc/cni/net.d'
+  - '/etc/myname'
+  - '/etc/rancher'
+  - '/etc/sudoers.new-1.9.5p2_2'
+  - '/usr/libexec/kubernetes'
+  - '/usr/lib/virt-sysprep'
+  - '/home/ansible/install_k3s.sh'
+  - '/home/ansible/k3s'
+  - '/var/lib/calico'
+  - '/var/lib/rancher'
+  - '/var/run/containerd'
+...
+# vim: set filetype=yaml

@@ -1,0 +1,25 @@
+---
+fstab_device: '/dev/sr0'
+fstab_mount: '/mnt/disc'
+
+install_command_prefix:
+  - '/bin/yum'
+  - 'localinstall'
+  - '--allowerasing'
+  - '--nogpgcheck'
+  - '-y'
+
+yum_repos:
+  - '/etc/yum.repos.d/media.repo'
+
+legacy_rpms:
+  - 'iptables-libs-1.6.2-2.fc28.x86_64.rpm'
+  - 'iptables-1.6.2-2.fc28.x86_64.rpm'
+
+prefix: '/tmp'
+prefixed_legacy_rpms: '{{ [prefix ~ "/"] | product(legacy_rpms) | map("join") | list }}'
+
+e_mount_notfound: "can't find in /etc/fstab."
+e_mount_already: 'already mounted'
+...
+# vim: set filetype=yaml

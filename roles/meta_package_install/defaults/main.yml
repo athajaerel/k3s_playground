@@ -1,0 +1,7 @@
+---
+e_mount_notfound: 'no mount point specified'  # crappy inaccurate error
+e_mount_already: 'already mounted'
+
+xbps_command: '/bin/xbps-install'
+...
+# vim: set filetype=yaml

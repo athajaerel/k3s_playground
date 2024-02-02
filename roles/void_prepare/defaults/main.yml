@@ -1,0 +1,8 @@
+---
+void_templates:
+  - '/etc/xbps.d/00-repository-main.conf'
+
+void_hosts:
+  - 'repo-default.voidlinux.org'
+...
+# vim: set filetype=yaml

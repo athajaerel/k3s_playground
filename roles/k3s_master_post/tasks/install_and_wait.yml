@@ -34,7 +34,7 @@
       - '{{ path }}'
 
 # do repeat-until for long waits
-# TODO: failed_when
+# TODO: figure out failed_when condition for kubectl wait
 - name: 'Wait for pods'
   when:
     - 'wait_selectors is defined'

@@ -8,8 +8,8 @@
     wait_selectors: '{{ selectors["core"] }}'
   import_tasks: 'install_and_wait.yml'
 
-# do repeat-until for long waits
-# TODO: failed_when
+# TODO: see what effect async and poll have on this task, maybe use it more
+# TODO: figure out failed_when condition for kubectl wait
 - name: 'Wait for all nodes'
   run_once: yes
   command:

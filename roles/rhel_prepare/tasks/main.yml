@@ -23,19 +23,18 @@
       - '/bin/mount'
       - '{{ fstab_mount }}'
 
-# TODO: add yum config
-# sudo install /mnt/disc/media.repo /etc/yum.repos.d/ -m0644
-# change title to AppStream
-# add lines:
-#enabled=1
-#baseurl=file:///mnt/disc/AppStream
-#gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
-# Set gpgcheck to 1
-# Duplicate and change AppStream to BaseOS wherever you see it
-# sudo yum clean all
-# sudo yum updates
+- name: 'Install yum repos'
+  loop: '{{ yum_repos }}'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
 
-- name: 'Copy legacy RPMs'
+# TODO: maybe replace with yum module?
+# TODO: figure out failed_when for yum clean all and yum update
+- name: 'Freshen yum data'
   loop:
     - 'clean all'
     - 'update'
@@ -47,7 +46,7 @@
     src: 'rpms/{{ item }}'
     dest: '/tmp/'
 
-# TODO: failed_when/changed_when
+# TODO: figure out failed_when for yum install
 - name: 'Install legacy RPMs'
   register: 'reg_iptables'
   command:

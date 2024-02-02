@@ -11,8 +11,8 @@
     owner: 'root'
     group: 'root'
 
+# TODO: figure out failed_when for k3s server --token-file ...
 - name: 'Generate server token from random token'
-  failed_when: no  # TODO, figure out fail conditions
   async: '{{ token_timeout | int }}'
   poll: 0
   command:
@@ -28,8 +28,8 @@
     path: '{{ actual_token_file }}'
     timeout: '{{ token_timeout | int }}'
 
+# TODO: figure out failed_when for pkill
 - name: 'End the token generation process'
-  failed_when: no  # TODO, figure out fail conditions
   command:
     argv:
       - '/bin/pkill'

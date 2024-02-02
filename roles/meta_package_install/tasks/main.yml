@@ -10,14 +10,15 @@
 - name: 'For Void Linux, ...'
   when: 'distro == "void"'
   block:
-    # TODO: failed_when
+    # TODO: figure out failed_when for xbps-install
+    # (or do this block a bit differently, and better)
     - name: 'Update xbps index'
       command:
         argv:
           - '{{ xbps_command }}'
           - '-Sy'
 
-    # TODO: failed_when
+    # TODO: figure out failed_when for xbps-install
     - name: 'Update xbps'
       command:
         argv:
@@ -25,7 +26,7 @@
           - '-uy'
           - 'xbps'
 
-    # TODO: failed_when
+    # TODO: figure out failed_when for xbps-install
     - name: 'Install packages with xbps'
       command:
         argv: '{{ [ xbps_command, "-y" ] + packages }}'
@@ -33,7 +34,7 @@
 - name: 'For Red Hat Enterprise Linux, ...'
   when: 'distro == "rhel"'
   block:
-    # TODO: check if we need to do this actually
+    # definitely needed
     - name: 'Mount disc'
       register: 'reg_mount'
       failed_when:
@@ -45,7 +46,13 @@
           - 'mount'
           - '/mnt/disc'
 
-    # todo : UPDATE YUM
+    # TODO: figure out failed_when for yum check-update
+    - name: 'Freshen yum data'
+      command:
+        argv:
+          - 'yum'
+          - 'check-update'
+
     - name: 'Install packages'
       loop: '{{ packages }}'
       package:

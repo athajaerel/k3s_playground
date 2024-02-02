@@ -7,6 +7,6 @@
     dest: '/var/service/{{ item }}'
     state: link
 
-# TODO rhel version
+# TODO rhel version (issue #39)
 ...
 # vim: set filetype=yaml

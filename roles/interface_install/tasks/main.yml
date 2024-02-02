@@ -1,5 +1,5 @@
 ---
-# TODO: add Rancher Admin role
+# TODO: add Rancher Admin role (issue #18)
 
 # . A VM with Ubuntu 21.04 x86-64 as Rancher cluster manager to have a
 # nice management UI (optional).

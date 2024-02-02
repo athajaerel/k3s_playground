@@ -7,7 +7,7 @@
 # This made me feel slimy and naked so I wrapped it up in a
 # tarball. It didn't even have a version number attached.
 
-# TODO: meta this? The whole 'download and tar' section is heavily distro-dependent.
+# TODO: meta this? New play? (issue #41)
 
 - name: 'Ensure directory exists'
   connection: 'local'
@@ -51,7 +51,7 @@
     dest: '{{ k3s_binaries_dir }}/'
     checksum: '{{ item.checksum }}'
 
-# TODO: changed_when
+# TODO: unnecessarily complex. Remove the loop and use k3s_tarball. (issue #42)
 - name: 'Tarball up binaries'
   when: 'file_checksum != k3s_sha256_checksum
          or not reg_tarball.stat.exists'

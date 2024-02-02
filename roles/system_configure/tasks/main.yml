@@ -21,6 +21,7 @@
     content: '{{ lookup("password", "/dev/null length=32", chars=["hexdigits"]) | lower }}'
     dest: '/etc/machine-id'
 
+# TODO: fix this (issue #31)
 - name: 'Add rshared option to root partition'
   vars:
     replace_internal: '\2,rshared'

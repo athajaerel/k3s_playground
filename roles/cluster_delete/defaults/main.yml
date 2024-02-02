@@ -4,6 +4,15 @@ is_clobbering_time: yes
 blank_templates:
   - '/etc/hosts'
 
+e_mount_notfound: 'no mount point specified' # crappy inaccurate error
+e_mount_already: 'not mounted'
+
+e_touch_fail: 'could not touch target'
+
+unmount_points:
+  - '/var/lib/kubelet'
+  - '/var/lib/nfs/rpc_pipefs'  # RHEL only?
+
 k3s_clobber_files:
   void:
     - '/etc/sv/k3s'

@@ -21,14 +21,9 @@
   become: yes
   failed_when:
     - 'reg_unmount.rc != 0'
-    - 'e_notfound not in reg_unmount.stderr'
-    - 'e_already not in reg_unmount.stderr'
-  vars:
-    e_notfound: 'no mount point specified'  # crappy inaccurate error
-    e_already: 'not mounted'
-  loop:
-    - '/var/lib/kubelet'
-    - '/var/lib/nfs/rpc_pipefs'  # RHEL only?
+    - 'e_mount_notfound not in reg_unmount.stderr'
+    - 'e_mount_already not in reg_unmount.stderr'
+  loop: '{{ unmount_points }}'
   command:
     argv:
       - '/usr/bin/umount'

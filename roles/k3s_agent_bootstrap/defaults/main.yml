@@ -1,4 +1,6 @@
 ---
+is_primary: no
+
 opts_common:
   - 'agent'
   - '--server'

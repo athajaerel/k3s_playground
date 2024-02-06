@@ -61,11 +61,15 @@
 # but can't guarantee more. By getting one at a time we
 # guarantee to get our full 4K.
 
+# need the handler; the reboot alone reliably doesn't work on one host in twelve. wtf?
 - name: 'Delete sshd private keys'
+  notify: 'Restart sshd'
   loop: '{{ sshd_private_key_types }}'
   file:
     path: '/etc/ssh/ssh_host_{{ item }}_key'
     state: 'absent'
+
+- meta: 'flush_handlers'
 
 - name: 'Reboot'
   reboot:

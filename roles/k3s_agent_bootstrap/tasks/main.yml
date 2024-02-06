@@ -82,5 +82,14 @@
     remote_src: yes
     src: '/etc/hostname'
     dest: '{{ nodename_file }}'
+
+#cat | sudo tee /etc/rancher/k3s/registries.yaml <<EOF
+## BEGIN ANSIBLE MANAGED BLOCK --- registry
+#mirrors:
+#  docker.io:
+#    endpoint:
+#      - 'http://127.0.0.1:30555'
+## END ANSIBLE MANAGED BLOCK --- registry
+#EOF
 ...
 # vim: set filetype=yaml

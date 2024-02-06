@@ -17,7 +17,5 @@
 #docker-registry    docker-registry                      LoadBalancer   10.43.54.47     10.20.1.2     80:30555/TCP             6h31m
 
 #/v2/_catalog
-
-
 ...
 # vim: set filetype=yaml

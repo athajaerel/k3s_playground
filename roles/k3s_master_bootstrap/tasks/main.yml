@@ -89,12 +89,12 @@
   when: 'distro == "void"'
   import_tasks: 'void_install.yml'
 
-- name: 'Reboot'
+- name: 'Reboot primary'
   when: 'is_primary'
   reboot:
     post_reboot_delay: 30
 
-- name: 'Reboot'
+- name: 'Reboot secondaries'
   when: 'not is_primary'
   reboot:
     post_reboot_delay: 10

@@ -23,7 +23,7 @@ metadata:
   name: {{ registry_service_name }}
   namespace: {{ registry_namespace }}
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
     - port: 80
       targetPort: http

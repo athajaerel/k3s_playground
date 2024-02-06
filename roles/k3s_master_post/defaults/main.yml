@@ -24,6 +24,7 @@ e_manifest_already: 'Error from server (AlreadyExists)'
 e_wait_ok: 'condition met'
 
 default_wait_timeout: '300s'
+core_timeout: '600s'
 nodes_timeout: '600s'
 longhorn_timeout: '7200s'
 cert_manager_timeout: '600s'

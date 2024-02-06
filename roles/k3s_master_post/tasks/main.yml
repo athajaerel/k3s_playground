@@ -6,6 +6,7 @@
     manifests: '{{ k3s_manifests.calico }}'
     namespace: '{{ k3s_namespaces.core }}'
     wait_selectors: '{{ k3s_selectors.core }}'
+    wait_timeout: '{{ core_timeout }}'
   import_tasks: 'install_and_wait.yml'
 
 # TODO: see what effect async and poll have on this task, maybe use it more

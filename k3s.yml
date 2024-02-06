@@ -74,6 +74,8 @@
   become: yes
   tags:
     - 'interface'
+    - 'bootstrap'
+    - 'bootstrap_masters'
     - 'never'
   handlers:
     - import_tasks: 'handlers/main.yml'

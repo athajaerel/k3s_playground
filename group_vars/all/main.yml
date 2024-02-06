@@ -4,7 +4,9 @@ ansible_host: '{{ network | ipv4(ip_fourth_byte) | ipv4("address") }}'
 fqdn: '{{ inventory_hostname }}.{{ domain }}'
 
 # nodes?
-registry_pvc_storage_class: 'local-path-storage'
+local_path_storage_class: 'local-path-storage'
+longhorn_storage_class: 'longhorn'
+registry_pvc_storage_class: '{{ longhorn_storage_class }}'
 registry_volume_mount_path: '/var/lib/registry'
 ...
 # vim: set filetype=yaml

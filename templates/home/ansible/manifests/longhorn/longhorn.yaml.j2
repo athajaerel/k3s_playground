@@ -44,7 +44,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: longhorn-storageclass
+  name: {{ longhorn_storage_class }}
   namespace: longhorn-system
   labels:
     app.kubernetes.io/name: longhorn
@@ -55,7 +55,7 @@ data:
     kind: StorageClass
     apiVersion: storage.k8s.io/v1
     metadata:
-      name: longhorn
+      name: {{ longhorn_storage_class }}
       annotations:
         storageclass.kubernetes.io/is-default-class: "true"
     provisioner: driver.longhorn.io

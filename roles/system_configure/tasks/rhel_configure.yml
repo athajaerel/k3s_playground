@@ -1,10 +1,22 @@
 ---
-# ...?
-
 - name: 'Update network configuration'
   lineinfile:
     path: '/etc/sysconfig/network'
     line: 'HOSTNAME={{ fqdn }}'
+
+- name: 'Template in defaults'
+  loop:
+    - '/etc/default/grub'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+
+- name: 'Regenerate GRUB options'
+  command:
+    argv:
+      - '/sbin/grub2-mkconfig'
+      - '-o'
+      - '/boot/grub2/grub.cfg'
 
 #- name: 'Add DNS resolver'
 #  vars:

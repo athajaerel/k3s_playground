@@ -19,13 +19,6 @@ k3s_scripts:
   - '{{ k3s_binary_dir }}/k3s-killall.sh'
   - '{{ k3s_binary_dir }}/k3s-uninstall.sh'
 
-config_dir: '/etc/rancher/k3s'
-calico_dir: '/var/lib/calico'
-
-data_dirs:
-  - '{{ config_dir }}'
-  - '{{ calico_dir }}'
-
 nodename_file: '{{ calico_dir }}/nodename'
 environment_file: '{{ config_dir }}/k3s.env'
 ...

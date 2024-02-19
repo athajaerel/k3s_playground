@@ -1,0 +1,40 @@
+---
+- name: 'Ensure directory exists'
+  file:
+    path: '{{ k3s_binaries_dir }}'
+    state: 'directory'
+
+- name: 'Check if tarball exists already'
+  register: 'reg_tarball'
+  stat:
+    path: '{{ k3s_tarball }}'
+
+- name: 'Get checksum from tarballed file'
+  when: 'reg_tarball.stat.exists'
+  register: 'reg_checksum'
+  archived_checksum:
+    path: '{{ k3s_tarball }}'
+    archived_file: 'k3s'
+
+- name: 'Download specified binaries'
+  when: 'reg_checksum.checksum != k3s_sha256_checksum
+         or not reg_tarball.stat.exists'
+  get_url:
+    url: '{{ k3s_url }}'
+    dest: '{{ k3s_binaries_dir }}/'
+    checksum: '{{ k3s_sha256_checksum }}'
+
+# TODO: failed_when or module?
+- name: 'Tarball up binaries'
+  when: 'reg_checksum.checksum != k3s_sha256_checksum
+         or not reg_tarball.stat.exists'
+  command:
+    argv:
+      - '/usr/bin/tar'
+      - 'cpzf'
+      - '{{ k3s_tarball }}'
+      - '-C'
+      - '{{ k3s_binaries_dir }}'
+      - '{{ k3s_url | basename }}'
+...
+# vim: set filetype=yaml

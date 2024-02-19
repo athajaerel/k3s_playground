@@ -1,0 +1,9 @@
+---
+k3s_version: 'v1.28.4+k3s2'
+k3s_sha256_checksum: '9014535a4cd20c788282d60398a06279983562093455b53ab76701539ce67acf'
+
+k3s_binaries_dir: '{{ playbook_dir }}/binaries'
+k3s_tarball: '{{ k3s_binaries_dir }}/k3s-{{ k3s_version }}.tgz'
+k3s_url: 'https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s'
+...
+# vim: set filetype=yaml

@@ -13,6 +13,19 @@
     - { name: 'void_prepare', when: 'distro == "void"' }
     - 'system_configure'
 
+- name: 'Check local project resources'
+  hosts: 'k3s_primary_masters'
+  connection: 'local'
+  run_once: yes
+  become: no
+  tags:
+    - 'install'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'project_prepare'
+
 - name: 'Prepare node hosts for k3s'
   hosts: 'nodes'
   gather_facts: no

@@ -1,4 +1,16 @@
 ---
+- name: 'Template in defaults'
+  loop:
+    - '/etc/default/grub'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+
+- name: 'Regenerate GRUB options'
+  command:
+    argv:
+      - '/usr/bin/update-grub'
+
 - name: 'Delete unneeded services'
   loop: '{{ unneeded_services }}'
   file:

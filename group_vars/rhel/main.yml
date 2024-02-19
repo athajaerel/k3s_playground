@@ -1,4 +1,8 @@
 ---
-
+grub2_opts:
+  - 'crashkernel=auto'
+  - 'resume=/dev/mapper/rhel_k3s--mother--001-swap'
+  - 'rd.lvm.lv=rhel_k3s-mother-001/root'
+  - 'rd.lvm.lv=rhel_k3s-mother-001/swap'
 ...
 # vim: set filetype=yaml

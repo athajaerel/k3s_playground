@@ -1,8 +1,13 @@
 ---
 grub2_opts:
+  - 'nofb'
+  - 'nomodeset'
+  - 'VGA=800x600'
   - 'crashkernel=auto'
   - 'resume=/dev/mapper/rhel_k3s--mother--001-swap'
   - 'rd.lvm.lv=rhel_k3s-mother-001/root'
   - 'rd.lvm.lv=rhel_k3s-mother-001/swap'
+  - 'cgroup_memory=1'
+  - 'cgroup_enable=memory'
 ...
 # vim: set filetype=yaml

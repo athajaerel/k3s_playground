@@ -1,4 +1,17 @@
 ---
+grub2_opts:
+  - 'nofb'
+  - 'nomodeset'
+  - 'VGA=800x600'
+  - 'cgroup_memory=1'
+  - 'cgroup_enable=memory'
+  - 'loglevel=4'
+  - 'slub_debug=P'
+  - 'page_poison=1'
+  - 'net.ifnames=0'
+  - 'keymap=uk'
+  - 'drm.debug=0x1e'
+
 k3s_service_dir: '/etc/sv/k3s'
 
 k3s_down_file: '{{ k3s_service_dir }}/down'

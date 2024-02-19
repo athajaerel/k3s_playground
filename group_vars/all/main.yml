@@ -8,5 +8,21 @@ local_path_storage_class: 'local-path-storage'
 longhorn_storage_class: 'longhorn'
 registry_pvc_storage_class: '{{ longhorn_storage_class }}'
 registry_volume_mount_path: '/var/lib/registry'
+
+# nodes?
+k3s_symlinks:
+  - 'kubectl'
+  - 'crictl'
+  - 'ctr'
+
+# nodes?
+config_dir: '/etc/rancher/k3s'
+calico_dir: '/var/lib/calico'
+
+# nodes?
+k3s_data_dirs:
+  - '{{ config_dir }}'
+  - '{{ calico_dir }}'
+  - '/var/lib/rancher/k3s/server'
 ...
 # vim: set filetype=yaml

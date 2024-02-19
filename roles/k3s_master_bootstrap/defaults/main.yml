@@ -16,18 +16,9 @@ opts_secondary:
 k3s_binary_dir: '/usr/local/bin'
 k3s_binary: '{{ k3s_binary_dir }}/k3s'
 
-k3s_symlinks:
-  - 'kubectl'
-  - 'crictl'
-  - 'ctr'
-
 k3s_scripts:
   - '{{ k3s_binary_dir }}/k3s-killall.sh'
   - '{{ k3s_binary_dir }}/k3s-uninstall.sh'
-
-k3s_data_dirs:
-  - '/etc/rancher/k3s'
-  - '/var/lib/rancher/k3s/server'
 
 k3s_vip_hosts_line: '{{ keepalived_vip_address }} {{ vip_name }}.{{ domain }} {{ vip_name }}'
 

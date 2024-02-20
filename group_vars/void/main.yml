@@ -4,8 +4,15 @@ k3s_clobber_files_distro:
   - '/etc/xbps.d/rancher-k3s-common*.conf'
   - '/var/service/k3s'
 
-unmount_points:
-  - '/var/lib/kubelet'
+distro_pkgs:
+  - 'nghttp2'
+  - 'libssh2'
+  - 'the_silver_searcher'  # ok, not so much needed as liked ;)
+  - 'open-iscsi'
+  - 'jq'
+  - 'curl'
+
+extra_unmount_points: []
 
 # a bit nondescript
 void_templates:

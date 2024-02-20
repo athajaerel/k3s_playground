@@ -24,5 +24,8 @@ k3s_clobber_files_common:
   - '/usr/local/bin/k3s.bak'
   - '/home/ansible/manifests'
   - '/home/ansible/.kube'
+
+unmount_points:
+  - '/var/lib/kubelet'
 ...
 # vim: set filetype=yaml

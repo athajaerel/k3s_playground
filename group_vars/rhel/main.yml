@@ -3,8 +3,11 @@ k3s_clobber_files_distro:
   - '/etc/systemd/system/k3s'
   - '/etc/systemd/system/k3s.env'
 
-unmount_points:
-  - '/var/lib/kubelet'
+distro_pkgs:
+  - 'util-linux-user'
+  - 'iscsi-initiator-utils'
+
+extra_unmount_points:
   - '/var/lib/nfs/rpc_pipefs'
 
 fstab_device: '/dev/sr0'

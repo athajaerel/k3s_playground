@@ -23,7 +23,7 @@
     - 'reg_unmount.rc != 0'
     - 'e_mount_notfound_none not in reg_unmount.stderr'
     - 'e_mount_already_not not in reg_unmount.stderr'
-  loop: '{{ unmount_points }}'
+  loop: '{{ unmount_points + extra_unmount_points }}'
   command:
     argv:
       - '/usr/bin/umount'

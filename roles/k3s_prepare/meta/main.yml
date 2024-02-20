@@ -1,26 +1,7 @@
 ---
 dependencies:
   - vars:
-      distro_pkgs:
-        rhel:
-          - 'util-linux-user'
-          - 'iscsi-initiator-utils'
-        void:
-          - 'nghttp2'
-          - 'libssh2'
-          - 'the_silver_searcher'  # ok, not so much needed as liked ;)
-          - 'open-iscsi'
-          - 'jq'
-      common_pkgs:
-        - 'bind-utils'
-        - 'icu'
-        - 'libstdc++'
-        - 'cronie'
-        - 'chrony'
-        - 'tmux'
-        - 'logrotate'
-        - 'nfs-utils'
-      packages: '{{ common_pkgs + distro_pkgs[distro] }}'
+      packages: '{{ common_pkgs + distro_pkgs }}'
     role: 'meta_package_install'
   - vars:
       services:

@@ -1,6 +1,4 @@
 ---
-is_primary: no
-
 opts_common:
   - 'agent'
   - '--server'
@@ -10,16 +8,6 @@ opts_common:
 
 opts_secondary: []
 
-k3s_token_file: '/var/lib/rancher/k3s/server/token'
-
-k3s_binary_dir: '/usr/local/bin'
-k3s_binary: '{{ k3s_binary_dir }}/k3s'
-
-k3s_scripts:
-  - '{{ k3s_binary_dir }}/k3s-killall.sh'
-  - '{{ k3s_binary_dir }}/k3s-uninstall.sh'
-
-nodename_file: '{{ calico_dir }}/nodename'
-environment_file: '{{ config_dir }}/k3s.env'
+is_primary: no
 ...
 # vim: set filetype=yaml

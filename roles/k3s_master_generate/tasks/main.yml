@@ -25,7 +25,7 @@
 - name: 'Wait for file to exist'
   wait_for:
     delay: 1  # give it a second
-    path: '{{ actual_token_file }}'
+    path: '{{ k3s_token_file }}'
     timeout: '{{ token_timeout | int }}'
 
 # TODO: figure out failed_when for pkill

@@ -14,10 +14,10 @@
   register: 'reg_mount'
   changed_when:
     - 'reg_mount.rc != 0'
-    - 'e_mount_already not in reg_mount.stderr'
+    - 'e_mount_already_already not in reg_mount.stderr'
   failed_when:
     - 'reg_mount.rc != 0'
-    - 'e_mount_notfound in reg_mount.stderr'
+    - 'e_mount_notfound_fstab in reg_mount.stderr'
   command:
     argv:
       - '/bin/mount'

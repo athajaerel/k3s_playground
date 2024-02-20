@@ -4,42 +4,25 @@ is_clobbering_time: yes
 blank_templates:
   - '/etc/hosts'
 
-e_mount_notfound: 'no mount point specified' # crappy inaccurate error
-e_mount_already: 'not mounted'
-
-e_touch_fail: 'could not touch target'
-
-unmount_points:
+k3s_clobber_files_common:
+  - '/etc/rancher'
+  - '/usr/local/bin/kubectl'
+  - '/usr/local/bin/crictl'
+  - '/usr/local/bin/ctr'
+  - '/run/k3s'
+  - '/run/flannel'
+  - '/var/lib/rancher'
   - '/var/lib/kubelet'
-  - '/var/lib/nfs/rpc_pipefs'  # RHEL only?
-
-k3s_clobber_files:
-  void:
-    - '/etc/sv/k3s'
-    - '/etc/xbps.d/rancher-k3s-common*.conf'
-    - '/var/service/k3s'
-  rhel:
-    - '/etc/systemd/system/k3s'
-    - '/etc/systemd/system/k3s.env'
-  common:
-    - '/etc/rancher'
-    - '/usr/local/bin/kubectl'
-    - '/usr/local/bin/crictl'
-    - '/usr/local/bin/ctr'
-    - '/run/k3s'
-    - '/run/flannel'
-    - '/var/lib/rancher'
-    - '/var/lib/kubelet'
-    - '/var/lib/calico'
-    - '/var/lib/cni'
-    - '/var/lib/longhorn'
-    - '/var/lib/nfs'
-    - '/usr/local/bin/k3s-killall.sh'
-    - '/usr/local/bin/k3s-uninstall.sh'
-    - '/usr/local/bin/calicoctl'
-    - '/usr/local/bin/k3s'
-    - '/usr/local/bin/k3s.bak'
-    - '/home/ansible/manifests'
-    - '/home/ansible/.kube'
+  - '/var/lib/calico'
+  - '/var/lib/cni'
+  - '/var/lib/longhorn'
+  - '/var/lib/nfs'
+  - '/usr/local/bin/k3s-killall.sh'
+  - '/usr/local/bin/k3s-uninstall.sh'
+  - '/usr/local/bin/calicoctl'
+  - '/usr/local/bin/k3s'
+  - '/usr/local/bin/k3s.bak'
+  - '/home/ansible/manifests'
+  - '/home/ansible/.kube'
 ...
 # vim: set filetype=yaml

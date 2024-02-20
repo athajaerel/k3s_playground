@@ -13,17 +13,7 @@ opts_secondary:
   - '--server=https://{{ primary_group[0] }}.{{ domain }}:6443'
   - '--token={{ server_token }}'  # seems to have newlines at the end, so don't add after this
 
-k3s_binary_dir: '/usr/local/bin'
-k3s_binary: '{{ k3s_binary_dir }}/k3s'
-
-k3s_scripts:
-  - '{{ k3s_binary_dir }}/k3s-killall.sh'
-  - '{{ k3s_binary_dir }}/k3s-uninstall.sh'
-
 k3s_vip_hosts_line: '{{ keepalived_vip_address }} {{ vip_name }}.{{ domain }} {{ vip_name }}'
-
-environment_file: '/etc/rancher/k3s/k3s.env'
-k3s_token_file: '/var/lib/rancher/k3s/server/token'
 
 bootstrap_templates:
   - '/etc/environment'

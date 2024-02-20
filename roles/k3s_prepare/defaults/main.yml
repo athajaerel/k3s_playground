@@ -1,6 +1,4 @@
 ---
-k3s_destdir: '/usr/local/bin'
-
 k3s_logrotate_configs:
   - '/etc/logrotate.d/standard'
   - '/etc/logrotate.d/k3s'
@@ -11,7 +9,5 @@ k3s_shells:
   - '/sbin/bash'
 
 k3s_chsh: '/usr/bin/chsh'
-
-e_selinux_notexists: 'does not exist'
 ...
 # vim: set filetype=yaml

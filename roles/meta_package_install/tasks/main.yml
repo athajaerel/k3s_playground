@@ -39,8 +39,8 @@
       register: 'reg_mount'
       failed_when:
         - 'reg_mount.rc != 0'
-        - 'e_mount_already not in reg_mount.stderr'
-        # - 'e_mount_notfound not in reg_mount.stderr'
+        - 'e_mount_already_already not in reg_mount.stderr'
+        # - 'e_mount_notfound_fstab not in reg_mount.stderr'
       command:
         argv:
           - 'mount'

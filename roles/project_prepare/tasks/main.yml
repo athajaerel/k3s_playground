@@ -1,7 +1,7 @@
 ---
 - name: 'Ensure directory exists'
   file:
-    path: '{{ k3s_binaries_dir }}'
+    path: '{{ k3s_tarball | dirname }}'
     state: 'directory'
 
 - name: 'Check if tarball exists already'
@@ -21,7 +21,7 @@
          or not reg_tarball.stat.exists'
   get_url:
     url: '{{ k3s_url }}'
-    dest: '{{ k3s_binaries_dir }}/'
+    dest: '{{ k3s_tarball | dirname }}/'
     checksum: '{{ k3s_sha256_checksum }}'
 
 # TODO: failed_when or module?
@@ -34,7 +34,7 @@
       - 'cpzf'
       - '{{ k3s_tarball }}'
       - '-C'
-      - '{{ k3s_binaries_dir }}'
+      - '{{ k3s_tarball | dirname }}'
       - '{{ k3s_url | basename }}'
 ...
 # vim: set filetype=yaml

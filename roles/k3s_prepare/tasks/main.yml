@@ -10,11 +10,11 @@
 - name: 'Unarchive the k3s binary'
   unarchive:
     src: '{{ k3s_tarball }}'
-    dest: '{{ k3s_destdir }}/'
+    dest: '{{ k3s_binary_dir }}/'
 
 - name: 'Permission the binary'
   file:
-    path: '{{ k3s_destdir }}/k3s'
+    path: '{{ k3s_binary_dir }}/k3s'
     mode: '0755'
     owner: 'root'
     group: 'root'

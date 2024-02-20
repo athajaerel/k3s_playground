@@ -1,4 +1,20 @@
 ---
+k3s_clobber_files_distro:
+  - '/etc/sv/k3s'
+  - '/etc/xbps.d/rancher-k3s-common*.conf'
+  - '/var/service/k3s'
+
+unmount_points:
+  - '/var/lib/kubelet'
+
+# a bit nondescript
+void_templates:
+  - '/etc/xbps.d/00-repository-main.conf'
+
+# a bit nondescript
+void_hosts:
+  - 'repo-default.voidlinux.org'
+
 grub2_opts:
   - 'nofb'
   - 'nomodeset'

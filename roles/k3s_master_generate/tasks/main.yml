@@ -28,8 +28,12 @@
     path: '{{ k3s_token_file }}'
     timeout: '{{ token_timeout | int }}'
 
-# TODO: figure out failed_when for pkill
 - name: 'End the token generation process'
+  register: 'reg_pkill'
+  failed_when:
+    - 'reg_pkill.rc != 0'
+    - 'reg_pkill.stderr not in ""'
+    - 'e_nonzero_rc not in reg_pkill.msg'
   command:
     argv:
       - '/bin/pkill'

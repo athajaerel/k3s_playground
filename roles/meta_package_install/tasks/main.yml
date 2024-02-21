@@ -48,14 +48,24 @@
 
     # TODO: figure out failed_when for yum check-update
     - name: 'Freshen yum data'
+      register: 'reg_freshen'
+      failed_when:
+        - 'reg_freshen.rc != 0'
+        - 'reg_freshen.rc != 100'
       command:
         argv:
           - 'yum'
           - 'check-update'
 
+    # TODO: figure out failed_when and changed_when for alternatives
+    - name: 'Make sure Python exists'  # wtf?!
+      command: '/usr/sbin/alternatives --set python /usr/bin/python3'
+
+    # doesn't like the yum module for some reason?
     - name: 'Install packages'
       loop: '{{ packages }}'
       package:
         name: '{{ item }}'
+        use: 'dnf'  # tries to use apt sometimes, weird
 ...
 # vim: set filetype=yaml

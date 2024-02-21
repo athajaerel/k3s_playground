@@ -37,7 +37,7 @@
 - name: 'Freshen yum data'
   loop:
     - 'clean all'
-    - 'update'
+    - '-y update'
   command: 'yum {{ item }}'
 
 - name: 'Copy legacy RPMs'

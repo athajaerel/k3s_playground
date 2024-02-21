@@ -12,6 +12,8 @@ distro_pkgs:
   - 'jq'
   - 'curl'
 
+service_command: '/usr/bin/sv'
+
 extra_unmount_points: []
 
 # a bit nondescript

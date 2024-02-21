@@ -7,6 +7,8 @@ distro_pkgs:
   - 'util-linux-user'
   - 'iscsi-initiator-utils'
 
+service_command: 'systemctl'
+
 extra_unmount_points:
   - '/var/lib/nfs/rpc_pipefs'
 

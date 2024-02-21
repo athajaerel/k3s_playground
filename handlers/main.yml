@@ -1,15 +1,12 @@
 ---
 - name: 'Restart keepalived'
+  become: yes
   # service:
   #   name: 'keepalived'
   #   state: 'restarted'
-  vars:
-    service_command:
-      void: 'sv'
-      rhel: 'systemctl'
   command:
     argv:
-      - '{{ service_command[distro] }}'
+      - '{{ service_command }}'
       - 'restart'
       - 'keepalived'
 
@@ -18,13 +15,9 @@
   # service:
   #   name: 'sshd'
   #   state: 'restarted'
-  vars:
-    service_command:
-      void: 'sv'
-      rhel: 'systemctl'
   command:
     argv:
-      - '{{ service_command[distro] }}'
+      - '{{ service_command }}'
       - 'restart'
       - 'sshd'
 ...

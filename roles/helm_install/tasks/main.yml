@@ -10,5 +10,9 @@
   template:
     src: '{{ item[1:] }}.j2'
     dest: '{{ item }}'
+
+- name: 'Install Helm on RHEL'
+  when: 'distro == "rhel"'
+  import_tasks: 'rhel_install.yml'
 ...
 # vim: set filetype=yaml

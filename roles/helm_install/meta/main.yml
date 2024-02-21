@@ -1,12 +1,9 @@
 ---
 dependencies:
   - vars:
-      distro_pkgs:
-        rhel:
-          - '?'  # seems there is no RHEL package for Helm :(
-        void:
-          - 'kubernetes-helm'
-      packages: '{{ distro_pkgs[distro] }}'
+      packages:
+        - 'kubernetes-helm'
+    when: 'distro == "void"'
     role: 'meta_package_install'
 ...
 # vim: set filetype=yaml

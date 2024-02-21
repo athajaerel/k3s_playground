@@ -1,7 +1,8 @@
 ---
 dependencies:
   - vars:
-      packages: 'kubernetes-helm'
+      packages:
+        - 'kubernetes-helm'
     when: 'distro == "void"'
     role: 'meta_package_install'
 ...

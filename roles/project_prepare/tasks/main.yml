@@ -22,7 +22,7 @@
   get_url:
     url: '{{ k3s_url }}'
     dest: '{{ k3s_tarball | dirname }}/'
-    checksum: '{{ k3s_sha256_checksum }}'
+    checksum: 'sha256:{{ k3s_sha256_checksum }}'
 
 # TODO: failed_when or module?
 - name: 'Tarball up binaries'

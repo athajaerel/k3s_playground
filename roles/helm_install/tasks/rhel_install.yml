@@ -1,28 +1,41 @@
 ---
 - name: 'Check if tarball exists already'
   register: 'reg_tarball'
+  connection: 'local'
+  run_once: yes
+  become: no
   stat:
     path: '{{ helm_tarball }}'
 
 - name: 'Get checksum from tarballed file'
   when: 'reg_tarball.stat.exists'
   register: 'reg_checksum'
+  connection: 'local'
+  run_once: yes
+  become: no
   archived_checksum:
     path: '{{ helm_tarball }}'
     archived_file: 'helm'
 
 - name: 'Download specified binaries'
-  when: 'reg_checksum.checksum != helm_sha256_checksum
-         or not reg_tarball.stat.exists'
+  when: 'not reg_tarball.stat.exists
+         or reg_checksum.checksum != helm_sha256_checksum'
+  connection: 'local'
+  run_once: yes
+  become: no
   get_url:
     url: '{{ helm_url }}'
     dest: '{{ helm_tarball | dirname }}/{{ helm_binary }}'
-    checksum: '{{ helm_sha256_checksum }}'
+    checksum: 'sha256:{{ helm_sha256_checksum }}'
+    use_proxy: no
 
 # TODO: failed_when or module?
 - name: 'Tarball up binaries'
-  when: 'reg_checksum.checksum != helm_sha256_checksum
-         or not reg_tarball.stat.exists'
+  when: 'not reg_tarball.stat.exists
+         or reg_checksum.checksum != helm_sha256_checksum'
+  connection: 'local'
+  run_once: yes
+  become: no
   command:
     argv:
       - '/usr/bin/tar'

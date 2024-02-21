@@ -3,7 +3,7 @@ helm_configs:
   - '/home/ansible/.config/helm/repositories.yaml'
 
 helm_version: '3.12.1'
-helm_tarball: '{{ playbook_dir }}/binaries/k3s-{{ k3s_version }}.tgz'
+helm_tarball: '{{ playbook_dir }}/binaries/helm-{{ helm_version }}.tgz'
 helm_url: 'https://mirror.openshift.com/pub/openshift-v4/clients/helm/{{ helm_version }}/helm-linux-amd64'
 helm_sha256_checksum: '4facc69b0bf3e6e39d6da6b23c979622c10a2264a0a4d778e640ddb9e04e57e4'
 helm_binary: 'helm'

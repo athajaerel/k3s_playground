@@ -1,0 +1,29 @@
+---
+calico_namespace: 'kube-system'
+core_namespace: 'kube-system'
+
+# please use minutes so we can rely on seconds for polling
+calico_timeout: '10m'
+core_timeout: '10m'
+nodes_timeout: '10m'
+
+calico_version: 'v3.27.2'
+
+calico_base_url: 'https://raw.githubusercontent.com/projectcalico/calico/{{ calico_version }}/manifests'
+
+calico_manifests:
+  - '{{ calico_base_url }}/calico.yaml'
+  - '{{ calico_base_url }}/calicoctl.yaml'
+  - '{{ calico_base_url }}/custom-resources.yaml'
+  - '{{ calico_base_url }}/tigera-operator.yaml'
+
+core_selectors:
+  - 'k8s-app=kube-dns'
+  - 'k8s-app=metrics-server'
+  - 'app=local-path-provisioner'
+
+calico_selectors:
+  - 'k8s-app=calico-kube-controllers'
+  - 'k8s-app=calico-node'
+...
+# vim: set filetype=yaml

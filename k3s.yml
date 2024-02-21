@@ -65,7 +65,24 @@
     - 'helm_install'
     - 'keepalived_install'
     - 'k3s_master_bootstrap'
-    - 'k3s_master_post'
+
+- name: 'Install manifests'
+  hosts: 'k3s_primary_masters'  # should be only one
+  gather_facts: no
+  become: yes
+  tags:
+    - 'bootstrap'
+    - 'bootstrap_masters'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'calico_install'
+    - 'longhorn_install'
+    # add registry later, keep simple for now
+    - 'metallb_install'
+    - 'nginx_ingress_install'
+    - 'cert_manager_install'
 
 - name: 'Bootstrap k3s agents nodes'
   hosts: 'k3s_agents'

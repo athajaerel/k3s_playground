@@ -6,6 +6,7 @@ blank_templates:
 
 k3s_clobber_files_common:
   - '/etc/rancher'
+  - '/etc/cni/net.d'
   - '/usr/local/bin/kubectl'
   - '/usr/local/bin/crictl'
   - '/usr/local/bin/ctr'

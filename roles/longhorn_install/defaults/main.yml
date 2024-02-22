@@ -1,0 +1,31 @@
+---
+longhorn_namespace: 'longhorn-system'
+
+# please use minutes so we can rely on seconds for polling
+# Longhorn takes ages to pull
+longhorn_timeout: '360m'
+
+longhorn_version: 'v1.5.3'
+
+longhorn_base_url: 'https://raw.githubusercontent.com/longhorn/longhorn/{{ longhorn_version }}'
+
+longhorn_manifests:
+  - '{{ longhorn_base_url }}/deploy/longhorn.yaml'
+
+longhorn_images:
+  - 'longhornio/longhorn-engine:{{ longhorn_version }}'
+  - 'longhornio/longhorn-instance-manager:{{ longhorn_version }}'
+
+longhorn_selectors:
+  - 'app=longhorn-driver-deployer'
+  - 'app=longhorn-manager'
+  - 'longhorn.io/component=engine-image'
+  - 'longhorn.io/component=instance-manager'
+  - 'app=csi-attacher'
+  - 'app=csi-provisioner'
+  - 'app=csi-resizer'
+  - 'app=csi-snapshotter'
+  - 'app=longhorn-csi-plugin'
+  - 'app=longhorn-ui'
+...
+# vim: set filetype=yaml

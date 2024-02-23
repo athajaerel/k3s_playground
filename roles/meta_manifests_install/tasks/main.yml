@@ -45,7 +45,7 @@
     - 'e_manifest_already not in reg_install_manifests.stderr'
   command:
     argv:
-      - '/usr/local/bin/kubectl'
+      - '{{ k3s_binary_dir }}/kubectl'
       - 'create'
       - '-f'
       - '{{ manifests_path }}/{{ item.item | basename }}'
@@ -69,7 +69,7 @@
   run_once: yes
   command:
     argv:
-      - '/usr/local/bin/kubectl'
+      - '{{ k3s_binary_dir }}/kubectl'
       - 'wait'
       - '--timeout={{ timeout | default(default_wait_timeout) }}'
       - '--for=condition=Ready'

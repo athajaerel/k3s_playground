@@ -7,7 +7,7 @@
   loop: '{{ groups["k3s_masters"] }}'
   command:
     argv:
-      - '/usr/local/bin/kubectl'
+      - '{{ k3s_binary_dir }}/kubectl'
       - 'wait'
       - '--timeout={{ nodes_timeout }}'
       - '--for=condition=Ready'
@@ -22,7 +22,7 @@
   run_once: yes
   command:
     argv:
-      - '/usr/local/bin/kubectl'
+      - '{{ k3s_binary_dir }}/kubectl'
       - 'wait'
       - '--timeout={{ core_timeout | default(default_wait_timeout) }}'
       - '--for=condition=Ready'

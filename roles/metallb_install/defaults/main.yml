@@ -1,0 +1,15 @@
+---
+metallb_namespace: 'metallb-system'
+
+metallb_base_url: 'https://raw.githubusercontent.com/metallb/metallb-operator/{{ metallb_version }}'
+
+metallb_manifests:
+  - '{{ metallb_base_url }}/bin/metallb-operator.yaml'
+
+metallb_selectors:
+  - 'control-plane=controller-manager'
+  - 'component=webhook-server'
+#  - 'component=controller'
+#  - 'component=speaker'
+...
+# vim: set filetype=yaml

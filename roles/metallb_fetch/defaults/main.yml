@@ -1,0 +1,6 @@
+---
+metallb_images:
+  - 'quay.io/metallb/metallb-operator:{{ metallb_version }}'
+  - 'quay.io/metallb/controller:v0.14.3'
+...
+# vim: set filetype=yaml

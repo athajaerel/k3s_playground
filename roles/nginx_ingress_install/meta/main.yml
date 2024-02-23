@@ -1,0 +1,10 @@
+---
+dependencies:
+  - vars:
+      manifests_path: '{{ manifests_path_prefix }}/nginx'
+      manifests: '{{ nginx_manifests }}'
+      namespace: '{{ nginx_namespace }}'
+      selectors: '{{ nginx_selectors }}'
+    role: 'meta_manifests_install'
+...
+# vim: set filetype=yaml

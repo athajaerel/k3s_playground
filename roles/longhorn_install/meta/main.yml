@@ -1,0 +1,12 @@
+---
+dependencies:
+  - vars:
+      images: '{{ longhorn_images }}'
+      manifests_path: '{{ manifests_path_prefix }}/longhorn'
+      manifests: '{{ longhorn_manifests }}'
+      namespace: '{{ longhorn_namespace }}'
+      selectors: '{{ longhorn_selectors }}'
+      timeout: '{{ longhorn_timeout }}'
+    role: 'meta_manifests_install'
+...
+# vim: set filetype=yaml

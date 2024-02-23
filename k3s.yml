@@ -37,6 +37,12 @@
     - import_tasks: 'handlers/main.yml'
   roles:
     - 'k3s_prepare'
+    - 'k3s_fetch'         # depends on system_configure
+    - 'calico_fetch'
+    - 'longhorn_fetch'
+    - 'metallb_fetch'
+    - 'emissary_fetch'
+    - 'certmgr_fetch'
 
 - name: 'Generate random server token for cluster'
   hosts: 'k3s_primary_masters'
@@ -63,9 +69,25 @@
     - import_tasks: 'handlers/main.yml'
   roles:
     - 'helm_install'
-    - 'keepalived_install'
     - 'k3s_master_bootstrap'
-    - 'k3s_master_post'
+
+- name: 'Install manifests'
+  hosts: 'k3s_primary_masters'  # should be only one
+  gather_facts: no
+  become: yes
+  tags:
+    - 'bootstrap'
+    - 'bootstrap_masters'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'calico_install'
+    - 'longhorn_install'
+    # add registry later, keep simple for now
+    - 'metallb_install'
+    - 'cert_manager_install'
+    - 'emissary_install'
 
 - name: 'Bootstrap k3s agents nodes'
   hosts: 'k3s_agents'

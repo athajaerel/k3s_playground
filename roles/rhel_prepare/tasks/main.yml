@@ -46,7 +46,7 @@
     src: 'rpms/{{ item }}'
     dest: '/tmp/'
 
-# TODO: figure out failed_when for yum install
+# TODO: figure out failed_when for yum install and changed_when so we don't reboot every time
 - name: 'Install legacy RPMs'
   register: 'reg_iptables'
   command:

@@ -44,5 +44,10 @@
   when: 'not is_primary'
   reboot:
     post_reboot_delay: 10
+
+# TODO: failed_when
+- name: 'Create emissary namespace'
+  run_once: yes
+  command: '{{ k3s_binary_dir }}/kubectl create namespace emissary'
 ...
 # vim: set filetype=yaml

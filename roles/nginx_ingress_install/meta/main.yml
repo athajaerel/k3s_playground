@@ -1,7 +1,6 @@
 ---
 dependencies:
   - vars:
-      images: '{{ nginx_images }}'
       manifests_path: '{{ manifests_path_prefix }}/nginx'
       manifests: '{{ nginx_manifests }}'
       namespace: '{{ nginx_namespace }}'

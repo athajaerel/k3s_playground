@@ -33,8 +33,9 @@ calico_version: 'v3.27.2'
 tigera_version: 'v1.32.5'
 longhorn_version: 'v1.5.3'
 metallb_version: 'v0.14.0'
-nginx_version: 'v0.41.2'
+nginx_version: 'v3.4.3'
 jettech_version: 'v1.5.0'  # ?
 certmgr_version: 'v1.14.3'
+emissary_version: '3.9.1'
 ...
 # vim: set filetype=yaml

@@ -41,7 +41,7 @@
     - 'calico_fetch'
     - 'longhorn_fetch'
     - 'metallb_fetch'
-    - 'nginx_fetch'
+    - 'emissary_fetch'
     - 'certmgr_fetch'
 
 - name: 'Generate random server token for cluster'
@@ -69,7 +69,6 @@
     - import_tasks: 'handlers/main.yml'
   roles:
     - 'helm_install'
-    - 'keepalived_install'
     - 'k3s_master_bootstrap'
 
 - name: 'Install manifests'
@@ -87,8 +86,8 @@
     - 'longhorn_install'
     # add registry later, keep simple for now
     - 'metallb_install'
-    - 'nginx_ingress_install'
     - 'cert_manager_install'
+    - 'emissary_install'
 
 - name: 'Bootstrap k3s agents nodes'
   hosts: 'k3s_agents'

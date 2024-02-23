@@ -22,7 +22,7 @@
   run_once: yes
   become: no
   vars:
-    tarfile: '{{ item.split(":") | first | replace("/", "_") }}.tar'
+    tarfile: '{{ item.split(":") | first | replace("/", "_") | replace("@", "_") }}.tar'
   loop: '{{ images }}'
   command:
     argv:
@@ -34,7 +34,7 @@
 
 - name: 'Copy manifest images'
   vars:
-    tarfile: '{{ item.split(":") | first | replace("/", "_") }}.tar'
+    tarfile: '{{ item.split(":") | first | replace("/", "_") | replace("@", "_") }}.tar'
   loop: '{{ images }}'
   copy:
     src: '/dev/shm/{{ tarfile }}'
@@ -42,7 +42,7 @@
 
 - name: 'Clean up manifest images'
   vars:
-    tarfile: '{{ item.split(":") | first | replace("/", "_") }}.tar'
+    tarfile: '{{ item.split(":") | first | replace("/", "_") | replace("@", "_") }}.tar'
   loop: '{{ images }}'
   file:
     path: '/dev/shm/{{ tarfile }}'

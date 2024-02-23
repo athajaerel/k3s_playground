@@ -97,5 +97,20 @@
     remote_src: yes
     src: '/etc/hostname'
     dest: '{{ nodename_file }}'
+
+# Force local image use
+- name: 'Disable fetching from docker.io'
+  loop:
+    - '0.0.0.0 docker.io'
+    - '0.0.0.0 registry-1.docker.io registry-1'
+  lineinfile:
+    line: '{{ item }}'
+    insertafter: 'EOF'
+    path: '/etc/hosts'
+
+- name: 'Ensure images directory exists'
+  file:
+    state: 'directory'
+    path: '/var/lib/rancher/k3s/agent/images'
 ...
 # vim: set filetype=yaml

@@ -1,0 +1,4 @@
+---
+base_images: "{{ k3s_base_images_list | regex_replace('[\r\n\f]+', '\n') | split('\n') | select() }}"  # select removes empty items?
+...
+# vim: set filetype=yaml

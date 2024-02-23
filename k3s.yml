@@ -37,6 +37,12 @@
     - import_tasks: 'handlers/main.yml'
   roles:
     - 'k3s_prepare'
+    - 'k3s_fetch'         # depends on system_configure
+    - 'calico_fetch'
+    - 'longhorn_fetch'
+    - 'metallb_fetch'
+    - 'nginx_fetch'
+    - 'certmgr_fetch'
 
 - name: 'Generate random server token for cluster'
   hosts: 'k3s_primary_masters'

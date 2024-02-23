@@ -1,0 +1,15 @@
+---
+# some disturbingly random version numbers here
+longhorn_images:
+  - 'longhornio/longhorn-engine:{{ longhorn_version }}'
+  - 'longhornio/longhorn-instance-manager:{{ longhorn_version }}'
+  - 'longhornio/longhorn-manager:{{ longhorn_version }}'
+  - 'longhornio/longhorn-ui:{{ longhorn_version }}'
+  - 'longhornio/livenessprobe:v2.9.0'
+  - 'longhornio/csi-node-driver-registrar:v2.7.0'
+  - 'longhornio/csi-attacher:v4.2.0'
+  - 'longhornio/csi-provisioner:v3.4.1'
+  - 'longhornio/csi-resizer:v1.7.0'
+  - 'longhornio/csi-snapshotter:v6.2.1'
+...
+# vim: set filetype=yaml

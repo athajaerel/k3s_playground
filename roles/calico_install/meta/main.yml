@@ -1,7 +1,6 @@
 ---
 dependencies:
   - vars:
-      images: '{{ calico_images }}'
       manifests_path: '{{ manifests_path_prefix }}/calico'
       manifests: '{{ calico_manifests }}'
       namespace: '{{ calico_namespace }}'

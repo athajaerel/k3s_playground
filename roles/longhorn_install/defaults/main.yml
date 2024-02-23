@@ -5,16 +5,10 @@ longhorn_namespace: 'longhorn-system'
 # Longhorn takes ages to pull
 longhorn_timeout: '360m'
 
-longhorn_version: 'v1.5.3'
-
 longhorn_base_url: 'https://raw.githubusercontent.com/longhorn/longhorn/{{ longhorn_version }}'
 
 longhorn_manifests:
   - '{{ longhorn_base_url }}/deploy/longhorn.yaml'
-
-longhorn_images:
-  - 'longhornio/longhorn-engine:{{ longhorn_version }}'
-  - 'longhornio/longhorn-instance-manager:{{ longhorn_version }}'
 
 longhorn_selectors:
   - 'app=longhorn-driver-deployer'

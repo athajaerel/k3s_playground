@@ -1,0 +1,7 @@
+---
+dependencies:
+  - vars:
+      images: '{{ nginx_images }}'
+    role: 'meta_images_fetch'
+...
+# vim: set filetype=yaml

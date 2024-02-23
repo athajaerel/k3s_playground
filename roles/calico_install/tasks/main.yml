@@ -30,22 +30,5 @@
       - '-n'
       - '{{ core_namespace }}'
       - '--selector={{ item }}'
-
-# module candidate? k3s_wait
-# do repeat-until for long waits
-# TODO: figure out failed_when condition for kubectl wait
-- name: 'Wait for Calico pods'
-  loop: '{{ calico_selectors }}'
-  run_once: yes
-  command:
-    argv:
-      - '/usr/local/bin/kubectl'
-      - 'wait'
-      - '--timeout={{ calico_timeout | default(default_wait_timeout) }}'
-      - '--for=condition=Ready'
-      - 'pod'
-      - '-n'
-      - '{{ calico_namespace }}'
-      - '--selector={{ item }}'
 ...
 # vim: set filetype=yaml

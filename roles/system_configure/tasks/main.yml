@@ -14,12 +14,6 @@
     line: '{{ item }}'
     insertafter: 'EOF'
 
-- name: 'Copy hostname to nodename'
-  copy:
-    remote_src: yes
-    src: '/etc/hostname'
-    dest: '{{ nodename_file }}'
-
 # /etc/rancher/k3s/k3s.yaml ?
 
 # TODO: fix this (issue #31)

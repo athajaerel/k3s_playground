@@ -86,5 +86,16 @@
     path: '/etc/fstab'
     regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
     replace: '# \1'
+
+- name: 'Create nodename directory'
+  file:
+    path: '{{ nodename_file | dirname }}'
+    state: 'directory'
+
+- name: 'Copy hostname to nodename'
+  copy:
+    remote_src: yes
+    src: '/etc/hostname'
+    dest: '{{ nodename_file }}'
 ...
 # vim: set filetype=yaml

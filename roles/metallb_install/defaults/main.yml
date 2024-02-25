@@ -5,6 +5,7 @@ metallb_base_url: 'https://raw.githubusercontent.com/metallb/metallb-operator/{{
 
 metallb_manifests:
   - '{{ metallb_base_url }}/bin/metallb-operator.yaml'
+  - 'metallb-pool.yaml.j2'
 
 metallb_selectors:
   - 'control-plane=controller-manager'

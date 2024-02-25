@@ -31,9 +31,9 @@
     dest: '{{ manifest_cache_dir }}/{{ namespace }}/'
     # use_proxy: no
 
-- name: 'Copy in manifests'
+- name: 'Template in manifests'
   loop: '{{ reg_manifests.results }}'
-  copy:
+  template:
     src: '{{ manifest_cache_dir }}/{{ namespace }}/{{ item.item | basename }}'
     dest: '{{ manifests_path }}/'
 

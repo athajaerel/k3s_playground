@@ -4,7 +4,6 @@ core_namespace: 'kube-system'  # do not delete
 
 # please use minutes so we can rely on seconds for polling
 calico_timeout: '20m'
-nodes_timeout: '20m'
 
 calico_base_url: 'https://raw.githubusercontent.com/projectcalico/calico/{{ calico_version }}/manifests'
 

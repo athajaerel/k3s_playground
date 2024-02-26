@@ -45,7 +45,21 @@
   reboot:
     post_reboot_delay: 10
 
+# TODO: see what effect async and poll have on this task, maybe use it more
+# TODO: figure out failed_when condition for kubectl wait
+# Nodes won't go to Ready state without a CNI installed, but we can check they exist. Didn't know that was necessary.
+- name: 'Wait for all nodes to exist'
+  retries: 60
+  delay: 10
+  command:
+    argv:
+      - '{{ k3s_binary_dir }}/kubectl'
+      - 'get'
+      - 'node'
+      - '{{ inventory_hostname }}.{{ domain }}'
+
 # TODO: failed_when
+# fatal: [k3s-mother-001]: FAILED! => {"changed": true, "cmd": ["/usr/local/bin/kubectl", "create", "namespace", "emissary"], "delta": "0:00:00.095668", "end": "2024-02-25 10:35:16.207686", "msg": "non-zero return code", "rc": 1, "start": "2024-02-25 10:35:16.112018", "stderr": "Error from server (AlreadyExists): namespaces \"emissary\" already exists", "stderr_lines": ["Error from server (AlreadyExists): namespaces \"emissary\" already exists"], "stdout": "", "stdout_lines": []}
 - name: 'Create emissary namespace'
   run_once: yes
   command: '{{ k3s_binary_dir }}/kubectl create namespace emissary'

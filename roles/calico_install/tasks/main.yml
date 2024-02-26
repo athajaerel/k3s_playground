@@ -1,9 +1,12 @@
 ---
 # TODO: see what effect async and poll have on this task, maybe use it more
 # TODO: figure out failed_when condition for kubectl wait
-- name: 'Wait for all nodes'
+# Nodes won't go to Ready state without a CNI installed
+- name: 'Wait for all nodes Ready'
   async: '{{ ((nodes_timeout[:-1] | int) * 60) + 1 }}'
   poll: 5  # make sure timeouts are in minutes
+  retries: 10
+  delay: 10
   loop: '{{ groups["k3s_masters"] }}'
   command:
     argv:

@@ -15,11 +15,11 @@ longhorn_selectors:
   - 'app=longhorn-manager'
   - 'longhorn.io/component=engine-image'
   - 'longhorn.io/component=instance-manager'
-  - 'app=csi-attacher'
-  - 'app=csi-provisioner'
-  - 'app=csi-resizer'
-  - 'app=csi-snapshotter'
-  - 'app=longhorn-csi-plugin'
+#  - 'app=csi-attacher'         # operator only
+#  - 'app=csi-provisioner'      # operator only
+#  - 'app=csi-resizer'          # operator only
+#  - 'app=csi-snapshotter'      # operator only
+#  - 'app=longhorn-csi-plugin'  # operator only
   - 'app=longhorn-ui'
 ...
 # vim: set filetype=yaml

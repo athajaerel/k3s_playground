@@ -42,6 +42,8 @@
 - name: 'Install manifests'
   register: 'reg_install_manifests'
   loop: '{{ reg_manifests.results }}'
+  loop_control:
+    pause: 5
   failed_when:
     - 'reg_install_manifests.rc != 0'
     - 'e_manifest_already not in reg_install_manifests.stderr'

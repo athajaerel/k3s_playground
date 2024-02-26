@@ -1,4 +1,7 @@
 ---
-
+# for use as a starting point
+- name: 'Post-action dummy task'
+  debug:
+    msg: 'Hi there!'
 ...
 # vim: set filetype=yaml

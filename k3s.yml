@@ -1,18 +1,4 @@
 ---
-- name: 'Prepare all hosts generically'
-  hosts: 'all'
-  gather_facts: no
-  become: yes
-  tags:
-    - 'install'
-    - 'never'
-  handlers:
-    - import_tasks: 'handlers/main.yml'
-  roles:
-    - { name: 'rhel_prepare', when: 'distro == "rhel"' }
-    - { name: 'void_prepare', when: 'distro == "void"' }
-    - 'system_configure'
-
 - name: 'Check local project resources'
   hosts: 'k3s_primary_masters'
   connection: 'local'
@@ -26,6 +12,32 @@
   roles:
     - 'project_prepare'
 
+- name: 'Prepare RHEL hosts generically'
+  hosts: 'rhel'
+  gather_facts: no
+  become: yes
+  tags:
+    - 'install'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'rhel_prepare'
+    - 'system_configure'
+
+- name: 'Prepare Void hosts generically'
+  hosts: 'void'
+  gather_facts: no
+  become: yes
+  tags:
+    - 'install'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'void_prepare'
+    - 'system_configure'
+
 - name: 'Prepare node hosts for k3s'
   hosts: 'nodes'
   gather_facts: no
@@ -36,8 +48,8 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'k3s_prepare'
-    - 'k3s_fetch'         # depends on system_configure
+    - 'k3s_fetch'         # requires fact set by system_configure
+    - 'k3s_prepare'       # will fail if project_prepare didn't complete once
     - 'calico_fetch'
     - 'longhorn_fetch'
     - 'metallb_fetch'
@@ -68,7 +80,7 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'helm_install'
+    # - 'helm_install'      # not using Helm currently
     - 'k3s_master_bootstrap'
 
 - name: 'Install manifests'
@@ -84,7 +96,6 @@
   roles:
     - 'calico_install'
     - 'longhorn_install'
-    # add registry later, keep simple for now
     - 'metallb_install'
     - 'cert_manager_install'
     - 'emissary_install'

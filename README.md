@@ -16,7 +16,7 @@ Current tags:
 - bootstrap
 - bootstrap_masters
 - bootstrap_agents
-- interface
+- bootstrap_interface
 - rolling_restart
 - delete_cluster
 

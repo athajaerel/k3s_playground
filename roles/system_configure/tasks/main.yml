@@ -75,10 +75,12 @@
   reboot:
 
 - name: 'Get list of base images'
+  register: 'reg_base_images'
   connection: 'local'
   run_once: yes
   become: no
-  register: 'reg_base_images'
+  retries: 5
+  delay: 5
   uri:
     url: 'https://raw.githubusercontent.com/k3s-io/k3s/{{ k3s_version }}/scripts/airgap/image-list.txt'
     return_content: true

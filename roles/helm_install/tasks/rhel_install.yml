@@ -23,6 +23,8 @@
   connection: 'local'
   run_once: yes
   become: no
+  retries: 5
+  delay: 5
   get_url:
     url: '{{ helm_url }}'
     dest: '{{ helm_tarball | dirname }}/{{ helm_binary }}'

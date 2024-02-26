@@ -119,9 +119,8 @@
   gather_facts: no
   become: yes
   tags:
-    - 'interface'
+    - 'bootstrap_interface'
     - 'bootstrap'
-    - 'bootstrap_masters'
     - 'never'
   handlers:
     - import_tasks: 'handlers/main.yml'

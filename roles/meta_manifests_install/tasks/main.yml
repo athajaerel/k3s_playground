@@ -43,6 +43,7 @@
   failed_when:
     - 'reg_install_manifests.rc != 0'
     - 'e_manifest_already not in reg_install_manifests.stderr'
+    - 'e_manifest_namespace not in reg_install_manifests.stderr'
   command:
     argv:
       - '{{ k3s_binary_dir }}/kubectl'

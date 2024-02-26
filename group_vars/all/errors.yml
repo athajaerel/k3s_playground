@@ -11,6 +11,8 @@ e_touch_fail: 'could not touch target'
 
 e_manifest_already: 'Error from server (AlreadyExists)'
 
+e_manifest_namespace: 'does not match the namespace'
+
 e_wait_ok: 'condition met'
 
 e_selinux_notexists: 'does not exist'

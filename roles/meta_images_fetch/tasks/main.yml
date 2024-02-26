@@ -4,11 +4,13 @@
 
 # TODO: implement a loop for all these tasks with a loop/vars/import tasks?
 
-# TODO: failed_when for docker
+# TODO: failed_when for docker, changed_when only if image pulled
 - name: 'Obtain manifest images'
   connection: 'local'
   run_once: yes
   become: no
+  retries: 5
+  delay: 5
   loop: '{{ images }}'
   command:
     argv:
@@ -16,7 +18,7 @@
       - 'pull'
       - '{{ item }}'
 
-# TODO: failed_when for docker
+# TODO: failed_when for docker, changed_when only if saved (not desperate)
 - name: 'Save manifest images'
   connection: 'local'
   run_once: yes

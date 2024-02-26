@@ -25,6 +25,8 @@
   connection: 'local'
   run_once: yes
   become: no
+  retries: 5
+  delay: 5
   loop: '{{ reg_manifests.results }}'
   get_url:
     url: '{{ item.item }}'

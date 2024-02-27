@@ -1,0 +1,6 @@
+---
+default_wait_timeout: '300s'
+
+manifest_cache_dir: '{{ playbook_dir }}/manifests'
+...
+# vim: set filetype=yaml

@@ -20,5 +20,7 @@ e_selinux_notexists: 'does not exist'
 e_mkdir_readonly: 'Read-only file system'
 
 e_nonzero_rc: 'non-zero return code'
+
+e_ns_already: 'Error from server (AlreadyExists): namespaces'
 ...
 # vim: set filetype=yaml

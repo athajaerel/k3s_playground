@@ -58,10 +58,12 @@
       - 'node'
       - '{{ inventory_hostname }}.{{ domain }}'
 
-# TODO: failed_when
-# fatal: [k3s-mother-001]: FAILED! => {"changed": true, "cmd": ["/usr/local/bin/kubectl", "create", "namespace", "emissary"], "delta": "0:00:00.095668", "end": "2024-02-25 10:35:16.207686", "msg": "non-zero return code", "rc": 1, "start": "2024-02-25 10:35:16.112018", "stderr": "Error from server (AlreadyExists): namespaces \"emissary\" already exists", "stderr_lines": ["Error from server (AlreadyExists): namespaces \"emissary\" already exists"], "stdout": "", "stdout_lines": []}
 - name: 'Create emissary namespace'
+  register: 'reg_ns'
   run_once: yes
+  failed_when:
+    - 'reg_ns.rc > 0'
+    - 'e_ns_already not in reg_ns.stderr'
   command: '{{ k3s_binary_dir }}/kubectl create namespace emissary'
 ...
 # vim: set filetype=yaml

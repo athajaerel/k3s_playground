@@ -1,0 +1,9 @@
+---
+dependencies:
+  - vars:
+      manifests_path: '{{ manifests_path_prefix }}/longhorn'
+      patches: '{{ longhorn_patches }}'
+      namespace: '{{ longhorn_namespace }}'
+    role: 'meta_manifests_patch'
+...
+# vim: set filetype=yaml

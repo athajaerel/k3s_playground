@@ -1,0 +1,9 @@
+---
+metallb_namespace: 'metallb-system'
+
+metallb_manifests:
+  - 'metallb-pool.yaml.j2'
+
+metallb_selectors: [ ]
+...
+# vim: set filetype=yaml

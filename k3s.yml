@@ -83,7 +83,7 @@
     # - 'helm_install'      # not using Helm currently
     - 'k3s_master_bootstrap'
 
-- name: 'Install manifests'
+- name: 'Deploy software manifests'
   hosts: 'k3s_primary_masters'  # should be only one
   gather_facts: no
   become: yes
@@ -99,6 +99,32 @@
     - 'metallb_install'
     - 'cert_manager_install'
     - 'emissary_install'
+
+- name: 'Apply patch manifests'  # aka modify default settings
+  hosts: 'k3s_primary_masters'  # should be only one
+  gather_facts: no
+  become: yes
+  tags:
+    - 'bootstrap'
+    - 'bootstrap_masters'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'longhorn_patch'
+
+- name: 'Install config manifests'
+  hosts: 'k3s_primary_masters'  # should be only one
+  gather_facts: no
+  become: yes
+  tags:
+    - 'bootstrap'
+    - 'bootstrap_masters'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'metallb_config'
 
 - name: 'Bootstrap k3s agents nodes'
   hosts: 'k3s_agents'

@@ -18,13 +18,16 @@
     archived_file: 'helm'
 
 - name: 'Download specified binaries'
+  register: 'reg_download'
   when: 'not reg_tarball.stat.exists
          or reg_checksum.checksum != helm_sha256_checksum'
+
   connection: 'local'
   run_once: yes
   become: no
   retries: 5
   delay: 5
+  until: 'reg_download is success'
   get_url:
     url: '{{ helm_url }}'
     dest: '{{ helm_tarball | dirname }}/{{ helm_binary }}'

@@ -49,8 +49,10 @@
 # TODO: figure out failed_when condition for kubectl wait
 # Nodes won't go to Ready state without a CNI installed, but we can check they exist. Didn't know that was necessary.
 - name: 'Wait for all nodes to exist'
+  register: 'reg_nodes'
   retries: 60
   delay: 10
+  until: 'reg_nodes is success'
   command:
     argv:
       - '{{ k3s_binary_dir }}/kubectl'

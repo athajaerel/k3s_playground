@@ -6,10 +6,12 @@
 
 # TODO: failed_when for docker, changed_when only if image pulled
 - name: 'Obtain manifest images'
+  register: 'reg_obtain'
   connection: 'local'
   run_once: yes
   become: no
   retries: 5
+  until: 'reg_obtain is success'
   delay: 5
   loop: '{{ images }}'
   command:

@@ -3,10 +3,12 @@
 # TODO: figure out failed_when condition for kubectl wait
 # Nodes won't go to Ready state without a CNI installed
 - name: 'Wait for all nodes Ready'
+  register: 'reg_nodes'
   async: '{{ ((nodes_timeout[:-1] | int) * 60) + 1 }}'
   poll: 5  # make sure timeouts are in minutes
   retries: 10
   delay: 10
+  until: 'reg_nodes is success'
   loop: '{{ groups["k3s_masters"] }}'
   command:
     argv:

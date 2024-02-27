@@ -21,6 +21,7 @@
     path: '{{ manifest_cache_dir }}/{{ item | basename }}'
 
 - name: 'Download missing manifests'
+  register: 'reg_download'
   when:
     - 'item.item[0:8] == "https://"'
     - 'not item.stat.exists'
@@ -29,6 +30,7 @@
   become: no
   retries: 5
   delay: 5
+  until: 'reg_download is success'
   loop: '{{ reg_manifests.results }}'
   get_url:
     url: '{{ item.item }}'

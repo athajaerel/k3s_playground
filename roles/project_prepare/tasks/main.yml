@@ -19,8 +19,10 @@
 - name: 'Download specified binaries'
   when: 'reg_checksum.checksum != k3s_sha256_checksum
          or not reg_tarball.stat.exists'
+  register: 'reg_download'
   retries: 5
   delay: 5
+  until: 'reg_download is success'
   get_url:
     url: '{{ k3s_url }}'
     dest: '{{ k3s_tarball | dirname }}/'

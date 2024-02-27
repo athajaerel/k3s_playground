@@ -1,7 +1,6 @@
 ---
 dependencies:
   - vars:
-      images: '{{ metallb_images }}'
       manifests_path: '{{ manifests_path_prefix }}/metallb'
       manifests: '{{ metallb_manifests }}'
       namespace: '{{ metallb_namespace }}'

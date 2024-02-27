@@ -39,5 +39,8 @@ nginx_version: 'v3.4.3'
 jettech_version: 'v1.5.0'  # ?
 certmgr_version: 'v1.14.3'
 emissary_version: '3.9.1'
+
+# LoadBalancer IP address fourth bytes go here
+longhorn_ui_fourth_byte: '30'
 ...
 # vim: set filetype=yaml

@@ -1,0 +1,51 @@
+---
+- name: 'Check if patch already exists'
+  register: 'reg_patches'
+  loop: '{{ patches }}'
+  stat:
+    path: '{{ manifest_cache_dir }}/{{ item.path | basename }}'
+
+- name: 'Download missing patches'
+  when:
+    - 'item.item.path[0:8] == "https://"'
+    - 'not item.stat.exists'
+  connection: 'local'
+  run_once: yes
+  become: no
+  retries: 5
+  delay: 5
+  loop: '{{ reg_patches.results }}'
+  get_url:
+    url: '{{ item.item.path }}'
+    dest: '{{ manifest_cache_dir }}/{{ namespace }}/'
+    # use_proxy: no
+
+- name: 'Template in patches'
+  loop: '{{ reg_patches.results }}'
+  template:
+    src: '{{ manifest_cache_dir }}/{{ namespace }}/{{ item.item.path | basename }}'
+    dest: '{{ manifests_path }}/'
+
+- name: 'Patch patches'
+  register: 'reg_install_patches'
+  loop: '{{ reg_patches.results }}'
+  loop_control:
+    pause: 5
+  failed_when:
+    - 'reg_install_patches.rc != 0'
+  command:
+    argv:
+      - '{{ k3s_binary_dir }}/kubectl'
+      - 'patch'
+      - '{{ item.item.type }}/{{ item.item.name }}'
+      - '--patch-file'
+      - '{{ manifests_path }}/{{ item.item.path | basename }}'
+      - '-n'
+      - '{{ namespace }}'
+
+# Seems like a good idea
+- name: 'Pause a few seconds for changes to settle'
+  pause:
+    seconds: 5
+...
+# vim: set filetype=yaml

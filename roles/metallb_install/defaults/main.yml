@@ -26,7 +26,6 @@ metallb_manifest_parts:
 
 metallb_manifests:
   - '{{ metallb_manifest_parts | path_join }}'
-  - 'metallb-pool.yaml.j2'  # manifest
 
 metallb_selectors: '{{ metallb_data[metallb_mode].selectors }}'
 ...

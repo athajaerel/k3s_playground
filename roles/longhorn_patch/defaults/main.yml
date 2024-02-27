@@ -1,0 +1,9 @@
+---
+longhorn_namespace: 'longhorn-system'
+
+longhorn_patches:
+  - name: 'longhorn-frontend'
+    path: 'longhorn_lb.yaml.j2'
+    type: 'service'
+...
+# vim: set filetype=yaml

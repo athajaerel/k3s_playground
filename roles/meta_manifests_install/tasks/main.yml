@@ -1,4 +1,5 @@
 ---
+# TODO: is this needed? should be there?
 - name: 'Ensure manifest cache directory exists'
   connection: 'local'
   run_once: yes
@@ -7,6 +8,7 @@
     path: '{{ manifest_cache_dir }}/{{ namespace }}'
     state: 'directory'
 
+# TODO: is this needed? should be there?
 - name: 'Ensure manifests directory exists'
   file:
     path: '{{ manifests_path }}'

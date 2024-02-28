@@ -36,7 +36,7 @@ prefixed_legacy_rpms: '{{ [prefix ~ "/"] | product(legacy_rpms) | map("join") | 
 grub2_opts:
   - 'nofb'
   - 'nomodeset'
-  - 'VGA=800x600'
+  - 'VGA=640x480'
   - 'crashkernel=auto'
   - 'rd.lvm.lv=rhel_k3s-mother-001/root'
   - 'cgroup_memory=1'

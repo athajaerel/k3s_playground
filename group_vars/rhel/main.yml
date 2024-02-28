@@ -20,6 +20,7 @@ install_command_prefix:
   - 'localinstall'
   - '--allowerasing'
   - '--nogpgcheck'
+  - '--disablerepo=*'
   - '-y'
 
 yum_repos:

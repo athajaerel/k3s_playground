@@ -7,6 +7,8 @@ e_mount_already_not: 'not mounted'
 
 e_mount_already_already: 'already mounted'
 
+e_mount_no_media: 'no medium found'
+
 e_touch_fail: 'could not touch target'
 
 e_manifest_already: 'Error from server (AlreadyExists)'

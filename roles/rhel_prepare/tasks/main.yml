@@ -15,6 +15,7 @@
   changed_when:
     - 'reg_mount.rc != 0'
     - 'e_mount_already_already not in reg_mount.stderr'
+    - 'e_mount_no_media not in reg_mount.stderr'
   failed_when:
     - 'reg_mount.rc != 0'
     - 'e_mount_notfound_fstab in reg_mount.stderr'
@@ -35,6 +36,8 @@
 # TODO: maybe replace with yum module?
 # TODO: figure out failed_when for yum clean all and yum update
 - name: 'Freshen yum data'
+  when:
+    - 'e_mount_no_media not in reg_mount.stderr'
   loop:
     - 'clean all'
     - '-y update'

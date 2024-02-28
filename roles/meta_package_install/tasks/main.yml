@@ -37,10 +37,16 @@
     # definitely needed
     - name: 'Mount disc'
       register: 'reg_mount'
+      changed_when:
+        - 'reg_mount.rc != 0'
+        - 'e_mount_already_already not in reg_mount.stderr'
+        - 'e_mount_no_media not in reg_mount.stderr'
+        # - 'e_mount_notfound_fstab not in reg_mount.stderr'
       failed_when:
         - 'reg_mount.rc != 0'
         - 'e_mount_already_already not in reg_mount.stderr'
-        # - 'e_mount_notfound_fstab not in reg_mount.stderr'
+        - 'e_mount_no_media not in reg_mount.stderr'
+        - 'e_mount_notfound_fstab not in reg_mount.stderr'
       command:
         argv:
           - 'mount'
@@ -48,6 +54,8 @@
 
     # TODO: figure out failed_when for yum check-update
     - name: 'Freshen yum data'
+      when:
+        - 'e_mount_no_media not in reg_mount.stderr'
       register: 'reg_freshen'
       failed_when:
         - 'reg_freshen.rc != 0'
@@ -63,6 +71,8 @@
 
     # doesn't like the yum module for some reason?
     - name: 'Install packages'
+      when:
+        - 'e_mount_no_media not in reg_mount.stderr'
       loop: '{{ packages }}'
       package:
         name: '{{ item }}'

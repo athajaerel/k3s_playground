@@ -20,6 +20,21 @@
 - name: 'Reboot'
   reboot:
 
+# TODO: see what effect async and poll have on this task, maybe use it more
+# TODO: figure out failed_when condition for kubectl wait
+- name: 'Wait for all nodes to exist'
+  register: 'reg_nodes'
+  retries: 60
+  delay: 10
+  until: 'reg_nodes is success'
+  delegate_to: '{{ groups.k3s_primary_masters | first }}'
+  command:
+    argv:
+      - '{{ k3s_binary_dir }}/kubectl'
+      - 'get'
+      - 'node'
+      - '{{ fqdn }}'
+
 #cat | sudo tee /etc/rancher/k3s/registries.yaml <<EOF
 ## BEGIN ANSIBLE MANAGED BLOCK --- registry
 #mirrors:

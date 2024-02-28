@@ -58,7 +58,7 @@
       - '{{ k3s_binary_dir }}/kubectl'
       - 'get'
       - 'node'
-      - '{{ inventory_hostname }}.{{ domain }}'
+      - '{{ fqdn }}'
 
 - name: 'Create emissary namespace'
   register: 'reg_ns'

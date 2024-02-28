@@ -17,10 +17,17 @@ Current tags:
 - bootstrap_masters
 - bootstrap_agents
 - bootstrap_interface
+- allwall
 - rolling_restart
 - delete_cluster
 
 To set up a cluster, run install and bootstrap. To delete the cluster, run delete_cluster.
+
+The 'allwall' tag is to send a message to all consoles in the cluster, viz:
+
+    ansible-playbook -i site/work k3s.yml --tags allwall -e'msg="This is my test message. Restart of subradiante in 10 microfleems."'
+
+Of course the message must be encapsulated in quotes, or you will only send the first word.
 
 ## Design Notes
 

@@ -19,6 +19,7 @@
   failed_when:
     - 'reg_mount.rc != 0'
     - 'e_mount_notfound_fstab in reg_mount.stderr'
+    - 'e_mount_no_media not in reg_mount.stderr'
   command:
     argv:
       - '/bin/mount'

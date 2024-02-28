@@ -1,0 +1,10 @@
+---
+# TODO: figure out failed_when/changed_when for wall command
+- name: 'Broadcasting message to all consoles'
+  command:
+    argv:
+      - '/bin/env'
+      - 'wall'
+      - '{{ msg }}'
+...
+# vim: set filetype=yaml

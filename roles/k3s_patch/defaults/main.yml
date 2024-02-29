@@ -5,10 +5,71 @@ patches:
     type: 'service'
     prefix: 'longhorn'
     namespace: 'longhorn-system'
+
   - name: 'longhorn-storageclass'
     path: 'longhorn_sc.yaml.j2'
     type: 'configmap'
     prefix: 'longhorn'
     namespace: 'longhorn-system'
+
+  - name: 'coredns'
+    path: 'reps_3.yaml.j2'
+    type: 'deployment'
+    prefix: 'kube-system'
+    namespace: 'kube-system'
+
+  - name: 'local-path-provisioner'
+    path: 'reps_3.yaml.j2'
+    type: 'deployment'
+    prefix: 'kube-system'
+    namespace: 'kube-system'
+
+  - name: 'metrics-server'
+    path: 'reps_3.yaml.j2'
+    type: 'deployment'
+    prefix: 'kube-system'
+    namespace: 'kube-system'
+
+  - name: 'calico-kube-controllers'
+    path: 'reps_3.yaml.j2'
+    type: 'deployment'
+    prefix: 'kube-system'
+    namespace: 'kube-system'
+
+  - name: 'controller'
+    path: 'reps_3.yaml.j2'
+    type: 'deployment'
+    prefix: 'kube-system'
+    namespace: 'metallb-system'
+
+  - name: 'longhorn-driver-deployer'
+    path: 'reps_3.yaml.j2'
+    type: 'deployment'
+    prefix: 'kube-system'
+    namespace: 'longhorn-system'
+
+  - name: 'emissary-ingress-agent'
+    path: 'reps_3.yaml.j2'
+    type: 'deployment'
+    prefix: 'kube-system'
+    namespace: 'emissary'
+
+  - name: 'cert-manager'
+    path: 'reps_3.yaml.j2'
+    type: 'deployment'
+    prefix: 'kube-system'
+    namespace: 'cert-manager'
+
+  - name: 'cert-manager-cainjector'
+    path: 'reps_3.yaml.j2'
+    type: 'deployment'
+    prefix: 'kube-system'
+    namespace: 'cert-manager'
+
+  - name: 'cert-manager-webhook'
+    path: 'reps_3.yaml.j2'
+    type: 'deployment'
+    prefix: 'kube-system'
+    namespace: 'cert-manager'
 ...
 # vim: set filetype=yaml

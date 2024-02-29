@@ -2,54 +2,11 @@
 # If you use this after k3s service is installed and up, you will need
 # a service restart or node reboot to get the images loaded.
 
-# TODO: implement a loop for all these tasks with a loop/vars/import tasks?
-
-# TODO: failed_when for docker, changed_when only if image pulled
-- name: 'Obtain manifest images'
-  register: 'reg_obtain'
-  connection: 'local'
-  run_once: yes
-  become: no
-  retries: 5
-  until: 'reg_obtain is success'
-  delay: 5
-  loop: '{{ images }}'
-  command:
-    argv:
-      - '/usr/bin/docker'
-      - 'pull'
-      - '{{ item }}'
-
-# TODO: failed_when for docker, changed_when only if saved (not desperate)
-- name: 'Save manifest images'
-  connection: 'local'
-  run_once: yes
-  become: no
+- name: 'Loop over images'
   vars:
     tarfile: '{{ item.split(":") | first | replace("/", "_") | replace("@", "_") }}.tar'
   loop: '{{ images }}'
-  command:
-    argv:
-      - '/usr/bin/docker'
-      - 'save'
-      - '{{ item }}'
-      - '-o'
-      - '/dev/shm/{{ tarfile }}'
-
-- name: 'Copy manifest images'
-  vars:
-    tarfile: '{{ item.split(":") | first | replace("/", "_") | replace("@", "_") }}.tar'
-  loop: '{{ images }}'
-  copy:
-    src: '/dev/shm/{{ tarfile }}'
-    dest: '/var/lib/rancher/k3s/agent/images/'
-
-- name: 'Clean up manifest images'
-  vars:
-    tarfile: '{{ item.split(":") | first | replace("/", "_") | replace("@", "_") }}.tar'
-  loop: '{{ images }}'
-  file:
-    path: '/dev/shm/{{ tarfile }}'
-    state: 'absent'
+  include_tasks:
+    file: 'loop.yml'
 ...
 # vim: set filetype=yaml

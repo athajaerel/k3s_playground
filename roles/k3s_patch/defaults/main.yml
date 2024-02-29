@@ -1,12 +1,14 @@
 ---
-longhorn_namespace: 'longhorn-system'
-
-longhorn_patches:
+patches:
   - name: 'longhorn-frontend'
     path: 'longhorn_lb.yaml.j2'
     type: 'service'
+    prefix: 'longhorn'
+    namespace: 'longhorn-system'
   - name: 'longhorn-storageclass'
     path: 'longhorn_sc.yaml.j2'
     type: 'configmap'
+    prefix: 'longhorn'
+    namespace: 'longhorn-system'
 ...
 # vim: set filetype=yaml

@@ -1,0 +1,6 @@
+---
+prefetch_retries: 5
+prefetch_delay: 5
+prefetch_url: 'https://raw.githubusercontent.com/k3s-io/k3s/{{ k3s_version }}/scripts/airgap/image-list.txt'
+...
+# vim: set filetype=yaml

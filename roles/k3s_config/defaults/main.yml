@@ -1,0 +1,9 @@
+---
+metallb_config_set:
+  - name: 'metallb'  # manifests_path: '{{ manifests_path_prefix }}/{{ name }}'
+    namespace: 'metallb-system'
+    manifests:
+      - 'metallb-pool.yaml.j2'
+    selectors: []
+...
+# vim: set filetype=yaml

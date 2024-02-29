@@ -1,8 +1,7 @@
 ---
-# for use as a starting point
 - name: 'Report completion'
   run_once: yes
   debug:
-    msg: 'Fetching complete'
+    msg: 'Patching complete'
 ...
 # vim: set filetype=yaml

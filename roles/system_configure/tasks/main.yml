@@ -73,22 +73,5 @@
 
 - name: 'Reboot'
   reboot:
-
-- name: 'Get list of base images'
-  register: 'reg_base_images'
-  connection: 'local'
-  run_once: yes
-  become: no
-  retries: 5
-  delay: 5
-  until: 'reg_base_images is success'
-  uri:
-    url: 'https://raw.githubusercontent.com/k3s-io/k3s/{{ k3s_version }}/scripts/airgap/image-list.txt'
-    return_content: true
-
-- name: 'Record list of base images'
-  run_once: yes
-  set_fact:
-    k3s_base_images_list: '{{ reg_base_images.content }}'
 ...
 # vim: set filetype=yaml

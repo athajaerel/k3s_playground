@@ -1,0 +1,19 @@
+---
+- name: 'Get list of base images'
+  register: 'reg_base_images'
+  connection: 'local'
+  run_once: yes
+  become: no
+  retries: '{{ prefetch_retries | int }}'
+  delay: '{{ prefetch_delay | int }}'
+  until: 'reg_base_images is success'
+  uri:
+    url: '{{ prefetch_url }}'
+    return_content: true
+
+- name: 'Record list of base images'
+  run_once: yes
+  set_fact:
+    k3s_base_images_list: '{{ reg_base_images.content }}'
+...
+# vim: set filetype=yaml

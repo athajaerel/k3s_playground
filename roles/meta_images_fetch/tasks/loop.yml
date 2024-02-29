@@ -1,0 +1,45 @@
+---
+- name: 'Report image name'
+  run_once: yes
+  debug:
+    msg: 'Fetching image: {{ item }}'
+
+# TODO: failed_when for docker, changed_when only if image pulled
+- name: 'Obtain container from elsewhere'
+  register: 'reg_obtain'
+  connection: 'local'
+  run_once: yes
+  become: no
+  retries: 5
+  until: 'reg_obtain is success'
+  delay: 5
+  command:
+    argv:
+      - '/usr/bin/docker'
+      - 'pull'
+      - '{{ item }}'
+
+# TODO: failed_when for docker, changed_when only if saved (not desperate)
+- name: 'Save image'
+  connection: 'local'
+  run_once: yes
+  become: no
+  command:
+    argv:
+      - '/usr/bin/docker'
+      - 'save'
+      - '{{ item }}'
+      - '-o'
+      - '/dev/shm/{{ tarfile }}'
+
+- name: 'Copy image into cluster'
+  copy:
+    src: '/dev/shm/{{ tarfile }}'
+    dest: '/var/lib/rancher/k3s/agent/images/'
+
+- name: 'Clean up image'
+  file:
+    path: '/dev/shm/{{ tarfile }}'
+    state: 'absent'
+...
+# vim: set filetype=yaml

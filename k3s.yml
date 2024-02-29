@@ -1,6 +1,6 @@
 ---
 - name: 'Check local project resources'
-  hosts: 'k3s_primary_masters'
+  hosts: 'all'
   connection: 'local'
   run_once: yes
   become: no
@@ -48,18 +48,13 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'k3s_fetch'         # requires fact set by system_configure
+    - 'k3s_fetch'
     - 'k3s_prepare'       # will fail if project_prepare didn't complete once
-    - 'calico_fetch'
-    - 'longhorn_fetch'
-    - 'metallb_fetch'
-    - 'emissary_fetch'
-    - 'certmgr_fetch'
     # - 'do_nothing'        # these two let me stop and start the roles
     # - 'fail_egregiously'  # these two let me stop and start the roles
 
 - name: 'Generate random server token for cluster'
-  hosts: 'k3s_primary_masters'
+  hosts: '{{ groups.k3s_primary_masters | first }}'
   gather_facts: no
   become: yes
   tags:
@@ -69,7 +64,7 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'k3s_master_generate'
+    - 'k3s_master_generate'  # make meta of k3s_master_bootstrap? (w/delegate)
 
 - name: 'Bootstrap k3s master nodes'
   hosts: 'k3s_masters'
@@ -86,7 +81,7 @@
     - 'k3s_master_bootstrap'
 
 - name: 'Deploy software manifests'
-  hosts: 'k3s_primary_masters'  # should be only one
+  hosts: '{{ groups.k3s_primary_masters | first }}'
   gather_facts: no
   become: yes
   tags:
@@ -96,41 +91,14 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
+    - 'k3s_install'       # install system manifests
     - 'calico_install'
     - 'longhorn_install'
     - 'metallb_install'
     - 'cert_manager_install'
     - 'emissary_install'
-    # - 'do_nothing'        # these two let me stop and start the roles
-    # - 'fail_egregiously'  # these two let me stop and start the roles
-
-- name: 'Apply patch manifests'  # aka modify default settings
-  hosts: 'k3s_primary_masters'  # should be only one
-  gather_facts: no
-  become: yes
-  tags:
-    - 'bootstrap'
-    - 'bootstrap_masters'
-    - 'never'
-  handlers:
-    - import_tasks: 'handlers/main.yml'
-  roles:
-    - 'longhorn_patch'
-    # - 'do_nothing'        # these two let me stop and start the roles
-    # - 'fail_egregiously'  # these two let me stop and start the roles
-
-- name: 'Install config manifests'
-  hosts: 'k3s_primary_masters'  # should be only one
-  gather_facts: no
-  become: yes
-  tags:
-    - 'bootstrap'
-    - 'bootstrap_masters'
-    - 'never'
-  handlers:
-    - import_tasks: 'handlers/main.yml'
-  roles:
-    - 'metallb_config'
+    - 'k3s_patch'         # modify installed settings (kubectl patch)
+    - 'k3s_config'        # add custom configs (kubectl create)
     # - 'do_nothing'        # these two let me stop and start the roles
     # - 'fail_egregiously'  # these two let me stop and start the roles
 

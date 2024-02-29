@@ -1,0 +1,5 @@
+---
+dependencies:
+  - role: 'meta_manifests_patch'
+...
+# vim: set filetype=yaml

@@ -1,7 +1,15 @@
 ---
 dependencies:
+  - role: 'meta_prefetch_imagelist'
   - vars:
-      images: '{{ base_images }}'
+      images: '{{ base_images
+                  + calico_images
+                  + longhorn_images
+                  + metallb_images
+                  + certmgr_images
+                  + emissary_images
+               }}'
+                  # + nginx_images
     role: 'meta_images_fetch'
 ...
 # vim: set filetype=yaml

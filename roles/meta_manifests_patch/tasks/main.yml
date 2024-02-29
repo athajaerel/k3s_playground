@@ -1,9 +1,12 @@
 ---
 - name: 'Check if patch already exists'
   register: 'reg_patches'
+  connection: 'local'
+  run_once: yes
+  become: no
   loop: '{{ patches }}'
   stat:
-    path: '{{ manifest_cache_dir }}/{{ item.path | basename }}'
+    path: '{{ manifest_cache_dir }}/{{ item.namespace }}/{{ item.path | basename }}'
 
 - name: 'Download missing patches'
   register: 'reg_download'
@@ -19,14 +22,13 @@
   loop: '{{ reg_patches.results }}'
   get_url:
     url: '{{ item.item.path }}'
-    dest: '{{ manifest_cache_dir }}/{{ namespace }}/'
-    # use_proxy: no
+    dest: '{{ manifest_cache_dir }}/{{ item.item.namespace }}/'
 
 - name: 'Template in patches'
   loop: '{{ reg_patches.results }}'
   template:
-    src: '{{ manifest_cache_dir }}/{{ namespace }}/{{ item.item.path | basename }}'
-    dest: '{{ manifests_path }}/'
+    src: '{{ manifest_cache_dir }}/{{ item.item.namespace }}/{{ item.item.path | basename }}'
+    dest: '{{ manifests_path_prefix }}/{{ item.item.prefix }}/'
 
 - name: 'Patch patches'
   register: 'reg_install_patches'
@@ -41,13 +43,8 @@
       - 'patch'
       - '{{ item.item.type }}/{{ item.item.name }}'
       - '--patch-file'
-      - '{{ manifests_path }}/{{ item.item.path | basename }}'
+      - '{{ manifests_path_prefix }}/{{ item.item.prefix }}/{{ item.item.path | basename }}'
       - '-n'
-      - '{{ namespace }}'
-
-# Seems like a good idea
-- name: 'Pause a few seconds for changes to settle'
-  pause:
-    seconds: 5
+      - '{{ item.item.namespace }}'
 ...
 # vim: set filetype=yaml

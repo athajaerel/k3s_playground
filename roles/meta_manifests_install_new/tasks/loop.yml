@@ -1,0 +1,71 @@
+---
+- name: 'Ensure manifest cache directory exists'
+  connection: 'local'
+  run_once: yes
+  become: no
+  file:
+    path: '{{ manifest_cache_dir }}/{{ manifest_set.namespace }}'
+    state: 'directory'
+
+- name: 'Ensure manifests directory exists'
+  file:
+    path: '{{ manifests_path_prefix }}/{{ manifest_set.prefix }}'
+    state: 'directory'
+
+- name: 'Check if manifest already exists'
+  register: 'reg_manifests_install'
+  connection: 'local'
+  run_once: yes
+  become: no
+  loop: '{{ manifest_set.install + manifest_set.config }}'
+  stat:
+    path: '{{ manifest_cache_dir }}/{{ manifest_set.namespace }}/{{ item | basename }}'
+
+- name: 'Download missing manifests'
+  register: 'reg_download'
+  when:
+    - 'item.item[0:8] == "https://"'
+    - 'not item.stat.exists'
+  connection: 'local'
+  run_once: yes
+  become: no
+  retries: 5
+  delay: 5
+  until: 'reg_download is success'
+  loop: '{{ reg_manifests_install.results }}'
+  get_url:
+    url: '{{ item.item }}'
+    dest: '{{ manifest_cache_dir }}/{{ manifest_set.namespace }}/'
+    # use_proxy: no
+
+- name: 'Template in manifests'
+  loop: '{{ manifest_set.install + manifest_set.config }}'
+  template:
+    src: '{{ manifest_cache_dir }}/{{ manifest_set.namespace }}/{{ item | basename }}'
+    dest: '{{ manifests_path_prefix }}/{{ manifest_set.prefix }}/'
+
+- name: 'Install manifests and wait (first)'
+  vars:
+    loop_list: '{{ manifest_set.install }}'
+    selector_list: '{{ manifest_set.post_install_selectors }}'
+  import_tasks: 'install_and_wait.yml'
+
+# seems like the next task might be failing before the containers
+# register as existing --- mitigate with a pause
+- name: 'Pause a few seconds for system to settle'
+  pause:
+    seconds: '{{ pause_seconds }}'
+
+- name: 'Install manifests and wait (second)'
+  vars:
+    loop_list: '{{ manifest_set.config }}'
+    selector_list: '{{ manifest_set.post_config_selectors }}'
+  import_tasks: 'install_and_wait.yml'
+
+# seems like the next task might be failing before the containers
+# register as existing --- mitigate with a pause
+- name: 'Pause a few seconds for system to settle'
+  pause:
+    seconds: '{{ pause_seconds }}'
+...
+# vim: set filetype=yaml

@@ -1,0 +1,9 @@
+---
+- name: 'Loop over manifest sets'
+  loop: '{{ manifest_sets }}'
+  loop_control:
+    loop_var: 'manifest_set'
+  include_tasks:
+    file: 'loop.yml'
+...
+# vim: set filetype=yaml

@@ -91,14 +91,8 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'k3s_install'       # install system manifests
-    - 'calico_install'
-    - 'longhorn_install'
-    - 'metallb_install'
-    - 'cert_manager_install'
-    - 'emissary_install'
+    - 'k3s_install'       # install system manifests (and configs)
     - 'k3s_patch'         # modify installed settings (kubectl patch)
-    - 'k3s_config'        # add custom configs (kubectl create)
     # - 'do_nothing'        # these two let me stop and start the roles
     # - 'fail_egregiously'  # these two let me stop and start the roles
 
@@ -129,6 +123,7 @@
   roles:
     - 'interface_install'
 
+# Badly-designed Ansible feature (argument_spec) is unusable because it forces 'always' tag :(
 - name: 'Alert all consoles in the cluster'
   hosts: 'all'
   gather_facts: no

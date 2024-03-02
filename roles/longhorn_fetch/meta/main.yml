@@ -1,7 +1,0 @@
----
-dependencies:
-  - vars:
-      images: '{{ longhorn_images }}'
-    role: 'meta_images_fetch'
-...
-# vim: set filetype=yaml

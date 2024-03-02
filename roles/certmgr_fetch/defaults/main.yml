@@ -1,7 +1,0 @@
----
-certmgr_images:
-  - 'quay.io/jetstack/cert-manager-cainjector:{{ certmgr_version }}'
-  - 'quay.io/jetstack/cert-manager-webhook:{{ certmgr_version }}'
-  - 'quay.io/jetstack/cert-manager-controller:{{ certmgr_version }}'
-...
-# vim: set filetype=yaml

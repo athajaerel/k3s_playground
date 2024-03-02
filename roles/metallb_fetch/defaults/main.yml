@@ -1,7 +1,0 @@
----
-metallb_images:
-  - 'quay.io/metallb/metallb-operator:{{ metallb_version }}'  # operator
-  - 'quay.io/metallb/speaker:{{ metallb_version }}'           # manifest
-  - 'quay.io/metallb/controller:{{ metallb_version }}'        # both
-...
-# vim: set filetype=yaml

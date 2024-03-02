@@ -1,7 +1,0 @@
----
-emissary_images:
-  - 'docker.io/emissaryingress/emissary:{{ emissary_version }}'
-  - 'istio/kubectl:1.5.10'
-  - 'docker.io/ambassador/ambassador-agent:1.0.14'
-...
-# vim: set filetype=yaml

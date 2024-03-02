@@ -1,9 +1,0 @@
----
-calico_images:
-  - 'calico/ctl:{{ calico_version }}'
-  - 'docker.io/calico/cni:{{ calico_version }}'
-  - 'docker.io/calico/node:{{ calico_version }}'
-  - 'docker.io/calico/kube-controllers:{{ calico_version }}'
-  - 'quay.io/tigera/operator:{{ tigera_version }}'
-...
-# vim: set filetype=yaml

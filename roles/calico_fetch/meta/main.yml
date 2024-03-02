@@ -1,7 +1,0 @@
----
-dependencies:
-  - vars:
-      images: '{{ calico_images }}'
-    role: 'meta_images_fetch'
-...
-# vim: set filetype=yaml

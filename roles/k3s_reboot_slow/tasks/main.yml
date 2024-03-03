@@ -1,0 +1,28 @@
+---
+- name: 'Reboot primary'
+  when: 'is_primary'
+  reboot:
+    post_reboot_delay: 30
+
+- name: 'Reboot secondaries and agents'
+  when: 'not is_primary'
+  reboot:
+    post_reboot_delay: 10
+
+# TODO: see what effect async and poll have on this task, maybe use it more
+# TODO: figure out failed_when condition for kubectl wait
+# Nodes won't go to Ready state without a CNI installed, but we can check they exist. Didn't know that was necessary.
+- name: 'Wait for all nodes to exist'
+  register: 'reg_nodes'
+  retries: 60
+  delay: 10
+  until: 'reg_nodes is success'
+  delegate_to: '{{ groups.k3s_primary_masters | first }}'
+  command:
+    argv:
+      - '{{ k3s_binary_dir }}/kubectl'
+      - 'get'
+      - 'node'
+      - '{{ fqdn }}'
+...
+# vim: set filetype=yaml

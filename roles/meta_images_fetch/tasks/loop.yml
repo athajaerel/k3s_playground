@@ -38,6 +38,9 @@
     dest: '/var/lib/rancher/k3s/agent/images/'
 
 - name: 'Clean up image'
+  connection: 'local'
+  run_once: yes
+  become: no
   file:
     path: '/dev/shm/{{ tarfile }}'
     state: 'absent'

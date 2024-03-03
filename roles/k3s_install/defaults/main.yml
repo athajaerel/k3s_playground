@@ -1,20 +1,55 @@
 ---
-pause_seconds: 1
-
-calico_base_url: 'https://raw.githubusercontent.com/projectcalico/calico/{{ calico_version }}/manifests'
-longhorn_base_url: 'https://raw.githubusercontent.com/longhorn/longhorn/{{ longhorn_version }}'
-metallb_base_url: 'https://raw.githubusercontent.com/metallb'
-certmgr_base_url: 'https://github.com/cert-manager/cert-manager/releases/download/{{ certmgr_version }}'
-emissary_base_url: 'https://app.getambassador.io/yaml/emissary/{{ emissary_version }}'
-
-# please use minutes so we can rely on seconds for polling
-calico_timeout: '20m'
-core_timeout: '20m'
-longhorn_timeout: '360m' # Longhorn takes ages to pull
-certmgr_timeout: '10m'
-emissary_timeout: '2m'
+pause_seconds: 10
 
 metallb_mode: 'manifest'
+
+metallb_data:
+  manifest:
+    app: 'metallb'
+    path: 'config/manifests/metallb-native.yaml'
+    selectors:
+      - selector: 'component=controller'
+      - selector: 'component=speaker'
+  operator:
+    app: 'metallb-operator'
+    path: 'bin/metallb-operator.yaml'
+    selectors:
+      - selector: 'control-plane=controller-manager'
+      - selector: 'component=webhook-server'
+
+project_urls:
+  calico: 'https://raw.githubusercontent.com/projectcalico'
+  longhorn: 'https://raw.githubusercontent.com/longhorn'
+  metallb: 'https://raw.githubusercontent.com/metallb'
+  certmgr: 'https://github.com/cert-manager'
+  emissary: 'https://app.getambassador.io/yaml/emissary'
+  nginx: 'https://raw.githubusercontent.com/kubernetes'
+
+version_urls:
+  calico: 'calico/{{ calico_version }}'
+  longhorn: 'longhorn/{{ longhorn_version }}'
+  metallb: '{{ metallb_data[metallb_mode].app }}/{{ metallb_version }}'
+  certmgr: 'cert-manager/releases/download/{{ certmgr_version }}'
+  emissary: '{{ emissary_version }}'
+  nginx: 'ingress-nginx/controller-{{ nginx_version }}'
+
+urls:
+  calico: '{{ project_urls.calico }}/{{ version_urls.calico }}'
+  longhorn: '{{ project_urls.longhorn }}/{{ version_urls.longhorn }}'
+  metallb: '{{ project_urls.metallb }}/{{ version_urls.metallb }}'
+  certmgr: '{{ project_urls.certmgr }}/{{ version_urls.certmgr }}'
+  emissary: '{{ project_urls.emissary }}/{{ version_urls.emissary }}'
+  nginx: '{{ project_urls.nginx }}/{{ version_urls.nginx }}'
+
+# please use minutes so we can rely on seconds for polling
+timeouts:
+  tigera: '20m'
+  calico: '20m'
+  core: '20m'
+  longhorn: '360m' # Longhorn takes ages to pull
+  certmgr: '10m'
+  emissary: '2m'
+  nginx: '2m'
 
 default_selector_type: 'pod'
 default_want_condition: 'Ready'
@@ -34,102 +69,123 @@ node_selectors:
 
 calico_post_selectors:
   - selector: 'k8s-app=kube-dns'
-    timeout: '{{ core_timeout }}'
+    timeout: '{{ timeouts.core }}'
   - selector: 'k8s-app=metrics-server'
-    timeout: '{{ core_timeout }}'
+    timeout: '{{ timeouts.core }}'
   - selector: 'app=local-path-provisioner'
-    timeout: '{{ core_timeout }}'
-
-metallb_data:
-  manifest:
-    base_url: '{{ metallb_base_url }}/metallb'
-    path: 'config/manifests/metallb-native.yaml'
-    selectors:
-      - selector: 'component=controller'
-      - selector: 'component=speaker'
-  operator:
-    base_url: '{{ metallb_base_url }}/metallb-operator'
-    path: 'bin/metallb-operator.yaml'
-    selectors:
-      - selector: 'control-plane=controller-manager'
-      - selector: 'component=webhook-server'
-
-metallb_manifest_parts:
-  - '{{ metallb_data[metallb_mode].base_url }}'
-  - '{{ metallb_version }}'
-  - '{{ metallb_data[metallb_mode].path }}'
+    timeout: '{{ timeouts.core }}'
 
 ###########################
 
 manifest_sets:
-  - namespace: 'kube-system'
-    prefix: 'calico'
+  - prefix: 'calico'
+    namespace: 'tigera-operator'
     install:
-      - '{{ calico_base_url }}/calico.yaml'
-      - '{{ calico_base_url }}/calicoctl.yaml'
-      # - '{{ calico_base_url }}/tigera-operator.yaml'  # possibly don't need this? Wants its own namespace.
-      - '{{ calico_base_url }}/custom-resources.yaml'
+      - '{{ urls.calico }}/manifests/tigera-operator.yaml'
+    config: [ ]
+    post_install_selectors:
+      - selector: 'k8s-app=tigera-operator'
+        timeout: '{{ timeouts.tigera }}'
+    post_config_selectors: [ ]
+
+  - prefix: 'calico'
+    namespace: 'calico-system'
+    # namespace: 'kube-system'
+    install:
+      - '{{ urls.calico }}/manifests/calico.yaml'
+      - '{{ urls.calico }}/manifests/calicoctl.yaml'
+      - '{{ urls.calico }}/manifests/custom-resources.yaml'
     config: [ ]
     post_install_selectors:
       - selector: 'k8s-app=calico-kube-controllers'
-        timeout: '{{ calico_timeout }}'
-      - selector: 'k8s-app=calico-node'
-        timeout: '{{ calico_timeout }}'
-    post_config_selectors: '{{ node_selectors + calico_post_selectors }}'
+        timeout: '{{ timeouts.calico }}'
+      # - selector: 'k8s-app=calico-node'
+      #   timeout: '{{ timeouts.calico }}'
+      - selector: 'k8s-app=calico-typha'
+        timeout: '{{ timeouts.calico }}'
+      - selector: 'k8s-app=csi-node-driver'
+        timeout: '{{ timeouts.calico }}'
+    post_config_selectors: '{{ node_selectors }}'
 
-  - namespace: 'longhorn-system'
-    prefix: 'longhorn'
+  - prefix: ''
+    namespace: 'kube-system'
+    install: [ ]
+    config: [ ]
+    post_install_selectors: [ ]
+    post_config_selectors: '{{ calico_post_selectors }}'
+
+  - prefix: 'calico'
+    namespace: 'calico-apiserver'
+    install: [ ]
+    config: [ ]
+    post_install_selectors:
+      - selector: 'k8s-app=calico-apiserver'
+        timeout: '{{ timeouts.calico }}'
+    post_config_selectors: [ ]
+
+  - prefix: 'longhorn'
+    namespace: 'longhorn-system'
     install:
-      - '{{ longhorn_base_url }}/deploy/longhorn.yaml'
+      - '{{ urls.longhorn }}/deploy/longhorn.yaml'
     config: [ ]
     post_install_selectors:
       - selector: 'app=longhorn-driver-deployer'
-        timeout: '{{ longhorn_timeout }}'
+        timeout: '{{ timeouts.longhorn }}'
       - selector: 'app=longhorn-manager'
-        timeout: '{{ longhorn_timeout }}'
+        timeout: '{{ timeouts.longhorn }}'
       - selector: 'longhorn.io/component=engine-image'
-        timeout: '{{ longhorn_timeout }}'
+        timeout: '{{ timeouts.longhorn }}'
       - selector: 'longhorn.io/component=instance-manager'
-        timeout: '{{ longhorn_timeout }}'
+        timeout: '{{ timeouts.longhorn }}'
       # - selector: 'app=csi-attacher'         # operator only
-      #   timeout: '{{ longhorn_timeout }}'
+      #   timeout: '{{ timeouts.longhorn }}'
       # - selector: 'app=csi-provisioner'      # operator only
-      #   timeout: '{{ longhorn_timeout }}'
+      #   timeout: '{{ timeouts.longhorn }}'
       # - selector: 'app=csi-resizer'          # operator only
-      #   timeout: '{{ longhorn_timeout }}'
+      #   timeout: '{{ timeouts.longhorn }}'
       # - selector: 'app=csi-snapshotter'      # operator only
-      #   timeout: '{{ longhorn_timeout }}'
+      #   timeout: '{{ timeouts.longhorn }}'
       # - selector: 'app=longhorn-csi-plugin'  # operator only
-      #   timeout: '{{ longhorn_timeout }}'
+      #   timeout: '{{ timeouts.longhorn }}'
       - selector: 'app=longhorn-ui'
-        timeout: '{{ longhorn_timeout }}'
+        timeout: '{{ timeouts.longhorn }}'
     post_config_selectors: [ ]
 
-  - namespace: 'metallb-system'
-    prefix: 'metallb'
+  - prefix: 'metallb'
+    namespace: 'metallb-system'
     install:
-      - '{{ metallb_manifest_parts | path_join }}'
+      - '{{ urls.metallb }}/{{ metallb_data[metallb_mode].path }}'
     config:
       - 'metallb-pool.yaml.j2'
     post_install_selectors: '{{ metallb_data[metallb_mode].selectors }}'
     post_config_selectors: [ ]
 
-  - namespace: 'cert-manager'
-    prefix: 'certmgr'
+  - prefix: 'certmgr'
+    namespace: 'cert-manager'
     install:
-      - '{{ certmgr_base_url }}/cert-manager.yaml'
+      - '{{ urls.certmgr }}/cert-manager.yaml'
     config: [ ]
     post_install_selectors:
       - selector: 'app.kubernetes.io/instance=cert-manager'
     post_config_selectors: [ ]
 
-  - namespace: 'emissary'
-    prefix: 'emissary'
+  - prefix: 'emissary'
+    namespace: 'emissary'
     install:
-      - '{{ emissary_base_url }}/emissary-crds.yaml'
-      - '{{ emissary_base_url }}/emissary-emissaryns.yaml'
+      - '{{ urls.emissary }}/emissary-crds.yaml'
+      - '{{ urls.emissary }}/emissary-emissaryns.yaml'
     config: [ ]
     post_install_selectors: [ ]
     post_config_selectors: [ ]
+
+#  - prefix: 'nginx'
+#    namespace: 'ingress-nginx'
+#    install:
+#      - '{{ urls.nginx }}/deploy/static/provider/baremetal/deploy.yaml'
+#    config: [ ]
+#    post_install_selectors:
+#      - selector: 'app.kubernetes.io/component=controller'
+#        timeout: '{{ timeouts.nginx }}'
+#    post_config_selectors: [ ]
 ...
 # vim: set filetype=yaml

@@ -1,0 +1,40 @@
+---
+- name: 'Delete for RHEL'
+  when: 'distro == "rhel"'
+  import_tasks: 'rhel_delete.yml'
+
+- name: 'Delete for Void'
+  when: 'distro == "void"'
+  import_tasks: 'void_delete.yml'
+
+- name: 'Blank templates'
+  loop: '{{ blank_templates }}'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+
+# TODO: find a way to unmount which doesn't use a reboot
+- name: 'Reboot to unmount kubelet and nfs'
+  reboot:
+
+- name: 'Unmount kubelet and nfs'
+  register: 'reg_unmount'
+  become: yes
+  failed_when:
+    - 'reg_unmount.rc != 0'
+    - 'e_mount_notfound_none not in reg_unmount.stderr'
+    - 'e_mount_already_not not in reg_unmount.stderr'
+  loop: '{{ unmount_points + extra_unmount_points }}'
+  command:
+    argv:
+      - '/usr/bin/umount'
+      - '{{ item }}'
+
+- name: 'Remove existing configuration'
+  when: 'is_clobbering_time'
+  loop: '{{ k3s_clobber_files_common + k3s_clobber_files_distro }}'
+  file:
+    path: '{{ item }}'
+    state: 'absent'
+...
+# vim: set filetype=yaml

@@ -34,7 +34,7 @@ patches:
     path: 'reps_3.yaml.j2'
     type: 'deployment'
     prefix: 'kube-system'
-    namespace: 'kube-system'
+    namespace: 'calico-system'
 
   - name: 'controller'
     path: 'reps_3.yaml.j2'

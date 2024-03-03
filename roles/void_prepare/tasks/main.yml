@@ -1,8 +1,0 @@
----
-- name: 'Update xbps config'
-  loop: '{{ void_templates }}'
-  template:
-    src: '{{ item[1:] }}.j2'
-    dest: '{{ item }}'
-...
-# vim: set filetype=yaml

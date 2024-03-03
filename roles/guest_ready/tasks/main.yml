@@ -1,0 +1,135 @@
+---
+- name: 'Enable sysctl settings'
+  loop: '{{ sysctl_settings }}'
+  lineinfile:
+    path: '/etc/sysctl.conf'
+    line: '{{ item }}'
+    insertafter: 'EOF'
+
+#    for XTABLES in iptables ip6tables; do
+#        if has_working_xtables ${XTABLES}; then
+#            $SUDO ${XTABLES}-save 2>/dev/null | grep -v KUBE- | grep -iv flannel | grep -iv cali | $SUDO ${XTABLES}-restore
+#        fi
+#    done
+
+- name: 'Add shell to /etc/shells'
+  loop: '{{ k3s_shells}}'
+  lineinfile:
+    path: '/etc/shells'
+    line: '{{ item }}'
+    insertafter: 'EOF'
+
+# TODO: figure out failed_when for chsh
+- name: 'Change ansible user shell'
+  command:
+    argv:
+      - '{{ k3s_chsh }}'
+      - '-s'
+      - '{{ k3s_shells | first }}'
+      - 'ansible'
+
+- name: 'Write tmux config'
+  loop:
+    - '/home/ansible/.tmux.conf'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+    owner: 'ansible'
+    group: 'ansible'
+    mode: '0644'
+
+- name: 'Create logrotate directory'
+  file:
+    path: '/etc/logrotate.d'
+    state: 'directory'
+
+- name: 'Template in logrotate config'
+  loop: '{{ k3s_logrotate_configs }}'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+    mode: '0644'
+
+- name: 'Template in some files'
+  loop: '{{ bootstrap_templates }}'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+
+- name: 'Set cron job for logrotate'
+  cron_legacy:
+    name: 'Logrotate'
+    cron_file: '/etc/crontab'
+    user: 'root'
+    job: '/usr/bin/logrotate /etc/logrotate.conf'
+    minute: '04'
+
+- name: 'Disable SELinux'
+  register: 'reg_selinux'
+  failed_when:
+    - 'reg_selinux.rc != 0'
+    - 'e_selinux_notexists not in reg_selinux.msg'
+  replace:
+    path: '/etc/selinux/config'
+    regexp: '^SELINUX=enforcing$'
+    replace: 'SELINUX=disabled'
+
+# TODO: fix this (issue #31)
+- name: 'Add rshared option to root partition'
+  vars:
+    replace_internal: '\2,rshared'
+    regex_negative_lookahead: 'rshared'
+    regex_prefix: '([^ ]* \/ [^ ]* )'
+    regex_suffix: '( \d \d)'
+  replace:
+    path: '/etc/fstab'
+    regexp: '^{{ regex_prefix }}((:?(?!{{ regex_negative_lookahead }}).)*?){{ regex_suffix }}$'
+    replace: '\1{{ replace_internal }}\4'
+
+- name: 'Create local repo mountpoint'
+  register: 'reg_mkdir'
+  vars:
+  failed_when:
+    - 'reg_mkdir.rc is defined'
+    - 'reg_mkdir.module_stdout is defined'
+    - 'reg_mkdir.rc != 0'
+    - 'e_mkdir_readonly not in reg_mkdir.module_stdout'
+  file:
+    path: '/mnt/disc'
+    state: 'directory'
+    mode: '0000'
+
+- name: 'Template in some configs'
+  loop: '{{ config_templates }}'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+
+- name: 'Set random seed'
+  notify: 'Restart sshd'
+  command:
+    argv:
+      - '/bin/dd'
+      - 'bs=1'
+      - 'count={{ "4 KB" | human_to_bytes }}'
+      - 'if=/dev/urandom'
+      - 'of=/var/lib/random-seed'
+
+# /dev/urandom is guaranteed to return at least one byte
+# but can't guarantee more. By getting one at a time we
+# guarantee to get our full 4K.
+
+# need the handler; the reboot alone reliably doesn't work on one host in twelve. wtf?
+- name: 'Delete sshd private keys'
+  notify: 'Restart sshd'
+  loop: '{{ sshd_private_key_types }}'
+  file:
+    path: '/etc/ssh/ssh_host_{{ item }}_key'
+    state: 'absent'
+
+- meta: 'flush_handlers'
+
+#- name: 'Reboot'
+#  reboot:
+...
+# vim: set filetype=yaml

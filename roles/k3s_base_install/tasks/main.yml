@@ -1,0 +1,79 @@
+---
+# The k3s project has taken the unusual decision to host built
+# binaries without any wrapper or compression at all. You just
+# download the actual binary and away you go. This is possible
+# since Go binaries famously have no dependencies.
+
+# This made me feel slimy and naked so I wrapped it up in a
+# tarball. It didn't even have a version number attached.
+
+- name: 'Unarchive the k3s binary'
+  unarchive:
+    src: '{{ k3s_tarball }}'
+    dest: '{{ k3s_binary_dir }}/'
+
+- name: 'Permission the binary'
+  file:
+    path: '{{ k3s_binary_dir }}/k3s'
+    mode: '0755'
+    owner: 'root'
+    group: 'root'
+
+- name: 'Create symlinks'
+  loop: '{{ k3s_symlinks }}'
+  file:
+    src: '{{ k3s_binary }}'
+    dest: '{{ k3s_binary_dir }}/{{ item }}'
+    state: 'link'
+    mode: '0755'
+    owner: 'root'
+    group: 'root'
+
+- name: 'Create scripts'
+  loop: '{{ k3s_scripts }}'
+  copy:
+    src: '{{ item[1:] }}'
+    dest: '{{ item }}'
+    mode: '0755'
+    owner: 'root'
+    group: 'root'
+
+- name: 'Ensure k3s directories exist'
+  loop: '{{ k3s_data_dirs }}'
+  file:
+    path: '{{ item }}'
+    state: 'directory'
+
+- name: 'Export environment to file'
+  register: 'reg_environment'
+  command:
+    argv:
+      - '/bin/sh'
+      - '-c'
+      - 'export'
+
+- name: 'Delete environment settings'
+  file:
+    path: '{{ environment_file }}'
+    state: 'absent'
+
+- name: 'Touch environment settings'
+  file:
+    path: '{{ environment_file }}'
+    state: 'touch'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'Create environment settings'
+  when: '"_PROXY" in item
+         or "_proxy" in item
+         or "K3S" in item
+         or "CONTAINERD" in item'
+  loop: '{{ reg_environment.stdout_lines }}'
+  lineinfile:
+    line: '{{ item }}'
+    dest: '{{ environment_file }}'
+    create: yes
+...
+# vim: set filetype=yaml

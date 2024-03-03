@@ -1,0 +1,87 @@
+---
+- name: 'Update xbps config'
+  loop: '{{ void_templates }}'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+
+- name: 'Template in defaults'
+  loop:
+    - '/etc/default/grub'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+
+- name: 'Regenerate GRUB options'
+  command:
+    argv:
+      - '/usr/bin/update-grub'
+
+- name: 'Check directory exists'
+  register: 'reg_stat'
+  stat:
+    path: '{{ k3s_service_dir }}'
+
+- name: 'Prevent k3s service start'
+  when: 'reg_stat.stat.exists'
+  register: 'reg_prevent_start'
+  vars:
+    e_fail: 'could not touch target'
+  failed_when:
+    - 'reg_prevent_start is failed'
+    - 'e_fail not in reg_prevent_start.msg'
+  file:
+    state: 'touch'
+    path: '{{ k3s_down_file }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+
+- name: 'Stop k3s service'
+  when: 'reg_stat.stat.exists'
+  failed_when: no
+  #runit:
+  #  name: 'k3s'
+  #  state: 'stopped'
+  command:
+    argv:
+      - '/usr/bin/sv'
+      - 'down'
+      - 'k3s'
+
+- name: 'Delete unneeded services'
+  loop: '{{ unneeded_services + [ "k3s" ] }}'
+  file:
+    path: '/var/service/{{ item }}'
+    state: 'absent'
+
+- name: 'Remove some filesystem paths'
+  loop: '{{ unneeded_paths }}'
+  file:
+    path: '{{ item }}'
+    state: 'absent'
+
+- name: 'Create empty iptables settings file'
+  copy:
+    remote_src: yes
+    src: '/etc/iptables/empty.rules'
+    dest: '/etc/iptables/iptables.rules'
+
+- name: 'Enable iptables service'
+  file:
+    state: 'link'
+    src: '/etc/sv/iptables'
+    dest: '/var/service/iptables'
+
+- name: 'Add DNS resolver in dhcpcd'
+  vars:
+    replace_internal: '8.8.8.8 \1'
+    regex_negative_lookahead: '8\.8\.8\.8'
+    regex_prefix: '[ \t]+static domain_name_servers='
+    regex_suffix: ''
+  replace:
+    path: '/etc/dhcpcd.conf'
+    regexp: '^{{ regex_prefix }}((:?(?!{{ regex_negative_lookahead }}).)*?){{ regex_suffix }}$'
+    replace: '{{ regex_prefix }}{{ replace_internal }}{{ regex_suffix }}'
+...
+# vim: set filetype=yaml

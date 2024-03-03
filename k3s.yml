@@ -1,7 +1,7 @@
 ---
-- name: 'Check local project resources'
+- name: 'Ready local project resources'
   hosts: 'all'
-  connection: 'local'
+  connection: 'local'  # /!\
   run_once: yes
   become: no
   tags:
@@ -10,9 +10,21 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'project_prepare'
+    - 'k3s_ready'
 
-- name: 'Prepare RHEL hosts generically'
+- name: 'Ready all targets'
+  hosts: 'all'
+  gather_facts: no
+  become: yes
+  tags:
+    - 'install'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'guest_ready'
+
+- name: 'Ready RHEL targets'
   hosts: 'rhel'
   gather_facts: no
   become: yes
@@ -22,10 +34,9 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'rhel_prepare'
-    - 'system_configure'
+    - 'rhel_ready'
 
-- name: 'Prepare Void hosts generically'
+- name: 'Ready Void targets'
   hosts: 'void'
   gather_facts: no
   become: yes
@@ -35,10 +46,9 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'void_prepare'
-    - 'system_configure'
+    - 'void_ready'
 
-- name: 'Prepare node hosts for k3s'
+- name: 'Base install'
   hosts: 'nodes'
   gather_facts: no
   become: yes
@@ -48,12 +58,13 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'k3s_fetch'
-    - 'k3s_prepare'       # will fail if project_prepare didn't complete once
+    - 'nodes_ready'
+    - 'images_ready'
+    - 'k3s_base_install' # will fail if k3s_ready didn't complete once
     # - 'do_nothing'        # these two let me stop and start the roles
     # - 'fail_egregiously'  # these two let me stop and start the roles
 
-- name: 'Generate random server token for cluster'
+- name: 'Generate random server token'
   hosts: '{{ groups.k3s_primary_masters | first }}'
   gather_facts: no
   become: yes
@@ -64,9 +75,35 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'k3s_master_generate'  # make meta of k3s_master_bootstrap? (w/delegate)
+    - 'k3s_token_create'
 
-- name: 'Bootstrap k3s master nodes'
+- name: 'Bootstrap RHEL masters'
+  hosts: 'k3s_masters:&rhel'
+  gather_facts: no
+  become: yes
+  tags:
+    - 'bootstrap'
+    - 'bootstrap_masters'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'rhel_bootstrap'
+
+- name: 'Bootstrap Void masters'
+  hosts: 'k3s_masters:&void'
+  gather_facts: no
+  become: yes
+  tags:
+    - 'bootstrap'
+    - 'bootstrap_masters'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'void_bootstrap'
+
+- name: 'Reboot masters and sundries'
   hosts: 'k3s_masters'
   gather_facts: no
   become: yes
@@ -77,8 +114,9 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
+    - 'k3s_reboot_slow'
     # - 'helm_install'      # not using Helm currently
-    - 'k3s_master_bootstrap'
+    - 'k3s_namespace_create'
 
 - name: 'Deploy software manifests'
   hosts: '{{ groups.k3s_primary_masters | first }}'
@@ -96,7 +134,33 @@
     # - 'do_nothing'        # these two let me stop and start the roles
     # - 'fail_egregiously'  # these two let me stop and start the roles
 
-- name: 'Bootstrap k3s agents nodes'
+- name: 'Bootstrap RHEL agents'
+  hosts: 'k3s_agents:&rhel'
+  gather_facts: no
+  become: yes
+  tags:
+    - 'bootstrap'
+    - 'bootstrap_agents'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'rhel_bootstrap'
+
+- name: 'Bootstrap Void agents'
+  hosts: 'k3s_agents:&void'
+  gather_facts: no
+  become: yes
+  tags:
+    - 'bootstrap'
+    - 'bootstrap_agents'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'void_bootstrap'
+
+- name: 'Reboot agents and sundries'
   hosts: 'k3s_agents'
   gather_facts: no
   become: yes
@@ -107,8 +171,8 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'k3s_agent_bootstrap'
-    - 'k3s_agent_post'
+    - 'k3s_reboot_slow'
+    - 'k3s_labels_apply'
 
 - name: 'Install user interface'
   hosts: 'interface'
@@ -153,11 +217,11 @@
   gather_facts: no
   become: yes
   tags:
-    - 'delete_cluster'
+    - 'destroy_cluster'
     - 'never'
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'cluster_delete'
+    - 'k3s_destroy_all'
 ...
 # vim: set filetype=yaml

@@ -1,0 +1,19 @@
+---
+#  set_fact:
+#    server_token:
+
+- name: 'Install service'
+  vars:
+    k3s_options: "{{ (opts_common + ([] if is_primary else opts_secondary)) | join(' ') }}"
+  loop:
+    - '/etc/systemd/system/k3s.service'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+
+- name: 'Start service'
+  systemd:
+    name: 'k3s'
+    enabled: yes
+...
+# vim: set filetype=yaml

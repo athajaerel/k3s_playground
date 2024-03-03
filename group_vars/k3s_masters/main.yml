@@ -10,5 +10,19 @@ is_primary: '{{ (inventory_hostname in primary_group) | bool }}'
 manifests_path_prefix: '/home/ansible/manifests'
 
 calico_network: '192.168.0.0/16'
+
+opts_common:
+  - 'server'
+  - '--disable=servicelb'
+  - '--disable=traefik'
+  - '--flannel-backend=none'
+  - '--disable-network-policy'
+  - '--cluster-cidr={{ calico_network }}'
+  - '--write-kubeconfig-mode=0644'
+  - '--cluster-init'
+
+opts_secondary:
+  - '--server=https://{{ primary_group[0] }}.{{ domain }}:6443'
+  - '--token={{ server_token }}'  # seems to have newlines at the end, so don't add after this
 ...
 # vim: set filetype=yaml

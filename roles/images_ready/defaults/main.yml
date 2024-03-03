@@ -1,0 +1,49 @@
+---
+base_images: "{{ k3s_base_images_list | regex_replace('[\r\n\f]+', '\n') | split('\n') | select() }}"  # select removes empty items?
+
+calico_images:
+  - 'calico/ctl:{{ calico_version }}'
+  - 'docker.io/calico/apiserver:{{ calico_version }}'
+  - 'docker.io/calico/cni:{{ calico_version }}'
+  - 'docker.io/calico/csi:{{ calico_version }}'
+  - 'docker.io/calico/kube-controllers:{{ calico_version }}'
+  - 'docker.io/calico/node:{{ calico_version }}'
+  - 'docker.io/calico/node-driver-registrar:{{ calico_version }}'
+  - 'docker.io/calico/pod2daemon-flexvol:{{ calico_version }}'
+  - 'docker.io/calico/typha:{{ calico_version }}'
+  - 'quay.io/tigera/operator:{{ tigera_version }}'
+
+# some disturbingly random version numbers here
+longhorn_images:
+  - 'longhornio/longhorn-engine:{{ longhorn_version }}'
+  - 'longhornio/longhorn-instance-manager:{{ longhorn_version }}'
+  - 'longhornio/longhorn-manager:{{ longhorn_version }}'
+  - 'longhornio/longhorn-ui:{{ longhorn_version }}'
+  - 'longhornio/livenessprobe:v2.9.0'
+  - 'longhornio/csi-node-driver-registrar:v2.7.0'
+  - 'longhornio/csi-attacher:v4.2.0'
+  - 'longhornio/csi-provisioner:v3.4.1'
+  - 'longhornio/csi-resizer:v1.7.0'
+  - 'longhornio/csi-snapshotter:v6.2.1'
+
+metallb_images:
+  - 'quay.io/metallb/metallb-operator:{{ metallb_version }}'  # operator
+  - 'quay.io/metallb/speaker:{{ metallb_version }}'           # manifest
+  - 'quay.io/metallb/controller:{{ metallb_version }}'        # both
+
+certmgr_images:
+  - 'quay.io/jetstack/cert-manager-cainjector:{{ certmgr_version }}'
+  - 'quay.io/jetstack/cert-manager-webhook:{{ certmgr_version }}'
+  - 'quay.io/jetstack/cert-manager-controller:{{ certmgr_version }}'
+
+emissary_images:
+  - 'docker.io/emissaryingress/emissary:{{ emissary_version }}'
+  - 'istio/kubectl:1.5.10'
+  - 'docker.io/ambassador/ambassador-agent:1.0.14'
+
+nginx_images:
+  - 'k8s.gcr.io/ingress-nginx/controller:{{ nginx_version }}'
+  - 'k8s.gcr.io/ingress-nginx/controller@sha256:1f4f402b9c14f3ae92b11ada1dfe9893a88f0faeb0b2f4b903e2c67a0c3bf0de'
+  - 'docker.io/jettech/kube-webhook-certgen:{{ jettech_version }}'
+...
+# vim: set filetype=yaml

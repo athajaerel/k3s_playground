@@ -29,6 +29,7 @@
   template:
     src: '{{ manifest_cache_dir }}/{{ item.item.namespace }}/{{ item.item.path | basename }}'
     dest: '{{ manifests_path_prefix }}/{{ item.item.prefix }}/'
+    follow: yes
 
 - name: 'Patch patches'
   register: 'reg_install_patches'

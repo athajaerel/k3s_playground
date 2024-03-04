@@ -129,7 +129,7 @@
 
 - meta: 'flush_handlers'
 
-#- name: 'Reboot'
-#  reboot:
+- name: 'Reboot'
+  reboot:
 ...
 # vim: set filetype=yaml

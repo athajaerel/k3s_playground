@@ -187,6 +187,18 @@
   roles:
     - 'interface_install'
 
+- name: 'Smoke testing'
+  hosts: 'all'
+  gather_facts: no
+  become: no
+  tags:
+    - 'smoke_test'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'smoke_test'
+
 # Badly-designed Ansible feature (argument_spec) is unusable because it forces 'always' tag :(
 - name: 'Alert all consoles in the cluster'
   hosts: 'all'

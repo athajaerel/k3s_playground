@@ -1,0 +1,24 @@
+---
+# Among other things, a good way to test selectors.
+- name: 'Loop over manifest sets'
+  args:
+    apply:
+      delegate_to: '{{ groups.k3s_primary_masters | first }}'
+  run_once: yes
+  loop: '{{ manifest_sets }}'
+  loop_control:
+    loop_var: 'manifest_set'
+  vars:
+    selector_list: '{{ manifest_set.post_install_selectors
+                       + manifest_set.post_config_selectors }}'
+  include_tasks:
+    file: 'wait_for.yml'
+
+- name: 'Check UIs report 200 status'
+  delegate_to: '{{ groups.k3s_primary_masters | first }}'
+  run_once: yes
+  loop: '{{ smoke_urls }}'
+  uri:
+    url: '{{ item }}'
+...
+# vim: set filetype=yaml

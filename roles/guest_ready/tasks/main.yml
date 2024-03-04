@@ -28,33 +28,19 @@
       - '{{ k3s_shells | first }}'
       - 'ansible'
 
-- name: 'Write tmux config'
-  loop:
-    - '/home/ansible/.tmux.conf'
-  template:
-    src: '{{ item[1:] }}.j2'
-    dest: '{{ item }}'
-    owner: 'ansible'
-    group: 'ansible'
-    mode: '0644'
-
 - name: 'Create logrotate directory'
   file:
     path: '/etc/logrotate.d'
     state: 'directory'
 
-- name: 'Template in logrotate config'
-  loop: '{{ k3s_logrotate_configs }}'
+- name: 'Template in configs'
+  loop: '{{ guest_templates }}'
   template:
-    src: '{{ item[1:] }}.j2'
-    dest: '{{ item }}'
-    mode: '0644'
-
-- name: 'Template in some files'
-  loop: '{{ bootstrap_templates }}'
-  template:
-    src: '{{ item[1:] }}.j2'
-    dest: '{{ item }}'
+    src: '{{ item.path[1:] }}.j2'
+    dest: '{{ item.path }}'
+    owner: '{{ item.owner | default("root") }}'
+    group: '{{ item.group | default("root") }}'
+    mode: '{{ item.mode | default("0644") }}'
 
 - name: 'Set cron job for logrotate'
   cron_legacy:
@@ -98,12 +84,6 @@
     path: '/mnt/disc'
     state: 'directory'
     mode: '0000'
-
-- name: 'Template in some configs'
-  loop: '{{ config_templates }}'
-  template:
-    src: '{{ item[1:] }}.j2'
-    dest: '{{ item }}'
 
 - name: 'Set random seed'
   notify: 'Restart sshd'

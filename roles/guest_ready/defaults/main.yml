@@ -8,16 +8,15 @@ sysctl_settings:
   - 'net.ipv6.conf.all.disable_ipv6 = 1'
   - 'net.ipv6.conf.default.disable_ipv6 = 1'
 
-config_templates:
-  - '/etc/machine-id'
-  - '/etc/hostname'
-
-k3s_logrotate_configs:
-  - '/etc/logrotate.d/standard'
-  - '/etc/logrotate.d/k3s'
-
-bootstrap_templates:
-  - '/etc/environment'
+guest_templates:
+  - path: '/home/ansible/.tmux.conf'
+    owner: 'ansible'
+    group: 'ansible'
+  - path: '/etc/machine-id'
+  - path: '/etc/hostname'
+  - path: '/etc/logrotate.d/standard'
+  - path: '/etc/logrotate.d/k3s'
+  - path: '/etc/environment'
 
 sshd_private_key_types:
   - 'ecdsa'

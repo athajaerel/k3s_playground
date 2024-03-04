@@ -1,0 +1,8 @@
+---
+longhorn_ui_ip: '{{ loadbalancer_pool_network | ipv4(longhorn_ui_fourth_byte) | ipv4("address") }}'
+
+smoke_urls:
+  - 'http://{{ longhorn_ui_ip }}:80/favicon.ico'
+  - 'http://{{ longhorn_ui_ip }}:80/#/dashboard'
+...
+# vim: set filetype=yaml

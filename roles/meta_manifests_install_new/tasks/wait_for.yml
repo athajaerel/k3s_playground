@@ -1,0 +1,29 @@
+---
+# module candidate? k3s_wait
+# do repeat-until for long waits
+# TODO: figure out failed_when condition for kubectl wait
+- name: 'Wait for condition'
+  when:
+    - 'selector_list is defined'
+    - 'selector_list'  # ie. not empty
+  loop: '{{ selector_list }}'
+  vars:
+    pod_suffix:
+      - '-n'
+      - '{{ manifest_set.namespace }}'
+      - '--selector={{ item.selector }}'
+    node_suffix:
+      - '{{ item.selector }}'
+    item_type: '{{ item.type | default(default_selector_type) }}'
+    wait_suffix: '{{ pod_suffix if item_type == "pod" }}{{ node_suffix if item_type == "node" }}'
+    wait_prefix:
+      - '{{ k3s_binary_dir }}/kubectl'
+      - 'wait'
+      - '--timeout={{ item.timeout | default(default_wait_timeout) }}'
+      - '--for=condition={{ item.want_condition | default(default_want_condition) }}'
+      - '{{ item.type | default(default_selector_type) }}'
+  run_once: yes
+  command:
+    argv: '{{ wait_prefix + wait_suffix }}'
+...
+# vim: set filetype=yaml

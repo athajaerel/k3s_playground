@@ -54,18 +54,7 @@ timeouts:
 default_selector_type: 'pod'
 default_want_condition: 'Ready'
 
-# DEBUG: until this bit of Jinja works, hardcode the master nodes here
-# node_selectors: '{% for node in groups["k3s_masters"] %}{% endfor %}'
-node_selectors:
-  - selector: 'k3s-mother-001.{{ domain }}'
-    type: 'node'
-    timeout: '{{ nodes_timeout }}'
-  - selector: 'k3s-mother-002.{{ domain }}'
-    type: 'node'
-    timeout: '{{ nodes_timeout }}'
-  - selector: 'k3s-mother-003.{{ domain }}'
-    type: 'node'
-    timeout: '{{ nodes_timeout }}'
+node_selectors: '[{% for h in (groups.k3s_masters | sort) %}{{ "{" }}{% for y in [{ "selector": [h, domain] | join(".") }, {"type": "node"}, {"timeout": nodes_timeout}] %}"{{ y.keys() | first }}": "{{ y.values() | first }}",{% endfor %}{{ "}, " }}{% endfor %}]'
 
 calico_post_selectors:
   - selector: 'k8s-app=kube-dns'

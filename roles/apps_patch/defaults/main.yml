@@ -1,0 +1,21 @@
+---
+patches: [ ]
+#  - name: 'longhorn-frontend'
+#    path: 'longhorn_lb.yaml.j2'
+#    type: 'service'
+#    prefix: 'longhorn'
+#    namespace: 'longhorn-system'
+#
+#  - name: 'longhorn-storageclass'
+#    path: 'longhorn_sc.yaml.j2'
+#    type: 'configmap'
+#    prefix: 'longhorn'
+#    namespace: 'longhorn-system'
+#
+#  - name: 'cert-manager-cainjector'
+#    path: 'reps_3.yaml.j2'
+#    type: 'deployment'
+#    prefix: 'kube-system'
+#    namespace: 'cert-manager'
+...
+# vim: set filetype=yaml

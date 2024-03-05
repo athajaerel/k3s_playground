@@ -1,0 +1,23 @@
+---
+pause_seconds: 10
+
+manifest_sets:
+  - prefix: 'postgresql'
+    namespace: 'postgres-system'
+    install:
+      - 'postgres-combined.yaml.j2'
+    config: [ ]
+    post_install_selectors: [ ]
+    post_config_selectors: [ ]
+
+  - prefix: 'elastic'
+    namespace: 'elastic-system'
+    install:
+      - 'elastic.yaml.j2'
+      - 'kibana.yaml.j2'
+    config: [ ]
+    post_install_selectors: [ ]
+    post_config_selectors: [ ]
+
+...
+# vim: set filetype=yaml

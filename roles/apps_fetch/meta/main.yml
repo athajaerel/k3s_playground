@@ -1,0 +1,8 @@
+---
+dependencies:
+  - role: 'meta_prefetch_imagelist'
+  - vars:
+      images: '{{ apps_images }}'
+    role: 'meta_images_fetch'
+...
+# vim: set filetype=yaml

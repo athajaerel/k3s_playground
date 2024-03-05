@@ -7,6 +7,8 @@
     - 'selector_list is defined'
     - 'selector_list'  # ie. not empty
   loop: '{{ selector_list }}'
+  loop_control:
+    label: '{{ item.selector }}: {{ item.want_condition | default(default_want_condition) }}'
   vars:
     pod_suffix:
       - '-n'

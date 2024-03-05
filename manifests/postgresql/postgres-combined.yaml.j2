@@ -1,8 +1,14 @@
 ---
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: postgres-system
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: postgres-pv-claim
+  namespace: postgres-system
 spec:
   storageClassName: longhorn
   accessModes:
@@ -15,6 +21,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: postgres-secret-config
+  namespace: postgres-system
 type: Opaque
 data:
   password: {{ psql_base64_secret | default("cG9zdGdyZXMK") }}
@@ -23,6 +30,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
+  namespace: postgres-system
 spec:
   replicas: 1
   template:
@@ -65,6 +73,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-service
+  namespace: postgres-system
   labels:
     app: postgres
 spec:

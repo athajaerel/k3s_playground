@@ -1,0 +1,11 @@
+---
+elasticsearch_version: '7.2.0'
+
+apps_images:
+  - 'postgres:{{ postgresql_version }}'
+  - 'busybox'
+  - 'docker.elastic.co/elasticsearch/elasticsearch-oss:{{ elasticsearch_version }}'
+  # - 'docker.elastic.co/elasticsearch/elasticsearch:{{ elasticsearch_version }}'
+  - 'docker.elastic.co/kibana/kibana:{{ elasticsearch_version }}'
+...
+# vim: set filetype=yaml

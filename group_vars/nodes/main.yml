@@ -40,7 +40,17 @@ jettech_version: 'v1.5.0'  # ?
 certmgr_version: 'v1.14.3'
 emissary_version: '3.9.1'
 
+postgresql_version: '16.2'
+postgresql_port: 5432
+postgresql_user: 'myuser'
+postgresql_database: 'db0'
+postgresql_replicas: 3
+postgresql_disk_size_gb: 5
+postgresql_secret_b64: 'cG9zdGdyZXMK'
+postgresql_data_path: '/var/lib/postgresql/data'
+
 # LoadBalancer IP address fourth bytes go here
 longhorn_ui_fourth_byte: '30'
+postgresql_fourth_byte: '40'
 ...
 # vim: set filetype=yaml

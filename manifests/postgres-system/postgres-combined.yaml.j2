@@ -15,7 +15,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ psql_disk_size_gb | default(5) }}Gi
+      storage: {{ postgresql_disk_size_gb }}Gi
 ---
 apiVersion: v1
 kind: Secret
@@ -24,7 +24,7 @@ metadata:
   namespace: postgres-system
 type: Opaque
 data:
-  password: {{ psql_base64_secret | default("cG9zdGdyZXMK") }}
+  password: {{ postgresql_secret_b64 }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -32,7 +32,7 @@ metadata:
   name: postgres
   namespace: postgres-system
 spec:
-  replicas: 1
+  replicas: {{ postgresql_replicas }}
   template:
     metadata:
       labels:
@@ -41,24 +41,24 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:10.1
-          imagePullPolicy: Never
+          image: postgres:{{ postgresql_version }}
+          # imagePullPolicy: Never
           ports:
-            - containerPort: 5432
+            - containerPort: {{ postgresql_port }}
           env:
             - name: POSTGRES_DB
-              value: db0
+              value: {{ postgresql_database }}
             - name: POSTGRES_USER
-              value: myuser
+              value: {{ postgresql_user }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret-config
                   key: password
             - name: PGDATA
-              value: /var/lib/postgresql/data/pgdata
+              value: {{ postgresql_data_path }}/pgdata
           volumeMounts:
-            - mountPath: /var/lib/postgresql/data
+            - mountPath: {{ postgresql_data_path }}
               name: postgres-pv-storage
       volumes:
         - name: postgres-pv-storage
@@ -78,9 +78,9 @@ metadata:
     app: postgres
 spec:
   type: LoadBalancer
-  loadBalancerIP: {{ loadbalancer_pool_network | ipv4(postgresql_fourth_byte | default(40)) | ipv4("address")  }}
+  loadBalancerIP: {{ loadbalancer_pool_network | ipv4(postgresql_fourth_byte) | ipv4("address") }}
   ports:
-    - port: 5432
+    - port: {{ postgresql_port }}
   selector:
     service: postgres
     app: postgres

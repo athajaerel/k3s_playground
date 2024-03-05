@@ -34,6 +34,7 @@
     state: 'directory'
 
 - name: 'Template in configs'
+  register: 'reg_config_templates'
   loop: '{{ guest_templates }}'
   template:
     src: '{{ item.path[1:] }}.j2'
@@ -109,7 +110,10 @@
 
 - meta: 'flush_handlers'
 
+# only needed when /etc/hostname was changed
 - name: 'Reboot'
+  when:
+    - '(reg_config_templates.results | selectattr("item.path", "==", "/etc/hostname") | first) is changed'
   reboot:
 ...
 # vim: set filetype=yaml

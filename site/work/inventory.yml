@@ -21,14 +21,14 @@ void:
 
 k3s_primary_masters:
   hosts:
-    k3s-mother-001:
+    k3s-mother-01:
       ip_fourth_byte: '101'
 
 k3s_secondary_masters:
   hosts:
-    k3s-mother-002:
+    k3s-mother-02:
       ip_fourth_byte: '102'
-    k3s-mother-003:
+    k3s-mother-03:
       ip_fourth_byte: '103'
 
 interface:
@@ -38,9 +38,9 @@ interface:
 
 k3s_agents:
   hosts:
-    k3s-child-001:
+    k3s-child-01:
       ip_fourth_byte: '111'
-    k3s-child-002:
+    k3s-child-02:
       ip_fourth_byte: '112'
 ...
 # vim: set filetype=yaml

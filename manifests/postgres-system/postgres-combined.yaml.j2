@@ -10,7 +10,7 @@ metadata:
   name: postgres-pv-claim
   namespace: postgres-system
 spec:
-  storageClassName: longhorn
+  storageClassName: {{ postgresql_storage_class }}
   accessModes:
     - ReadWriteOnce
   resources:
@@ -41,8 +41,8 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:{{ postgresql_version }}
-          # imagePullPolicy: Never
+          image: docker.io/library/postgres:{{ postgresql_version }}
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: {{ postgresql_port }}
           env:

@@ -6,7 +6,9 @@ You need some VMs prepared with passwordless SSH login for user ansible set up. 
 
 To run:
 
-$ ansible-playbook k3s.yml -i site/whatever --tags=choose_a_tag 
+$ ansible-playbook k3s.yml -i site/whatever --tags=choose_a_tag --ask-vault-password
+
+(Vault password is now required, password is 'password' for this demo system.)
 
 Tags must be specified as all plays have the 'never' tag.
 

@@ -7,8 +7,10 @@ metadata:
   labels:
     app: kibana
 spec:
+  type: LoadBalancer
+  loadBalancerIP: {{ loadbalancer_pool_network | ipv4(elasticsearch_fourth_byte) | ipv4("address") }}
   ports:
-  - port: 5601
+  - port: {{ kibana_ui_port }}
   selector:
     app: kibana
 ---
@@ -39,6 +41,6 @@ spec:
             cpu: 100m
         env:
           - name: ELASTICSEARCH_URL
-            value: http://elasticsearch:9200
+            value: http://elasticsearch:{{ elasticsearch_ui_port }}
         ports:
-        - containerPort: 5601
+        - containerPort: {{ kibana_ui_port }}

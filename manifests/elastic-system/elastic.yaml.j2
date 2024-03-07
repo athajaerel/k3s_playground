@@ -10,7 +10,7 @@ metadata:
   name: elastic-pv-claim
   namespace: elastic-system
 spec:
-  storageClassName: longhorn
+  storageClassName: {{ app_storage_class }}
   accessModes:
     - ReadWriteOnce
   resources:
@@ -25,11 +25,11 @@ metadata:
   labels:
     service: elasticsearch
 spec:
- clusterIP: None
+ clusterIP: 10.43.208.37
  ports:
- - port: 9200
+ - port: {{ elasticsearch_ui_port }}
    name: serving
- - port: 9300
+ - port: {{ elasticsearch_internal_port }}
    name: node-to-node
  selector:
    service: elasticsearch
@@ -60,13 +60,15 @@ spec:
         resources:
             limits:
               cpu: 1000m
+              memory: 6Gi
             requests:
               cpu: 100m
+              memory: 4Gi
         ports:
-          - containerPort: 9200
+          - containerPort: {{ elasticsearch_ui_port }}
             name: rest
             protocol: TCP
-          - containerPort: 9300
+          - containerPort: {{ elasticsearch_internal_port }}
             name: inter-node
             protocol: TCP
         volumeMounts:
@@ -74,50 +76,24 @@ spec:
             mountPath: /usr/share/elasticsearch/data
         env:
           - name: cluster.name
-            value: k8s-logs
+            value: k3s-logs
           - name: node.name
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
           - name: discovery.seed_hosts
-            value: "es-cluster-0.elasticsearch,es-cluster-1.elasticsearch,es-cluster-2.elasticsearch"
+            value: "elasticsearch-0,elasticsearch-1,elasticsearch-2"
           - name: cluster.initial_master_nodes
-            value: "es-cluster-0,es-cluster-1,es-cluster-2"
+            value: "elasticsearch-0,elasticsearch-1,elasticsearch-2"
           - name: ES_JAVA_OPTS
             value: "-Xms512m -Xmx512m"
-    spec:
-      containers:
-      - name: elasticsearch
-        image: docker.elastic.co/elasticsearch/elasticsearch-oss:{{ elasticsearch_version }}
-        resources:
-          requests:
-            memory: 4Gi
-          limits:
-            memory: 6Gi
-        ports:
-          - containerPort: 9200
-            name: http
-          - containerPort: 9300
-            name: tcp
-        env:
-          - name: cluster.name
-            value: elasticsearch-cluster
-          - name: node.name
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          - name: discovery.zen.ping.unicast.hosts
-            value: "elasticsearch-0.es.default.svc.cluster.local,elasticsearch-1.es.default.svc.cluster.local,elasticsearch-2.es.default.svc.cluster.local"
-          - name: ES_JAVA_OPTS
-            value: -Xms4g -Xmx4g
         volumeMounts:
         - name: data
           mountPath: /usr/share/elasticsearch/data
-
       terminationGracePeriodSeconds: 300
       initContainers:
       - name: fix-the-volume-permission
-        image: busybox
+        image: docker.io/library/busybox:{{ busybox_version }}
         command:
         - sh
         - -c
@@ -128,7 +104,7 @@ spec:
         - name: data
           mountPath: /usr/share/elasticsearch/data
       - name: increase-the-vm-max-map-count
-        image: busybox
+        image: docker.io/library/busybox:{{ busybox_version }}
         command:
         - sysctl
         - -w
@@ -136,7 +112,7 @@ spec:
         securityContext:
           privileged: true
       - name: increase-the-ulimit
-        image: busybox
+        image: docker.io/library/busybox:{{ busybox_version }}
         command:
         - sh
         - -c
@@ -151,7 +127,7 @@ spec:
     spec:
       accessModes:
         - ReadWriteOnce
-      storageClassName: longhorn
+      storageClassName: {{ app_storage_class }}
       resources:
         requests:
-          storage: 10Gi
+          storage: {{ elasticsearch_disk_size_gb }}Gi

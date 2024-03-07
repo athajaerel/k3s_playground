@@ -56,10 +56,16 @@ postgresql_secret_b64: !vault |
   343932633062333332303934323462346638353661616439
 
 postgresql_data_path: '/var/lib/postgresql/data'
-postgresql_storage_class: 'local-path'
+
+app_storage_class: 'longhorn'
+
+busybox_version: '1.35.0'
 
 elasticsearch_version: '7.2.0'
 elasticsearch_disk_size_gb: '10'
+elasticsearch_ui_port: '9200'
+elasticsearch_internal_port: '9300'
+kibana_ui_port: '5601'
 
 # LoadBalancer IP address fourth bytes go here
 longhorn_ui_fourth_byte: '30'

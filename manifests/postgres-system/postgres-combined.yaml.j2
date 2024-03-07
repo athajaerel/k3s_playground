@@ -10,7 +10,7 @@ metadata:
   name: postgres-pv-claim
   namespace: postgres-system
 spec:
-  storageClassName: {{ postgresql_storage_class }}
+  storageClassName: {{ app_storage_class }}
   accessModes:
     - ReadWriteOnce
   resources:

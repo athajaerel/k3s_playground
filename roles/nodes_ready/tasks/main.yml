@@ -12,6 +12,20 @@
     path: '{{ nodename_file | dirname }}'
     state: 'directory'
 
+- name: 'Create iscsi initiator name'
+  register: 'reg_iname'
+  command:
+    argv:
+      - '/usr/bin/iscsi-iname'
+
+- name: 'Template in iscsi configs'
+  loop:
+    - '/etc/iscsi/initiatorname.iscsi'
+    - '/etc/iscsi/iscsid.conf'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+
 - name: 'Copy hostname to nodename'
   copy:
     remote_src: yes

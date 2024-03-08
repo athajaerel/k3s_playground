@@ -93,7 +93,7 @@ spec:
       terminationGracePeriodSeconds: 300
       initContainers:
       - name: fix-the-volume-permission
-        image: docker.io/library/busybox:{{ busybox_version }}
+        image: docker.io/rancher/mirrored-library-busybox:{{ busybox_version }}
         command:
         - sh
         - -c
@@ -104,7 +104,7 @@ spec:
         - name: data
           mountPath: /usr/share/elasticsearch/data
       - name: increase-the-vm-max-map-count
-        image: docker.io/library/busybox:{{ busybox_version }}
+        image: docker.io/rancher/mirrored-library-busybox:{{ busybox_version }}
         command:
         - sysctl
         - -w
@@ -112,7 +112,7 @@ spec:
         securityContext:
           privileged: true
       - name: increase-the-ulimit
-        image: docker.io/library/busybox:{{ busybox_version }}
+        image: docker.io/rancher/mirrored-library-busybox:{{ busybox_version }}
         command:
         - sh
         - -c

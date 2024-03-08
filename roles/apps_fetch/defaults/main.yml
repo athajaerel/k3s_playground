@@ -1,7 +1,7 @@
 ---
 apps_images:
   - 'postgres:{{ postgresql_version }}'
-  - 'busybox'
+  - 'docker.io/rancher/mirrored-library-busybox:{{ busybox_version }}'
   - 'docker.elastic.co/elasticsearch/elasticsearch-oss:{{ elasticsearch_version }}'
   # - 'docker.elastic.co/elasticsearch/elasticsearch:{{ elasticsearch_version }}'
   - 'docker.elastic.co/kibana/kibana:{{ elasticsearch_version }}'

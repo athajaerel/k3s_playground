@@ -38,12 +38,6 @@
     owner: 'root'
     group: 'root'
 
-- name: 'Ensure k3s directories exist'
-  loop: '{{ k3s_data_dirs }}'
-  file:
-    path: '{{ item }}'
-    state: 'directory'
-
 - name: 'Export environment to file'
   register: 'reg_environment'
   command:

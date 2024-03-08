@@ -13,13 +13,17 @@ k3s_symlinks:
 
 config_dir: '/etc/rancher/k3s'
 calico_dir: '/var/lib/calico'
+k3s_config_dir: '/var/lib/rancher/k3s'
 
 k3s_data_dirs:
   - '{{ config_dir }}'
   - '{{ calico_dir }}'
-  - '/var/lib/rancher/k3s/server'
+  - '{{ k3s_config_dir }}/server'
+  - '{{ nodename_file | dirname }}'
+  - '{{ k3s_config_dir }}/agent/images'
+  - '/etc/iscsi'
 
-k3s_token_file: '/var/lib/rancher/k3s/server/token'
+k3s_token_file: '{{ k3s_config_dir }}/server/token'
 
 k3s_binary_dir: '/usr/local/bin'
 k3s_binary: '{{ k3s_binary_dir }}/k3s'

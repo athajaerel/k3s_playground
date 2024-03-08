@@ -5,5 +5,8 @@ apps_images:
   - 'docker.elastic.co/elasticsearch/elasticsearch-oss:{{ elasticsearch_version }}'
   # - 'docker.elastic.co/elasticsearch/elasticsearch:{{ elasticsearch_version }}'
   - 'docker.elastic.co/kibana/kibana:{{ elasticsearch_version }}'
+
+  # Prometheus
+  - 'prom/prometheus:{{ prometheus_tag }}'
 ...
 # vim: set filetype=yaml

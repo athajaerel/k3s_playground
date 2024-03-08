@@ -14,8 +14,8 @@
 # Nodes won't go to Ready state without a CNI installed, but we can check they exist. Didn't know that was necessary.
 - name: 'Wait for all nodes to exist'
   register: 'reg_nodes'
-  retries: 60
-  delay: 10
+  retries: 120
+  delay: 20
   until: 'reg_nodes is success'
   delegate_to: '{{ groups.k3s_primary_masters | first }}'
   command:

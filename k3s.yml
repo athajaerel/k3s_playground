@@ -70,7 +70,6 @@
   become: yes
   tags:
     - 'bootstrap'
-    - 'bootstrap_masters'
     - 'never'
   handlers:
     - import_tasks: 'handlers/main.yml'
@@ -83,7 +82,6 @@
   become: yes
   tags:
     - 'bootstrap'
-    - 'bootstrap_masters'
     - 'never'
   handlers:
     - import_tasks: 'handlers/main.yml'
@@ -96,7 +94,6 @@
   become: yes
   tags:
     - 'bootstrap'
-    - 'bootstrap_masters'
     - 'never'
   handlers:
     - import_tasks: 'handlers/main.yml'
@@ -109,7 +106,6 @@
   become: yes
   tags:
     - 'bootstrap'
-    - 'bootstrap_masters'
     - 'never'
   handlers:
     - import_tasks: 'handlers/main.yml'
@@ -118,13 +114,12 @@
     # - 'helm_install'      # not using Helm currently
     - 'k3s_namespace_create'
 
-- name: 'Deploy software manifests'
+- name: 'Deploy core manifests'
   hosts: '{{ groups.k3s_primary_masters | first }}'
   gather_facts: no
   become: yes
   tags:
     - 'bootstrap'
-    - 'bootstrap_masters'
     - 'never'
   handlers:
     - import_tasks: 'handlers/main.yml'
@@ -140,7 +135,6 @@
   become: yes
   tags:
     - 'bootstrap'
-    - 'bootstrap_agents'
     - 'never'
   handlers:
     - import_tasks: 'handlers/main.yml'
@@ -153,7 +147,6 @@
   become: yes
   tags:
     - 'bootstrap'
-    - 'bootstrap_agents'
     - 'never'
   handlers:
     - import_tasks: 'handlers/main.yml'
@@ -166,13 +159,37 @@
   become: yes
   tags:
     - 'bootstrap'
-    - 'bootstrap_agents'
     - 'never'
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
     - 'k3s_reboot_slow'
     - 'k3s_labels_apply'
+
+#- name: 'Install user interface'
+#  hosts: 'interface'
+#  gather_facts: no
+#  become: yes
+#  tags:
+#    - 'bootstrap'
+#    - 'never'
+#  handlers:
+#    - import_tasks: 'handlers/main.yml'
+#  roles:
+#    - 'interface_install'
+
+- name: 'Fetch application manifests'
+  hosts: 'nodes'
+  gather_facts: no
+  become: yes
+  tags:
+    - 'apps_install'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'apps_fetch'        # fetch app images
+    - 'rolling_restart'
 
 - name: 'Deploy application manifests'
   hosts: '{{ groups.k3s_primary_masters | first }}'
@@ -184,27 +201,13 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'apps_fetch'        # fetch app images
     - 'apps_install'      # install app manifests (and configs)
     - 'apps_patch'        # modify installed settings (kubectl patch)
     # - 'do_nothing'        # these two let me stop and start the roles
     # - 'fail_egregiously'  # these two let me stop and start the roles
 
-- name: 'Install user interface'
-  hosts: 'interface'
-  gather_facts: no
-  become: yes
-  tags:
-    - 'bootstrap_interface'
-    - 'bootstrap'
-    - 'never'
-  handlers:
-    - import_tasks: 'handlers/main.yml'
-  roles:
-    - 'interface_install'
-
 - name: 'Smoke testing'
-  hosts: 'all'
+  hosts: '{{ groups.k3s_primary_masters | first }}'
   gather_facts: no
   become: no
   tags:

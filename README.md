@@ -16,16 +16,15 @@ Current tags:
 
 - install
 - bootstrap
-- bootstrap_masters
-- bootstrap_agents
-- bootstrap_interface
+- apps_install
+- smoke_test
 - allwall
 - rolling_restart
-- delete_cluster
+- destroy_cluster
 
-To set up a cluster, run install and bootstrap. To delete the cluster, run delete_cluster.
+To set up a cluster, run install, bootstrap and apps_install. To test the cluster, run smoke_test. To destroy the cluster, run destroy_cluster. And rolling_restart does a rolling restart of the cluster.
 
-The 'allwall' tag is to send a message to all consoles in the cluster, viz:
+The allwall tag is to send a message to all consoles in the cluster, viz:
 
     ansible-playbook -i site/work k3s.yml --tags allwall -e'msg="This is my test message. Restart of subradiante in 10 microfleems."'
 
@@ -33,19 +32,16 @@ Of course the message must be encapsulated in quotes, or you will only send the 
 
 ## Design Notes
 
-Clone rhel86-playground twelve times:
-  - k3s-mother-001
-  - k3s-mother-002
-  - k3s-mother-003
-  - k3s-child-001
-  - k3s-child-002
-  - k3s-child-003
-  - k3s-child-004
-  - k3s-child-005
-  - k3s-child-006
-  - k3s-child-007
-  - k3s-child-008
-  - k3s-child-009
+Clone rhel86-playground nine times:
+  - k3s-mother-01
+  - k3s-mother-02
+  - k3s-mother-03
+  - k3s-child-01
+  - k3s-child-02
+  - k3s-child-03
+  - k3s-child-04
+  - k3s-child-05
+  - k3s-child-06
 
 Change UUIDs:
   - ifcfg-enp10s0 [actually, don't think we need to configure a UUID for these?]

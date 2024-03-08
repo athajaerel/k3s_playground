@@ -43,6 +43,7 @@ nginx_version: 'v3.4.3'
 jettech_version: 'v1.5.0'  # ?
 certmgr_version: 'v1.14.3'
 emissary_version: '3.9.1'
+prometheus_tag: 'v2.50.1'
 
 postgresql_version: '16.2'
 postgresql_port: 5432
@@ -70,10 +71,13 @@ elasticsearch_disk_size_gb: '10'
 elasticsearch_ui_port: '9200'
 elasticsearch_internal_port: '9300'
 kibana_ui_port: '5601'
+prometheus_port: '9090'
+prometheus_disk_size_gb: '5'
 
 # LoadBalancer IP address fourth bytes go here
 longhorn_ui_fourth_byte: '30'
 postgresql_fourth_byte: '40'
 elasticsearch_fourth_byte: '50'
+prometheus_fourth_byte: '60'
 ...
 # vim: set filetype=yaml

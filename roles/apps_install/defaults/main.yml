@@ -21,5 +21,15 @@ manifest_sets:
     post_install_selectors: [ ]
     post_config_selectors: [ ]
 
+  # Prometheus
+  - prefix: 'prometheus'
+    namespace: 'monitoring-system'
+    install:
+      - 'prometheus.yaml.j2'
+    config: [ ]
+    post_install_selectors:
+      - 'app=prometheus'
+      - 'service=prometheus'
+    post_config_selectors: [ ]
 ...
 # vim: set filetype=yaml

@@ -5,19 +5,6 @@ metadata:
   name: postgres-system
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: postgres-pv-claim
-  namespace: postgres-system
-spec:
-  storageClassName: {{ app_storage_class }}
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ postgresql_disk_size_gb }}Gi
----
-apiVersion: v1
 kind: Secret
 metadata:
   name: postgres-secret-config
@@ -27,12 +14,16 @@ data:
   password: {{ postgresql_secret_b64 }}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: postgres
   namespace: postgres-system
 spec:
   replicas: {{ postgresql_replicas }}
+  selector:
+    matchLabels:
+      service: postgres
+      app: postgres
   template:
     metadata:
       labels:
@@ -57,17 +48,22 @@ spec:
                   key: password
             - name: PGDATA
               value: {{ postgresql_data_path }}/pgdata
+#   TIMESCALEDB_TELEMETRY: "off"
+# TODO: spin off another repo to work on correct replication setup
           volumeMounts:
             - mountPath: {{ postgresql_data_path }}
-              name: postgres-pv-storage
-      volumes:
-        - name: postgres-pv-storage
-          persistentVolumeClaim:
-            claimName: postgres-pv-claim
-  selector:
-    matchLabels:
-      service: postgres
-      app: postgres
+              name: postgres-pv-claim
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-pv-claim
+        namespace: postgres-system
+      spec:
+        storageClassName: {{ app_storage_class }}
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ postgresql_disk_size_gb }}Gi
 ---
 apiVersion: v1
 kind: Service

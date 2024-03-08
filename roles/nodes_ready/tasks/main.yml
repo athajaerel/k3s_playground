@@ -7,9 +7,10 @@
     regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
     replace: '# \1'
 
-- name: 'Create nodename directory'
+- name: 'Create directories'
+  loop: '{{ k3s_data_dirs }}'
   file:
-    path: '{{ nodename_file | dirname }}'
+    path: '{{ item }}'
     state: 'directory'
 
 - name: 'Create iscsi initiator name'
@@ -41,10 +42,5 @@
     line: '{{ item }}'
     insertafter: 'EOF'
     path: '/etc/hosts'
-
-- name: 'Ensure images directory exists'
-  file:
-    state: 'directory'
-    path: '/var/lib/rancher/k3s/agent/images'
 ...
 # vim: set filetype=yaml

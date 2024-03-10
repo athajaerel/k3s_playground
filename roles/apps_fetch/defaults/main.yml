@@ -1,12 +1,18 @@
 ---
 apps_images:
-  - 'postgres:{{ postgresql_version }}'
+  # Common app
   - 'docker.io/rancher/mirrored-library-busybox:{{ busybox_version }}'
+
+  # PostgreSQL
+  - 'postgres:{{ postgresql_version }}'
+
+  # Elasticsearch and Kibana
   - 'docker.elastic.co/elasticsearch/elasticsearch-oss:{{ elasticsearch_version }}'
   # - 'docker.elastic.co/elasticsearch/elasticsearch:{{ elasticsearch_version }}'
   - 'docker.elastic.co/kibana/kibana:{{ elasticsearch_version }}'
 
   # Prometheus
   - 'prom/prometheus:{{ prometheus_tag }}'
+  - 'quay.io/prometheuscommunity/postgres-exporter:{{ postgres_exporter_tag }}'
 ...
 # vim: set filetype=yaml

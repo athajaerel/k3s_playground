@@ -62,6 +62,8 @@ postgresql_secret_b64: !vault |
 
 postgresql_data_path: '/var/lib/postgresql/data'
 
+postgres_exporter_tag: 'v0.15.0'
+
 app_storage_class: 'longhorn'
 
 busybox_version: '1.36.1'
@@ -74,6 +76,8 @@ kibana_ui_port: '5601'
 prometheus_port: '9090'
 prometheus_disk_size_gb: '5'
 prometheus_replicas: 1
+
+exporter_replicas: 1
 
 # TODO:
 # kubectl describe secrets kube-metrics-reader-token -n kube-system

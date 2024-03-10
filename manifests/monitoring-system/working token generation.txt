@@ -1,0 +1,22 @@
+kube_metrics_reader_name: metrics-reader
+binding-name: add-on-cluster-admin
+
+kubectl -n kube-system create serviceaccount {{ kube_metrics_reader_name }}
+
+kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:{{ kube_metrics_reader_name }}
+
+kube-metrics-reader-token.yaml:
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: kube-metrics-reader-token
+    namespace: kube-system
+    annotations:
+      kubernetes.io/service-account.name: {{ kube_metrics_reader_name }}
+  type: kubernetes.io/service-account-token
+
+kubectl apply -f kube-metrics-reader-token.yaml
+
+kubectl describe secrets kube-metrics-reader-token -n kube-system
+
+

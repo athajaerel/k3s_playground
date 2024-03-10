@@ -112,7 +112,6 @@
   roles:
     - 'k3s_reboot_slow'
     # - 'helm_install'      # not using Helm currently
-    - 'k3s_namespace_create'
 
 - name: 'Deploy core manifests'
   hosts: '{{ groups.k3s_primary_masters | first }}'

@@ -51,20 +51,15 @@ timeouts:
   emissary: '2m'
   nginx: '2m'
 
-default_selector_type: 'pod'
-default_want_condition: 'Ready'
-
 node_selectors: '[{% for h in (groups.k3s_masters | sort) %}{{ "{" }}{% for y in [{ "selector": [h, domain] | join(".") }, {"type": "node"}, {"timeout": nodes_timeout}] %}"{{ y.keys() | first }}": "{{ y.values() | first }}",{% endfor %}{{ "}, " }}{% endfor %}]'
 
-calico_post_selectors:
+kube_selectors:
   - selector: 'k8s-app=kube-dns'
     timeout: '{{ timeouts.core }}'
   - selector: 'k8s-app=metrics-server'
     timeout: '{{ timeouts.core }}'
   - selector: 'app=local-path-provisioner'
     timeout: '{{ timeouts.core }}'
-
-###########################
 
 manifest_sets:
   - prefix: 'calico'
@@ -101,7 +96,7 @@ manifest_sets:
     install: [ ]
     config: [ ]
     post_install_selectors: [ ]
-    post_config_selectors: '{{ calico_post_selectors }}'
+    post_config_selectors: '{{ kube_selectors }}'
 
   - prefix: 'calico'
     namespace: 'calico-apiserver'

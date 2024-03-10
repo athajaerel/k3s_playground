@@ -29,6 +29,8 @@
     owner: 'root'
     group: 'root'
 
+# sudo ln -s /usr/local/bin/crictl /usr/bin/
+
 - name: 'Create scripts'
   loop: '{{ k3s_scripts }}'
   copy:

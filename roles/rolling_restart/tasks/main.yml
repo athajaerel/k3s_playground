@@ -1,4 +1,6 @@
 ---
+# TODO: redo this as a loop --- wait for node?
+
 - name: 'Reboot'
   throttle: 1
   reboot:

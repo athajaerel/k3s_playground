@@ -161,6 +161,7 @@ manifest_sets:
   - prefix: 'emissary'
     namespace: 'emissary'
     install:
+      - 'emissary-ns.yaml.j2'
       - '{{ urls.emissary }}/emissary-crds.yaml'
       - '{{ urls.emissary }}/emissary-emissaryns.yaml'
     config: [ ]

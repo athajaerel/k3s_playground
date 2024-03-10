@@ -1,12 +1,4 @@
 ---
-# Not sure I can add this to the meta hosts role as it is.
-#- name: 'Add k3s-vip to hosts file'
-#  vars:
-#    vip_name: 'k3s-vip'
-#  lineinfile:
-#    path: '/etc/hosts'
-#    line: '{{ k3s_vip_hosts_line }}'
-
 - name: 'Create emissary namespace'
   register: 'reg_ns'
   run_once: yes

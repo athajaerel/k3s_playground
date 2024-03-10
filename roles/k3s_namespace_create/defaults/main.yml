@@ -1,4 +1,0 @@
----
-k3s_vip_hosts_line: '{{ keepalived_vip_address }} {{ vip_name }}.{{ domain }} {{ vip_name }}'
-...
-# vim: set filetype=yaml

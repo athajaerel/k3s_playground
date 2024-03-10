@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-exporter
+  namespace: monitoring-system
+  labels:
+    app: postgres-exporter
+    service: postgres-exporter
+spec:
+  replicas: {{ exporter_replicas }}
+  selector:
+    matchLabels:
+      app: postgres-exporter
+      service: postgres-exporter
+  template:
+    metadata:
+      labels:
+        app: postgres-exporter
+        service: postgres-exporter
+    spec:
+      containers:
+        - name: postgres-exporter
+          image: quay.io/prometheuscommunity/postgres-exporter:{{ postgres_exporter_tag }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ exporter_port }}
+#          env:
+#            - name: POSTGRES_DB
+#              value: 
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-exporter-service
+  namespace: monitoring-system
+  labels:
+    app: prometheus-exporter
+    service: prometheus-exporter
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ exporter_port }}
+  selector:
+    app: prometheus-exporter
+    service: prometheus-exporter
+...

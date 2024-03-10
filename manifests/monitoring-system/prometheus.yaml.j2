@@ -11,9 +11,6 @@ metadata:
   name: prometheus-config
   namespace: monitoring-system
 data:
-  prom_rules.yml: |-
-    # empty
-
   prometheus.yml: |-
     global:
       scrape_interval: 60s
@@ -26,13 +23,19 @@ data:
             - targets:
                 - alertmanager:9093
     
-    rule_files:
-      - "prom_rules.yml"
-    
     scrape_configs:
       - job_name: "prometheus"
         static_configs:
           - targets: ["localhost:9090"]
+      - job_name: "kubernetes"
+        scheme: https
+        authorization:
+          type: Bearer
+          credentials: {{ kube_metrics_reader_token }}
+        tls_config:
+          insecure_skip_verify: true
+        static_configs:
+          - targets: ["{{ kube_metrics_address }}:443"]
 
 ---
 apiVersion: v1
@@ -100,8 +103,6 @@ spec:
             items:
             - key: "prometheus.yml"
               path: "prometheus.yml"
-            - key: "prom_rules.yml"
-              path: "prom_rules.yml"
   volumeClaimTemplates:
     - metadata:
         name: data

@@ -20,5 +20,8 @@
   loop: '{{ smoke_urls }}'
   uri:
     url: '{{ item }}'
+
+#- name: 'Check apps are up'
+# ...
 ...
 # vim: set filetype=yaml

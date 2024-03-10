@@ -1,5 +1,5 @@
 ---
-pause_seconds: 10
+# pause_seconds: 10
 
 manifest_sets:
   # Prometheus

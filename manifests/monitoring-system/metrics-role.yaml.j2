@@ -1,0 +1,43 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ kube_metrics_reader_name }}
+  namespace: monitoring-system
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: metrics-read-role
+rules:
+  - nonResourceURLs:
+      - "/metrics"
+    verbs:
+      - get
+
+---
+# --serviceaccount=kube-system:{{ kube_metrics_reader_name }} ?
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: metrics-read-bind
+subjects:
+  - kind: ServiceAccount
+    name: {{ kube_metrics_reader_name }}
+    namespace: monitoring-system
+roleRef:
+  kind: ClusterRole
+  name: metrics-read-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: metrics-read-token
+  namespace: monitoring-system
+  annotations:
+    kubernetes.io/service-account.name: {{ kube_metrics_reader_name }}
+type: kubernetes.io/service-account-token
+...

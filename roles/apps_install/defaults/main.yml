@@ -2,34 +2,46 @@
 pause_seconds: 10
 
 manifest_sets:
+  # Prometheus
+  - prefix: 'prometheus'
+    namespace: 'monitoring-system'
+    install:
+      - 'prometheus.yaml.j2'
+      - 'metrics-role.yaml.j2'
+    config: [ ]  # TODO: add defaults so these can go away
+    post_install_selectors:
+      - selector: 'app=prometheus'
+      - selector: 'service=prometheus'
+    post_config_selectors: [ ]
+
+  # PostgreSQL
   - prefix: 'postgresql'
     namespace: 'postgres-system'
     install:
       - 'postgres-combined.yaml.j2'
     config: [ ]
     post_install_selectors:
-      - 'app=postgres'
-      - 'service=postgres'
+      - selector: 'app=postgres'
+      - selector: 'service=postgres'
     post_config_selectors: [ ]
 
-  - prefix: 'elastic'
-    namespace: 'elastic-system'
+  - prefix: 'postgresql'
+    namespace: 'postgres-system'
     install:
-      - 'elastic.yaml.j2'
-      - 'kibana.yaml.j2'
-    config: [ ]
-    post_install_selectors: [ ]
-    post_config_selectors: [ ]
-
-  # Prometheus
-  - prefix: 'prometheus'
-    namespace: 'monitoring-system'
-    install:
-      - 'prometheus.yaml.j2'
+      - 'postgres-exporter.yaml.j2'
     config: [ ]
     post_install_selectors:
-      - 'app=prometheus'
-      - 'service=prometheus'
+      - selector: 'app=postgres-exporter'
+      - selector: 'service=postgres-exporter'
     post_config_selectors: [ ]
+
+#  - prefix: 'elastic'
+#    namespace: 'elastic-system'
+#    install:
+#      - 'elastic.yaml.j2'
+#      - 'kibana.yaml.j2'
+#    config: [ ]
+#    post_install_selectors: [ ]
+#    post_config_selectors: [ ]
 ...
 # vim: set filetype=yaml

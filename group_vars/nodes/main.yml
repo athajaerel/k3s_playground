@@ -1,4 +1,8 @@
 ---
+k3s_first_primary: '{{ groups.k3s_primary_masters | first }}'
+
+pause_seconds: 10
+
 local_path_storage_class: 'local-path-storage'
 longhorn_storage_class: 'longhorn'
 registry_pvc_storage_class: '{{ longhorn_storage_class }}'

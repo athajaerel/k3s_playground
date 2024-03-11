@@ -1,7 +1,7 @@
 ---
 - name: 'Set agent labels'
   become: yes
-  delegate_to: '{{ groups.k3s_primary_masters | first }}'
+  delegate_to: '{{ k3s_first_primary }}'
   loop: '{{ agent_labels }}'
   command:
     argv:

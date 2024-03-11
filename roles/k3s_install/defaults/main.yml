@@ -1,6 +1,4 @@
 ---
-pause_seconds: 10
-
 metallb_mode: 'manifest'
 
 metallb_data:

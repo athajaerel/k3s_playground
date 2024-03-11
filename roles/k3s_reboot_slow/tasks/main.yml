@@ -14,8 +14,6 @@
 # Nodes won't go to Ready state without a CNI installed, but we can check they exist. Didn't know that was necessary.
 - name: 'Wait for all nodes to exist'
   register: 'reg_nodes'
-  vars:
-    host: '{{ groups.k3s_primary_masters | first }}'
   failed_when:
     - 'reg_nodes is failed
        or fqdn not in (reg_nodes.json | json_query("items[*].metadata.name"))'
@@ -23,7 +21,7 @@
   delay: 20
   until: 'reg_nodes is success'
   uri:
-    url: 'https://{{ host }}:6443/api/v1/nodes'
+    url: 'https://{{ k3s_first_primary }}:6443/api/v1/nodes'
     validate_certs: no
     headers:
       Authorization: 'Bearer {{ node_token }}'

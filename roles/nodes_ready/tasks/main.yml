@@ -17,7 +17,7 @@
   register: 'reg_iname'
   command:
     argv:
-      - '/usr/bin/iscsi-iname'
+      - '{{ iscsi_iname_command[distro] }}'
 
 - name: 'Template in iscsi configs'
   loop:

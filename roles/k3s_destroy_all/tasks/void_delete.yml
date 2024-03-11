@@ -18,15 +18,13 @@
     mode: '0444'
 
 - name: 'Stop service'
-  failed_when: no
-  #runit:
-  #  name: 'k3s'
-  #  state: 'stopped'
-  command:
-    argv:
-      - '/usr/bin/sv'
-      - 'down'
-      - 'k3s'
+  file:
+    path: '/var/service/k3s'
+    state: 'absent'
+
+- name: 'Wait a sec'
+  pause:
+    seconds: 3
 
 - name: 'Uninstall service'
   file:

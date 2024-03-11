@@ -37,18 +37,6 @@
     group: 'root'
     mode: '0444'
 
-- name: 'Stop k3s service'
-  when: 'reg_stat.stat.exists'
-  failed_when: no
-  #runit:
-  #  name: 'k3s'
-  #  state: 'stopped'
-  command:
-    argv:
-      - '/usr/bin/sv'
-      - 'down'
-      - 'k3s'
-
 - name: 'Delete unneeded services'
   loop: '{{ unneeded_services + [ "k3s" ] }}'
   file:

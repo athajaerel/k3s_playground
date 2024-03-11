@@ -1,16 +1,7 @@
 ---
-#cat | sudo tee /etc/rancher/k3s/registries.yaml <<EOF
-## BEGIN ANSIBLE MANAGED BLOCK --- registry
-#mirrors:
-#  docker.io:
-#    endpoint:
-#      - 'http://127.0.0.1:30555'
-## END ANSIBLE MANAGED BLOCK --- registry
-#EOF
-
 - name: 'Set agent labels'
   become: yes
-  delegate_to: 'k3s-mother-001'
+  delegate_to: '{{ groups.k3s_primary_masters | first }}'
   loop: '{{ agent_labels }}'
   command:
     argv:

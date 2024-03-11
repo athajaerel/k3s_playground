@@ -1,8 +1,8 @@
 ---
 - name: 'Ready local project resources'
-  hosts: 'all'
-  connection: 'local'  # /!\
-  run_once: yes
+  hosts: 'all'         #    .
+  connection: 'local'  #   /!\
+  run_once: yes        #  '~~~`
   become: no
   tags:
     - 'install'

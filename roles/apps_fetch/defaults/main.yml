@@ -13,6 +13,11 @@ apps_images:
 
   # Prometheus
   - 'prom/prometheus:{{ prometheus_tag }}'
+
+  # Prometheus exporters
   - 'quay.io/prometheuscommunity/postgres-exporter:{{ postgres_exporter_tag }}'
+
+  # Grafana
+  - 'grafana/grafana:{{ grafana_tag }}'
 ...
 # vim: set filetype=yaml

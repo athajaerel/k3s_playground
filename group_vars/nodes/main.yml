@@ -55,6 +55,7 @@ jettech_version: 'v1.5.0'  # ?
 certmgr_version: 'v1.14.3'
 emissary_version: '3.9.1'
 prometheus_tag: 'v2.50.1'
+grafana_tag: '10.0.12'
 
 postgresql_version: '16.2'
 postgresql_port: 5432
@@ -88,6 +89,9 @@ prometheus_port: '9090'
 prometheus_disk_size_gb: '5'
 prometheus_replicas: 1
 
+grafana_disk_size_gb: 2
+grafana_port: '3000'
+
 exporter_replicas: 1
 
 kube_metrics_reader_name: 'metrics-reader'
@@ -100,5 +104,6 @@ longhorn_ui_fourth_byte: '30'
 postgresql_fourth_byte: '40'
 elasticsearch_fourth_byte: '50'
 prometheus_fourth_byte: '60'
+grafana_fourth_byte: '70'
 ...
 # vim: set filetype=yaml

@@ -13,6 +13,17 @@ manifest_sets:
       - selector: 'service=prometheus'
     post_config_selectors: [ ]
 
+  # Grafana
+  - prefix: 'grafana'
+    namespace: 'monitoring-system'
+    install:
+      - 'grafana.yaml.j2'
+    config: [ ]  # TODO: add defaults so these can go away
+    post_install_selectors:
+      - selector: 'app=grafana'
+      - selector: 'service=grafana'
+    post_config_selectors: [ ]
+
   # PostgreSQL
   - prefix: 'postgresql'
     namespace: 'postgres-system'

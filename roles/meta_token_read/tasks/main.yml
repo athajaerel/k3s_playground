@@ -1,7 +1,7 @@
 ---
 - name: 'Copy token file from primary'
   register: 'reg_token'
-  delegate_to: '{{ groups.k3s_primary_masters | first }}'
+  delegate_to: '{{ k3s_first_primary }}'
   run_once: yes
   slurp:
     src: '{{ k3s_token_file }}'

@@ -1,6 +1,5 @@
 ---
-# pause_seconds: 10
-
+# can "wait for" all sorts: nodes, pods, services, etc.
 manifest_sets:
   # Prometheus
   - prefix: 'prometheus'
@@ -19,18 +18,11 @@ manifest_sets:
     namespace: 'postgres-system'
     install:
       - 'postgres-combined.yaml.j2'
+      - 'postgres-exporter.yaml.j2'
     config: [ ]
     post_install_selectors:
       - selector: 'app=postgres'
       - selector: 'service=postgres'
-    post_config_selectors: [ ]
-
-  - prefix: 'postgresql'
-    namespace: 'postgres-system'
-    install:
-      - 'postgres-exporter.yaml.j2'
-    config: [ ]
-    post_install_selectors:
       - selector: 'app=postgres-exporter'
       - selector: 'service=postgres-exporter'
     post_config_selectors: [ ]
@@ -41,7 +33,9 @@ manifest_sets:
 #      - 'elastic.yaml.j2'
 #      - 'kibana.yaml.j2'
 #    config: [ ]
-#    post_install_selectors: [ ]
+#    post_install_selectors:
+#      - selector: 'app=elasticsearch'
+#      - selector: 'service=elasticsearch'
 #    post_config_selectors: [ ]
 ...
 # vim: set filetype=yaml

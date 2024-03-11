@@ -3,7 +3,7 @@
 - name: 'Loop over manifest sets'
   args:
     apply:
-      delegate_to: '{{ groups.k3s_primary_masters | first }}'
+      delegate_to: '{{ k3s_first_primary }}'
   run_once: yes
   loop: '{{ manifest_sets }}'
   loop_control:
@@ -15,7 +15,7 @@
     file: 'wait_for.yml'
 
 - name: 'Check UIs report 200 status'
-  delegate_to: '{{ groups.k3s_primary_masters | first }}'
+  delegate_to: '{{ k3s_first_primary }}'
   run_once: yes
   loop: '{{ smoke_urls }}'
   uri:

@@ -111,7 +111,6 @@
     - import_tasks: 'handlers/main.yml'
   roles:
     - 'k3s_reboot_slow'
-    # - 'do_nothing'        # these two let me stop and start the roles
     # - 'helm_install'      # not using Helm currently
 
 - name: 'Deploy core manifests'

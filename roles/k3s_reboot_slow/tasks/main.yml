@@ -14,15 +14,19 @@
 # Nodes won't go to Ready state without a CNI installed, but we can check they exist. Didn't know that was necessary.
 - name: 'Wait for all nodes to exist'
   register: 'reg_nodes'
+  vars:
+    host: '{{ groups.k3s_primary_masters | first }}'
+  failed_when:
+    - 'reg_nodes is failed
+       or fqdn not in (reg_nodes.json | json_query("items[*].metadata.name"))'
   retries: 120
   delay: 20
   until: 'reg_nodes is success'
-  delegate_to: '{{ groups.k3s_primary_masters | first }}'
-  command:
-    argv:
-      - '{{ k3s_binary_dir }}/kubectl'
-      - 'get'
-      - 'node'
-      - '{{ fqdn }}'
+  uri:
+    url: 'https://{{ host }}:6443/api/v1/nodes'
+    validate_certs: no
+    headers:
+      Authorization: 'Bearer {{ node_token }}'
+    return_content: yes
 ...
 # vim: set filetype=yaml

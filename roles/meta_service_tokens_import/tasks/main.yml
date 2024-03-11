@@ -1,0 +1,39 @@
+---
+#cat | sudo tee /etc/rancher/k3s/registries.yaml <<EOF
+## BEGIN ANSIBLE MANAGED BLOCK --- registry
+#mirrors:
+#  docker.io:
+#    endpoint:
+#      - 'http://127.0.0.1:30555'
+## END ANSIBLE MANAGED BLOCK --- registry
+#EOF
+
+# TODO: find a better way than shell module --- can't use API as it needs these
+# tokens
+- name: 'Get tokens'
+  register: 'reg_tokens'
+  vars:
+    awk_token_parse: "'/^token:/ {print $2}'"
+  delegate_to: '{{ k3s_first_primary }}'
+  run_once: yes
+  loop: '{{ tokens_needed }}'
+  shell: "/usr/local/bin/kubectl describe secret -n {{ item.namespace }} {{ item.name }} | awk {{ awk_token_parse }}"
+
+#- name: 'debug'
+#  delegate_to: '{{ k3s_first_primary }}'
+#  run_once: yes
+#  loop: '{{ reg_tokens.results }}'
+#  loop_control:
+#    label: 'nope'
+#  debug:
+#    msg: '{{ item.item.key }}={{ item.stdout }}'
+
+- name: 'Set token facts'
+  when: 'hostvars[item.item.key] is undefined'
+  loop: '{{ reg_tokens.results }}'
+  loop_control:
+    label: '{{ item.item.key }}'
+  set_fact:
+    '{{ item.item.key }}': '{{ item.stdout }}'
+...
+# vim: set filetype=yaml

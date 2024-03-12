@@ -19,5 +19,9 @@ apps_images:
 
   # Grafana
   - 'grafana/grafana:{{ grafana_tag }}'
+
+  # Dashboard
+  - 'kubernetesui/dashboard:{{ dashboard_tag }}'
+  - 'kubernetesui/metrics-scraper:{{ metrics_scraper_ui_tag }}'
 ...
 # vim: set filetype=yaml

@@ -56,6 +56,9 @@ certmgr_version: 'v1.14.3'
 emissary_version: '3.9.1'
 prometheus_tag: 'v2.50.1'
 grafana_tag: '10.0.12'
+dashboard_tag: 'v2.7.0'
+metrics_scraper_ui_tag: 'v1.0.8'  # ?
+postgres_exporter_tag: 'v0.15.0'
 
 postgresql_version: '16.2'
 postgresql_port: 5432
@@ -73,8 +76,6 @@ postgresql_secret_b64: !vault |
   6139643466313737343932633062333332303934323462346638353661616439
 
 postgresql_data_path: '/var/lib/postgresql/data'
-
-postgres_exporter_tag: 'v0.15.0'
 
 app_storage_class: 'longhorn'
 
@@ -105,5 +106,6 @@ postgresql_fourth_byte: '40'
 elasticsearch_fourth_byte: '50'
 prometheus_fourth_byte: '60'
 grafana_fourth_byte: '70'
+dashboard_fourth_byte: '80'
 ...
 # vim: set filetype=yaml

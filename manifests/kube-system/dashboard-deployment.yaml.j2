@@ -1,0 +1,6 @@
+# patch deployment.apps/kubernetes-dashboard
+spec:
+  template:
+    spec:
+      containers[0]:
+          imagePullPolicy: IfNotPresent

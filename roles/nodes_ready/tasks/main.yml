@@ -23,10 +23,13 @@
   loop:
     - '/etc/iscsi/initiatorname.iscsi'
     - '/etc/iscsi/iscsid.conf'
-    - '/etc/profile.d/bash_completion_kubectl.sh'
   template:
     src: '{{ item[1:] }}.j2'
     dest: '{{ item }}'
+
+# TODO: replace with a script?
+- name: 'Generate bash completions'
+  shell: 'kubectl completion bash | sudo tee /etc/profile.d/bbsh_completion_kubectl.sh'
 
 - name: 'Copy hostname to nodename'
   copy:

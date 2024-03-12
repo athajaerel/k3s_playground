@@ -1,0 +1,34 @@
+---
+- name: 'Check kubectl exists'
+  register: 'reg_kubectl'
+  stat:
+    path: '/usr/local/bin/kubectl'
+
+- name: 'When command exists...'
+  when: 'reg_kubectl.stat.exists'
+  block:
+    - name: 'Pre-service restart pause'
+      pause:
+        seconds: 30
+
+    - name: 'Restart k3s service'
+      service:
+        name: 'k3s'
+        state: 'restarted'
+
+    - name: 'Post-service restart pause'
+      pause:
+        seconds: 120
+
+    - name: 'Wait task'
+      vars:
+        manifest_set: { }
+        selector_list:
+          - selector: '{{ inventory_hostname }}'
+            type: 'node'
+            timeout: '2m'
+            want_condition: 'Ready'
+      include_tasks:
+        file: 'wait_for.yml'
+...
+# vim: set filetype=yaml

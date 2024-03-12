@@ -20,6 +20,7 @@ Current tags:
 - smoke_test
 - allwall
 - rolling_restart
+- rolling_service_restart
 - destroy_cluster
 
 To set up a cluster, run install, bootstrap and apps_install. To test the cluster, run smoke_test. To destroy the cluster, run destroy_cluster. And rolling_restart does a rolling restart of the cluster.

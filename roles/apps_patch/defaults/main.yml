@@ -1,11 +1,17 @@
 ---
-patches: [ ]
-#  - name: 'longhorn-frontend'
-#    path: 'longhorn_lb.yaml.j2'
-#    type: 'service'
-#    prefix: 'longhorn'
-#    namespace: 'longhorn-system'
-#
+patches:
+  - name: 'kubernetes-dashboard'
+    path: 'dashboard-service.yaml.j2'
+    type: 'service'
+    prefix: 'dashboard'
+    namespace: 'kubernetes-dashboard'
+
+  - name: 'kubernetes-dashboard'
+    path: 'dashboard-deployment.yaml.j2'
+    type: 'deployment.apps'
+    prefix: 'dashboard'
+    namespace: 'kubernetes-dashboard'
+
 #  - name: 'longhorn-storageclass'
 #    path: 'longhorn_sc.yaml.j2'
 #    type: 'configmap'

@@ -38,6 +38,15 @@ manifest_sets:
       - selector: 'service=postgres-exporter'
     post_config_selectors: [ ]
 
+  # Dashboard
+  - prefix: 'dashboard'
+    namespace: 'kube-system'
+    install:
+      - 'https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml'
+    config: [ ]
+    post_install_selectors: [ ]
+    post_config_selectors: [ ]
+
 #  - prefix: 'elastic'
 #    namespace: 'elastic-system'
 #    install:

@@ -8,5 +8,6 @@ common_pkgs:
   - 'tmux'
   - 'logrotate'
   - 'nfs-utils'
+  - 'bash-completion'
 ...
 # vim: set filetype=yaml

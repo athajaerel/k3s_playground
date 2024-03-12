@@ -19,10 +19,11 @@
     argv:
       - '{{ iscsi_iname_command[distro] }}'
 
-- name: 'Template in iscsi configs'
+- name: 'Template in configs'
   loop:
     - '/etc/iscsi/initiatorname.iscsi'
     - '/etc/iscsi/iscsid.conf'
+    - '/etc/profile.d/bash_completion_kubectl.sh'
   template:
     src: '{{ item[1:] }}.j2'
     dest: '{{ item }}'

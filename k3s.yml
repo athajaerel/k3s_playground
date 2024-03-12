@@ -60,9 +60,9 @@
   roles:
     - 'nodes_ready'
     - 'images_ready'
-    - 'k3s_base_install' # will fail if k3s_ready didn't complete once
-    # - 'do_nothing'        # these two let me stop and start the roles
-    # - 'fail_egregiously'  # these two let me stop and start the roles
+    - 'k3s_base_install' # fails if k3s_ready didn't complete once
+    # - 'do_nothing'        # these let me stop and start the roles
+    # - 'fail_egregiously'  # these let me stop and start the roles
 
 - name: 'Generate random server token'
   hosts: '{{ groups.k3s_primary_masters | first }}'
@@ -125,8 +125,8 @@
   roles:
     - 'k3s_install'       # install system manifests (and configs)
     - 'k3s_patch'         # modify installed settings (kubectl patch)
-    # - 'do_nothing'        # these two let me stop and start the roles
-    # - 'fail_egregiously'  # these two let me stop and start the roles
+    # - 'do_nothing'        # these let me stop and start the roles
+    # - 'fail_egregiously'  # these let me stop and start the roles
 
 - name: 'Bootstrap RHEL agents'
   hosts: 'k3s_agents:&rhel'
@@ -202,8 +202,8 @@
   roles:
     - 'apps_install'      # install app manifests (and configs)
     - 'apps_patch'        # modify installed settings (kubectl patch)
-    # - 'do_nothing'        # these two let me stop and start the roles
-    # - 'fail_egregiously'  # these two let me stop and start the roles
+    # - 'do_nothing'        # these let me stop and start the roles
+    # - 'fail_egregiously'  # these let me stop and start the roles
 
 - name: 'Smoke testing'
   hosts: '{{ groups.k3s_primary_masters | first }}'
@@ -217,7 +217,8 @@
   roles:
     - 'smoke_test'
 
-# Badly-designed Ansible feature (argument_spec) is unusable because it forces 'always' tag :(
+# Badly-designed Ansible feature (argument_spec) is unusable
+# because it forces 'always' tag :(
 - name: 'Alert all consoles in the cluster'
   hosts: 'all'
   gather_facts: no
@@ -241,6 +242,19 @@
     - import_tasks: 'handlers/main.yml'
   roles:
     - 'rolling_restart'
+
+- name: 'Rolling restart k3s service'
+  hosts: 'nodes'
+  gather_facts: no
+  become: yes
+  serial: 1
+  tags:
+    - 'rolling_service_restart'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'rolling_service_restart'
 
 - name: 'Purge k3s cluster'
   hosts: 'all'

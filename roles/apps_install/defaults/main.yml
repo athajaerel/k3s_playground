@@ -42,7 +42,7 @@ manifest_sets:
   - prefix: 'dashboard'
     namespace: 'kube-system'
     install:
-      - 'https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml'
+      - 'https://raw.githubusercontent.com/kubernetes/dashboard/{{ dashboard_tag }}/aio/deploy/recommended.yaml'
     config: [ ]
     post_install_selectors: [ ]
     post_config_selectors: [ ]

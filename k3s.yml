@@ -1,4 +1,5 @@
 ---
+# Install --v
 - name: 'Ready local project resources'
   hosts: 'all'         #    .
   connection: 'local'  #   /!\
@@ -97,6 +98,7 @@
   roles:
     - 'vm_snapshot_rollback'
 
+# Bootstrap --v
 - name: 'Generate random server token'
   hosts: '{{ groups.k3s_primary_masters | first }}'
   gather_facts: no
@@ -210,6 +212,7 @@
 #  roles:
 #    - 'interface_install'
 
+# Apps_install --v
 - name: 'Fetch application manifests'
   hosts: 'nodes'
   gather_facts: no
@@ -238,6 +241,7 @@
     # - 'do_nothing'        # these let me stop and start the roles
     # - 'fail_egregiously'  # these let me stop and start the roles
 
+# smoke_test --v
 - name: 'Smoke testing'
   hosts: '{{ groups.k3s_primary_masters | first }}'
   gather_facts: no

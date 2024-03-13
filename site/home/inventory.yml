@@ -19,6 +19,10 @@ void:
     nodes:
     interface:
 
+vm_guests:
+  children:
+    void:
+
 k3s_primary_masters:
   hosts:
     k3s-mother-01:

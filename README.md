@@ -19,11 +19,21 @@ Current tags:
 - apps_install
 - smoke_test
 - allwall
+- snapshot
+- revert_snapshot
 - rolling_restart
 - rolling_service_restart
 - destroy_cluster
 
-To set up a cluster, run install, bootstrap and apps_install. To test the cluster, run smoke_test. To destroy the cluster, run destroy_cluster. And rolling_restart does a rolling restart of the cluster.
+To set up a cluster, run install, bootstrap and apps_install in that order.
+
+To test the cluster, run smoke_test.
+
+To delete the cluster, run destroy_cluster.
+
+To do a rolling restart of the cluster, run rolling_restart. To just rolling restart the k3s service, run rolling_service_restart.
+
+To take a snapshot, run snapshot. To revert to the current snapshot, run revert_snapshot.
 
 The allwall tag is to send a message to all consoles in the cluster, viz:
 

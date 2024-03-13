@@ -64,6 +64,39 @@
     # - 'do_nothing'        # these let me stop and start the roles
     # - 'fail_egregiously'  # these let me stop and start the roles
 
+- name: 'Auto-snapshot'
+  gather_facts: no
+  hosts: 'vm_guests'   #    .
+  connection: 'local'  #   /!\
+  run_once: no         #  '~~~`
+  become: no
+  vars:
+    snapshot_name: 'post-install'
+  tags:
+    - 'install'
+    - 'snapshot'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'vm_snapshot_create'
+
+- name: 'Revert snapshots'
+  gather_facts: no
+  hosts: 'vm_guests'   #    .
+  connection: 'local'  #   /!\
+  run_once: no         #  '~~~`
+  become: no
+  vars:
+    snapshot_name: 'post-install'
+  tags:
+    - 'revert_snapshot'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'vm_snapshot_rollback'
+
 - name: 'Generate random server token'
   hosts: '{{ groups.k3s_primary_masters | first }}'
   gather_facts: no

@@ -19,6 +19,10 @@ rhel:
 void:
   children: { }
 
+vm_guests:
+  children:
+    rhel:
+
 k3s_primary_masters:
   hosts:
     k3s-mother-01:

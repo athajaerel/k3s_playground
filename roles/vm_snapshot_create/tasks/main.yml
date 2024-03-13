@@ -1,0 +1,35 @@
+---
+# Inverted failed_when :)
+- name: 'Commit all snapshots'
+  register: 'reg_delete_snapshot'
+  vars:
+    e_ok: 'deleted'
+    e_notfound: 'the domain does not have a current snapshot'
+    #e_file: 'No such file or directory'
+  retries: 10
+  until: 'reg_delete_snapshot is success'
+  changed_when: no
+  failed_when:
+    - 'reg_delete_snapshot.rc == 0'
+    - 'e_ok in reg_delete_snapshot.stdout'
+    - 'e_notfound not in reg_delete_snapshot.stderr'
+  command:
+    argv:
+      - 'virsh'
+      - 'snapshot-delete'
+      - '--current'
+      - '{{ fqdn }}'
+
+# - name: Check there is enough space on the hypervisor for the backing files
+
+- name: 'Create a snapshot image'
+  command:
+    argv:
+      - 'virsh'
+      - 'snapshot-create-as'
+      - '{{ fqdn }}'
+      - '{{ snapshot_name | default("snapshot") }}'
+
+# needs module? :/ 
+...
+# vim: set filetype=yaml

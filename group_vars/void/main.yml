@@ -13,6 +13,7 @@ distro_pkgs:
   - 'curl'
 
 service_command: '/usr/bin/sv'
+iscsi_iname_command: '/usr/bin/iscsi-iname'
 
 extra_unmount_points: []
 

@@ -1,30 +1,20 @@
 ---
-k3s_first_primary: '{{ groups.k3s_primary_masters | first }}'
-
 pause_seconds: 10
 
-local_path_storage_class: 'local-path-storage'
-longhorn_storage_class: 'longhorn'
-registry_pvc_storage_class: '{{ longhorn_storage_class }}'
-registry_volume_mount_path: '/var/lib/registry'
-
-iscsi_iname_command:
-  rhel: '/usr/sbin/iscsi-iname'
-  void: '/usr/bin/iscsi-iname'
+nodes_timeout: '20m'
 
 default_selector_type: 'pod'
 default_want_condition: 'Ready'
 
-nodes_timeout: '20m'
+config_dir: '/etc/rancher/k3s'
+environment_file: '{{ config_dir }}/k3s.env'
+
+k3s_first_primary: '{{ groups.k3s_primary_masters | first }}'
 
 k3s_symlinks:
   - 'kubectl'
   - 'crictl'
   - 'ctr'
-
-config_dir: '/etc/rancher/k3s'
-calico_dir: '/var/lib/calico'
-k3s_config_dir: '/var/lib/rancher/k3s'
 
 k3s_data_dirs:
   - '{{ config_dir }}'
@@ -34,8 +24,8 @@ k3s_data_dirs:
   - '{{ k3s_config_dir }}/agent/images'
   - '/etc/iscsi'
 
+k3s_config_dir: '/var/lib/rancher/k3s'
 k3s_token_file: '{{ k3s_config_dir }}/server/token'
-
 k3s_binary_dir: '/usr/local/bin'
 k3s_binary: '{{ k3s_binary_dir }}/k3s'
 
@@ -43,69 +33,9 @@ k3s_scripts:
   - '{{ k3s_binary_dir }}/k3s-killall.sh'
   - '{{ k3s_binary_dir }}/k3s-uninstall.sh'
 
-nodename_file: '{{ calico_dir }}/nodename'
-environment_file: '{{ config_dir }}/k3s.env'
-
-calico_version: 'v3.27.2'
-tigera_version: 'v1.32.5'
-longhorn_version: 'v1.5.3'
-metallb_version: 'v0.13.9'
-nginx_version: 'v3.4.3'
-jettech_version: 'v1.5.0'  # ?
-certmgr_version: 'v1.14.3'
-emissary_version: '3.9.1'
-prometheus_tag: 'v2.50.1'
-grafana_tag: '10.0.12'
-dashboard_tag: 'v2.7.0'
-metrics_scraper_ui_tag: 'v1.0.8'  # ?
-postgres_exporter_tag: 'v0.15.0'
-
-postgresql_version: '16.2'
-postgresql_port: 5432
-postgresql_user: 'myuser'
-postgresql_database: 'db0'
-postgresql_replicas: 1
-postgresql_disk_size_gb: 5
-
-postgresql_secret_b64: !vault |
-  $ANSIBLE_VAULT;1.1;AES256
-  36373131356239303335396530663033653463613934396239343162623861333
-  5386133616138313531363461376265636230613634623764316362663138610a
-  34663265396662383439616439333563383533373835366138393161663138613
-  4363539313039623030393465623366376533386461663961373263373634340a
-  6139643466313737343932633062333332303934323462346638353661616439
-
-postgresql_data_path: '/var/lib/postgresql/data'
-
-app_storage_class: 'longhorn'
-
-busybox_version: '1.36.1'
-
-elasticsearch_version: '7.2.0'
-elasticsearch_disk_size_gb: '10'
-elasticsearch_ui_port: '9200'
-elasticsearch_internal_port: '9300'
-kibana_ui_port: '5601'
-prometheus_port: '9090'
-prometheus_disk_size_gb: '5'
-prometheus_replicas: 1
-
-grafana_disk_size_gb: 2
-grafana_port: '3000'
-
-exporter_replicas: 1
-
 kube_metrics_reader_name: 'metrics-reader'
 
 # TODO: generate and apply in service? or use dns name? put into DNS? hosts file? To think about. Yeah, probably easiest to put this into the name system once and then not need to worry about it. Assuming the same IP is assigned at every cluster start, of course.
 kube_metrics_address: '10.43.75.46'  # clusterIP of "metrics-server" # home: 10.43.10.60
-
-# LoadBalancer IP address fourth bytes go here
-longhorn_ui_fourth_byte: '30'
-postgresql_fourth_byte: '40'
-elasticsearch_fourth_byte: '50'
-prometheus_fourth_byte: '60'
-grafana_fourth_byte: '70'
-dashboard_fourth_byte: '80'
 ...
 # vim: set filetype=yaml

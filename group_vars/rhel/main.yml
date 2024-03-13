@@ -8,6 +8,7 @@ distro_pkgs:
   - 'iscsi-initiator-utils'
 
 service_command: 'systemctl'
+iscsi_iname_command: '/usr/sbin/iscsi-iname'
 
 extra_unmount_points:
   - '/var/lib/nfs/rpc_pipefs'

@@ -1,0 +1,23 @@
+---
+- name: 'Roll back to latest snapshot'
+  command:
+    argv:
+      - 'virsh'
+      - 'snapshot-revert'
+      - '--current'
+      - '--running'
+      - '{{ fqdn }}'
+
+# Synchronise ship clock with nearest Federation starbase after time travel
+- name: 'Reset clock'
+  delegate_to: '{{ inventory_hostname }}'
+  connection: 'ssh'  # run remotely as 'ansible' user
+  become: yes
+  command:
+    argv:
+      - 'hwclock'
+      - '-s'
+
+# Don't restart k3s --- might not be installed yet
+...
+# vim: set filetype=yaml

@@ -19,6 +19,9 @@ void:
     nodes:
     interface:
 
+vm_guests:
+  children: { }
+
 k3s_primary_masters:
   hosts:
     gang-mother-01:

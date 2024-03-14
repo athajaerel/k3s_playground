@@ -48,12 +48,6 @@ patches:
     prefix: 'kube-system'
     namespace: 'longhorn-system'
 
-  - name: 'emissary-ingress-agent'
-    path: 'reps_3.yaml.j2'
-    type: 'deployment'
-    prefix: 'kube-system'
-    namespace: 'emissary'
-
   - name: 'cert-manager'
     path: 'reps_3.yaml.j2'
     type: 'deployment'
@@ -71,5 +65,11 @@ patches:
     type: 'deployment'
     prefix: 'kube-system'
     namespace: 'cert-manager'
+
+  - name: 'haproxy-kubernetes-ingress'
+    path: 'haproxy-image.yaml.j2'
+    type: 'deployment.apps'
+    prefix: 'haproxy-ingress'
+    namespace: 'haproxy-controller'
 ...
 # vim: set filetype=yaml

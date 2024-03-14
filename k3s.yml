@@ -53,8 +53,6 @@
   hosts: 'nodes'
   gather_facts: no
   become: yes
-  vars:
-    snapshot_name: 'post-install'
   tags:
     - 'install'
     - 'never'
@@ -64,11 +62,26 @@
     - 'nodes_ready'
     - 'images_ready'
     - 'k3s_base_install'  # fails if k3s_ready didn't complete once
-    - 'vm_snapshot_create'
     # - 'do_nothing'        # these let me stop and start the roles
     # - 'fail_egregiously'  # these let me stop and start the roles
 
 - name: 'Auto-snapshot'
+  gather_facts: no
+  hosts: 'vm_guests'   #    .
+  connection: 'local'  #   /!\
+  run_once: no         #  '~~~`
+  become: no
+  vars:
+    snapshot_name: 'post-install'
+  tags:
+    - 'install'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'vm_snapshot_create'
+
+- name: 'Manual snapshot'
   gather_facts: no
   hosts: 'vm_guests'   #    .
   connection: 'local'  #   /!\

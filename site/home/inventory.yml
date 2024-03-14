@@ -36,9 +36,7 @@ k3s_secondary_masters:
       ip_fourth_byte: '3'
 
 interface:
-  hosts:
-    rancher-admin:
-      ip_fourth_byte: '200'
+  hosts: { }
 
 k3s_agents:
   hosts:
@@ -52,7 +50,5 @@ k3s_agents:
       ip_fourth_byte: '14'
     k3s-child-05:
       ip_fourth_byte: '15'
-    k3s-child-06:
-      ip_fourth_byte: '16'
 ...
 # vim: set filetype=yaml

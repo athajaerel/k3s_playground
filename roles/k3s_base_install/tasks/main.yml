@@ -71,5 +71,10 @@
     line: '{{ item }}'
     dest: '{{ environment_file }}'
     create: yes
+
+- name: 'Generate bash completions'
+  args:
+    creates: '/etc/profile.d/bbsh_completion_kubectl.sh'
+  script: 'scripts/generate_kubectl_bash_completion.bash'
 ...
 # vim: set filetype=yaml

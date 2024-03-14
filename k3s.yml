@@ -53,6 +53,8 @@
   hosts: 'nodes'
   gather_facts: no
   become: yes
+  vars:
+    snapshot_name: 'post-install'
   tags:
     - 'install'
     - 'never'
@@ -61,7 +63,8 @@
   roles:
     - 'nodes_ready'
     - 'images_ready'
-    - 'k3s_base_install' # fails if k3s_ready didn't complete once
+    - 'k3s_base_install'  # fails if k3s_ready didn't complete once
+    - 'vm_snapshot_create'
     # - 'do_nothing'        # these let me stop and start the roles
     # - 'fail_egregiously'  # these let me stop and start the roles
 
@@ -71,10 +74,7 @@
   connection: 'local'  #   /!\
   run_once: no         #  '~~~`
   become: no
-  vars:
-    snapshot_name: 'post-install'
   tags:
-    - 'install'
     - 'snapshot'
     - 'never'
   handlers:
@@ -241,7 +241,7 @@
     # - 'do_nothing'        # these let me stop and start the roles
     # - 'fail_egregiously'  # these let me stop and start the roles
 
-# smoke_test --v
+# Smoke_test --v
 - name: 'Smoke testing'
   hosts: '{{ groups.k3s_primary_masters | first }}'
   gather_facts: no

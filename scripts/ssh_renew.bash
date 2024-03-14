@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euxo pipefail
 
+# This script exists so that Ansible treats these operations
+# as atomic, ie. doesn't lose connection halfway through.
+
 # /dev/urandom is guaranteed to return at least one byte
 # but can't guarantee more. By getting one at a time we
 # guarantee to get our full 4K.

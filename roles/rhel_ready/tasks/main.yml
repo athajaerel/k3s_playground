@@ -91,9 +91,5 @@
   register: 'reg_iptables'
   command:
     argv: '{{ install_command_prefix + prefixed_legacy_rpms }}'
-
-- name: 'Reboot'
-  when: 'reg_iptables is changed'
-  reboot:
 ...
 # vim: set filetype=yaml

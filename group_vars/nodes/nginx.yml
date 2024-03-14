@@ -1,5 +1,0 @@
----
-#nginx_version: 'v3.4.3'
-#jettech_version: 'v1.5.0'  # ?
-...
-# vim: set filetype=yaml

@@ -7,9 +7,8 @@ dependencies:
                   + longhorn_images
                   + metallb_images
                   + certmgr_images
-                  + emissary_images
+                  + haproxy_images
                }}'
-                  # + nginx_images
     role: 'meta_images_fetch'
 ...
 # vim: set filetype=yaml

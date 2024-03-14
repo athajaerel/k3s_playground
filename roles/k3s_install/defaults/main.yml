@@ -20,24 +20,21 @@ project_urls:
   longhorn: 'https://raw.githubusercontent.com/longhorn'
   metallb: 'https://raw.githubusercontent.com/metallb'
   certmgr: 'https://github.com/cert-manager'
-  emissary: 'https://app.getambassador.io/yaml/emissary'
-  nginx: 'https://raw.githubusercontent.com/kubernetes'
+  haproxy: 'https://raw.githubusercontent.com/haproxytech'
 
 version_urls:
   calico: 'calico/{{ calico_version }}'
   longhorn: 'longhorn/{{ longhorn_version }}'
   metallb: '{{ metallb_data[metallb_mode].app }}/{{ metallb_version }}'
   certmgr: 'cert-manager/releases/download/{{ certmgr_version }}'
-  emissary: '{{ emissary_version }}'
-  nginx: 'ingress-nginx/controller-{{ nginx_version }}'
+  haproxy: 'kubernetes-ingress/{{ haproxy_version }}'
 
 urls:
   calico: '{{ project_urls.calico }}/{{ version_urls.calico }}'
   longhorn: '{{ project_urls.longhorn }}/{{ version_urls.longhorn }}'
   metallb: '{{ project_urls.metallb }}/{{ version_urls.metallb }}'
   certmgr: '{{ project_urls.certmgr }}/{{ version_urls.certmgr }}'
-  emissary: '{{ project_urls.emissary }}/{{ version_urls.emissary }}'
-  nginx: '{{ project_urls.nginx }}/{{ version_urls.nginx }}'
+  haproxy: '{{ project_urls.haproxy }}/{{ version_urls.haproxy }}'
 
 # please use minutes so we can rely on seconds for polling
 timeouts:
@@ -46,8 +43,6 @@ timeouts:
   core: '20m'
   longhorn: '360m' # Longhorn takes ages to pull
   certmgr: '10m'
-  emissary: '2m'
-  nginx: '2m'
 
 node_selectors: '[{% for h in (groups.k3s_masters | sort) %}{{ "{" }}{% for y in [{ "selector": [h, domain] | join(".") }, {"type": "node"}, {"timeout": nodes_timeout}] %}"{{ y.keys() | first }}": "{{ y.values() | first }}",{% endfor %}{{ "}, " }}{% endfor %}]'
 
@@ -151,24 +146,12 @@ manifest_sets:
       - selector: 'app.kubernetes.io/instance=cert-manager'
     post_config_selectors: [ ]
 
-  - prefix: 'emissary'
-    namespace: 'emissary'
+  - prefix: 'haproxy-ingress'
+    namespace: 'haproxy-controller'
     install:
-      - 'emissary-ns.yaml.j2'
-      - '{{ urls.emissary }}/emissary-crds.yaml'
-      - '{{ urls.emissary }}/emissary-emissaryns.yaml'
+      - '{{ urls.haproxy }}/deploy/haproxy-ingress.yaml'
     config: [ ]
     post_install_selectors: [ ]
     post_config_selectors: [ ]
-
-#  - prefix: 'nginx'
-#    namespace: 'ingress-nginx'
-#    install:
-#      - '{{ urls.nginx }}/deploy/static/provider/baremetal/deploy.yaml'
-#    config: [ ]
-#    post_install_selectors:
-#      - selector: 'app.kubernetes.io/component=controller'
-#        timeout: '{{ timeouts.nginx }}'
-#    post_config_selectors: [ ]
 ...
 # vim: set filetype=yaml

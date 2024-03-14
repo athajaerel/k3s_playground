@@ -1,0 +1,6 @@
+spec:
+  template:
+    spec:
+      containers[0]:
+        image: haproxytech/kubernetes-ingress:{{ haproxy_tag }}
+        imagePullPolicy: IfNotPresent

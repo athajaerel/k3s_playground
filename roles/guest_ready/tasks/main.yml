@@ -109,11 +109,5 @@
     state: 'absent'
 
 - meta: 'flush_handlers'
-
-# only needed when /etc/hostname was changed
-- name: 'Reboot'
-  when:
-    - '(reg_config_templates.results | selectattr("item.path", "==", "/etc/hostname") | first) is changed'
-  reboot:
 ...
 # vim: set filetype=yaml

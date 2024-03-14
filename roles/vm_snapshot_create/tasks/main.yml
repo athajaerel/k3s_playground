@@ -6,6 +6,9 @@
     e_ok: 'deleted'
     e_notfound: 'the domain does not have a current snapshot'
     #e_file: 'No such file or directory'
+    cmd:
+      - 'scripts/snapshot_commit.bash'
+      - '{{ fqdn | quote }}'
   retries: 10
   until: 'reg_delete_snapshot is success'
   changed_when: no
@@ -13,22 +16,15 @@
     - 'reg_delete_snapshot.rc == 0'
     - 'e_ok in reg_delete_snapshot.stdout'
     - 'e_notfound not in reg_delete_snapshot.stderr'
-  command:
-    argv:
-      - 'virsh'
-      - 'snapshot-delete'
-      - '--current'
-      - '{{ fqdn }}'
-
-# - name: Check there is enough space on the hypervisor for the backing files
+  script: '{{ cmd | join(" ") }}'
 
 - name: 'Create a snapshot image'
-  command:
-    argv:
-      - 'virsh'
-      - 'snapshot-create-as'
-      - '{{ fqdn }}'
-      - '{{ snapshot_name | default("snapshot") }}'
+  vars:
+    cmd:
+      - 'scripts/snapshot_take.bash'
+      - '{{ fqdn | quote }}'
+      - '{{ snapshot_name | default("snapshot") | quote }}'
+  script: '{{ cmd | join(" ") }}'
 
 # needs module? :/ 
 ...

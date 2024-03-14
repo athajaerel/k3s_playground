@@ -15,9 +15,12 @@
 
 - name: 'Create iscsi initiator name'
   register: 'reg_iname'
-  command:
-    argv:
-      - '{{ iscsi_iname_command }}'
+  vars:
+    cmd:
+      - 'scripts/iscsi_name.bash'
+  args:
+    executable: '/bin/bash'
+  script: '{{ cmd | join(" ") }}'
 
 - name: 'Template in configs'
   loop:

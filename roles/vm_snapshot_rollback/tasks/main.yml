@@ -1,22 +1,25 @@
 ---
 - name: 'Roll back to latest snapshot'
-  command:
-    argv:
-      - 'virsh'
-      - 'snapshot-revert'
-      - '--current'
-      - '--running'
-      - '{{ fqdn }}'
+  vars:
+    cmd:
+      - 'scripts/snapshot_rollback.bash'
+      - '{{ fqdn | quote }}'
+  script: '{{ cmd | join(" ") }}'
 
-# Synchronise ship clock with nearest Federation starbase after time travel
+# Synchronise ship clock with nearest Federation starbase
+# after time travel
 - name: 'Reset clock'
   delegate_to: '{{ inventory_hostname }}'
   connection: 'ssh'  # run remotely as 'ansible' user
   become: yes
-  command:
-    argv:
-      - 'hwclock'
-      - '-s'
+  vars:
+    cmd:
+      - 'scripts/time_correct.bash'
+  # sometimes tries 'sh' and fails if we don't specify
+  # ah, because root user shell is 'sh' not 'bash'
+  args:
+    executable: '/bin/bash'
+  script: '{{ cmd | join(" ") }}'
 
 # Don't restart k3s --- might not be installed yet
 ...

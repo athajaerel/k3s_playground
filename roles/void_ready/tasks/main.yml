@@ -13,9 +13,12 @@
     dest: '{{ item }}'
 
 - name: 'Regenerate GRUB options'
-  command:
-    argv:
-      - '/usr/bin/update-grub'
+  vars:
+    cmd:
+      - 'scripts/grub_update.bash'
+  args:
+    executable: '/bin/bash'
+  script: '{{ cmd | join(" ") }}'
 
 - name: 'Check directory exists'
   register: 'reg_stat'

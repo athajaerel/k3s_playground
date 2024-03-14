@@ -40,13 +40,14 @@
     owner: 'root'
     group: 'root'
 
-- name: 'Export environment to file'
+- name: 'Export environment'
   register: 'reg_environment'
-  command:
-    argv:
-      - '/bin/sh'
-      - '-c'
-      - 'export'
+  vars:
+    cmd:
+      - 'scripts/env_dump.bash'
+  args:
+    executable: '/bin/bash'
+  script: '{{ cmd | join(" ") }}'
 
 - name: 'Delete environment settings'
   file:
@@ -75,6 +76,7 @@
 - name: 'Generate bash completions'
   args:
     creates: '/etc/profile.d/bbsh_completion_kubectl.sh'
+    executable: '/bin/bash'
   script: 'scripts/generate_kubectl_bash_completion.bash'
 ...
 # vim: set filetype=yaml

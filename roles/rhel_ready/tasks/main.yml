@@ -16,11 +16,12 @@
     dest: '{{ item }}'
 
 - name: 'Regenerate GRUB options'
-  command:
-    argv:
-      - '/sbin/grub2-mkconfig'
-      - '-o'
-      - '/boot/grub2/grub.cfg'
+  vars:
+    cmd:
+      - 'scripts/grub_update.bash'
+  args:
+    executable: '/bin/bash'
+  script: '{{ cmd | join(" ") }}'
 
 #- name: 'Add DNS resolver'
 #  vars:
@@ -48,10 +49,13 @@
     - 'reg_mount.rc != 0'
     - 'e_mount_notfound_fstab in reg_mount.stderr'
     - 'e_mount_no_media not in reg_mount.stderr'
-  command:
-    argv:
-      - '/bin/mount'
-      - '{{ fstab_mount }}'
+  vars:
+    cmd:
+      - 'scripts/dev_mount.bash'
+      - '{{ fstab_mount | quote }}'
+  args:
+    executable: '/bin/bash'
+  script: '{{ cmd | join(" ") }}'
 
 - name: 'Install yum repos'
   loop: '{{ yum_repos }}'
@@ -67,10 +71,12 @@
 - name: 'Freshen yum data'
   when:
     - 'e_mount_no_media not in reg_mount.stderr'
-  loop:
-    - 'clean all'
-    - '-y update'
-  command: 'yum {{ item }}'
+  vars:
+    cmd:
+      - 'scripts/yum_freshen.bash'
+  args:
+    executable: '/bin/bash'
+  script: '{{ cmd | join(" ") }}'
 
 - name: 'Stop and disable k3s'
   failed_when: no
@@ -89,7 +95,11 @@
 # TODO: figure out failed_when for yum install and changed_when so we don't reboot every time
 - name: 'Install legacy RPMs'
   register: 'reg_iptables'
-  command:
-    argv: '{{ install_command_prefix + prefixed_legacy_rpms }}'
+  vars:
+    cmd:
+      - 'scripts/yum_install.bash'
+  args:
+    executable: '/bin/bash'
+  script: '{{ (cmd + prefixed_legacy_rpms) | join(" ") }}'
 ...
 # vim: set filetype=yaml

@@ -32,13 +32,15 @@
 - name: 'Tarball up binaries'
   when: 'reg_checksum.checksum != k3s_sha256_checksum
          or not reg_tarball.stat.exists'
-  command:
-    argv:
-      - '/usr/bin/tar'
-      - 'cpzf'
-      - '{{ k3s_tarball }}'
-      - '-C'
+  vars:
+    cmd:
+      - 'scripts/tarball_create.bash'
+      - '{{ k3s_tarball | quote }}'
       - '{{ k3s_tarball | dirname }}'
       - '{{ k3s_url | basename }}'
+  args:
+    creates: '{{ k3s_tarball }}'
+    executable: '/bin/bash'
+  script: '{{ cmd | join(" ") }}'
 ...
 # vim: set filetype=yaml

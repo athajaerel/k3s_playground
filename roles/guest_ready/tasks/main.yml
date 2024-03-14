@@ -21,12 +21,14 @@
 
 # TODO: figure out failed_when for chsh
 - name: 'Change ansible user shell'
-  command:
-    argv:
-      - '{{ k3s_chsh }}'
-      - '-s'
-      - '{{ k3s_shells | first }}'
+  vars:
+    cmd:
+      - 'scripts/shell_change.bash'
+      - '{{ k3s_shells | first | quote }}'
       - 'ansible'
+  args:
+    executable: '/bin/bash'
+  script: '{{ cmd | join(" ") }}'
 
 - name: 'Create logrotate directory'
   file:
@@ -86,28 +88,13 @@
     state: 'directory'
     mode: '0000'
 
-- name: 'Set random seed'
-  notify: 'Restart sshd'
-  command:
-    argv:
-      - '/bin/dd'
-      - 'bs=1'
-      - 'count={{ "4 KB" | human_to_bytes }}'
-      - 'if=/dev/urandom'
-      - 'of=/var/lib/random-seed'
-
-# /dev/urandom is guaranteed to return at least one byte
-# but can't guarantee more. By getting one at a time we
-# guarantee to get our full 4K.
-
-# need the handler; the reboot alone reliably doesn't work on one host in twelve. wtf?
-- name: 'Delete sshd private keys'
-  notify: 'Restart sshd'
-  loop: '{{ sshd_private_key_types }}'
-  file:
-    path: '/etc/ssh/ssh_host_{{ item }}_key'
-    state: 'absent'
-
-- meta: 'flush_handlers'
+- name: 'Renewing SSH keys'
+  vars:
+    cmd:
+      - 'scripts/ssh_renew.bash'
+      - '{{ "4 KB" | human_to_bytes | quote }}'
+  args:
+    executable: '/bin/bash'
+  script: '{{ cmd | join(" ") }}'
 ...
 # vim: set filetype=yaml

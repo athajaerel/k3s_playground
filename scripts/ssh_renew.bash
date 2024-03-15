@@ -9,10 +9,10 @@ set -euxo pipefail
 # guarantee to get our full 4K.
 dd bs=1 count=$1 if=/dev/urandom of=/var/lib/random-seed
 
-rm /etc/ssh/ssh_host_ecdsa_key
-rm /etc/ssh/ssh_host_dsa_key
-rm /etc/ssh/ssh_host_ed25519_key
-rm /etc/ssh/ssh_host_rsa_key
+rm -f /etc/ssh/ssh_host_ecdsa_key
+rm -f /etc/ssh/ssh_host_dsa_key
+rm -f /etc/ssh/ssh_host_ed25519_key
+rm -f /etc/ssh/ssh_host_rsa_key
 
 if [ -x /bin/sv ]; then
     sv restart sshd

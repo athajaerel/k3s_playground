@@ -16,6 +16,8 @@
     - 'reg_delete_snapshot.rc == 0'
     - 'e_ok in reg_delete_snapshot.stdout'
     - 'e_notfound not in reg_delete_snapshot.stderr'
+  args:
+    executable: '/bin/bash'
   script: '{{ cmd | join(" ") }}'
 
 - name: 'Create a snapshot image'
@@ -24,6 +26,8 @@
       - 'scripts/snapshot_take.bash'
       - '{{ fqdn | quote }}'
       - '{{ snapshot_name | default("snapshot") | quote }}'
+  args:
+    executable: '/bin/bash'
   script: '{{ cmd | join(" ") }}'
 
 # needs module? :/ 

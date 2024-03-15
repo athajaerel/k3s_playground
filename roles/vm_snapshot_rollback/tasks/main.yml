@@ -4,6 +4,8 @@
     cmd:
       - 'scripts/snapshot_rollback.bash'
       - '{{ fqdn | quote }}'
+  args:
+    executable: '/bin/bash'
   script: '{{ cmd | join(" ") }}'
 
 # Synchronise ship clock with nearest Federation starbase

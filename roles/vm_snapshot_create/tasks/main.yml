@@ -5,7 +5,8 @@
   vars:
     e_ok: 'deleted'
     e_notfound: 'the domain does not have a current snapshot'
-    #e_file: 'No such file or directory'
+    # e_file: 'No such file or directory'
+    # e_denied: 'Permission denied'
     cmd:
       - 'scripts/snapshot_commit.bash'
       - '{{ fqdn | quote }}'

@@ -87,9 +87,6 @@ spec:
             value: "elasticsearch-0,elasticsearch-1,elasticsearch-2"
           - name: ES_JAVA_OPTS
             value: "-Xms512m -Xmx512m"
-        volumeMounts:
-        - name: data
-          mountPath: /usr/share/elasticsearch/data
       terminationGracePeriodSeconds: 300
       initContainers:
       - name: fix-the-volume-permission

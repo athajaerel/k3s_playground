@@ -101,8 +101,6 @@
   connection: 'local'  #   /!\
   run_once: no         #  '~~~`
   become: no
-  vars:
-    snapshot_name: 'post-install'
   tags:
     - 'revert_snapshot'
     - 'never'

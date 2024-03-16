@@ -1,6 +1,5 @@
 <domain type='kvm'>
-  <name>k3s-mother-002.k3s.lab</name>
-  <uuid>a04c19bd-37d3-4b45-81c5-7af2c7fe0b14</uuid>
+  <name>k3s-mother-001.k3s.lab</name>
   <metadata>
     <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
       <libosinfo:os id="http://redhat.com/rhel/8.6"/>
@@ -35,7 +34,7 @@
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2' discard='unmap'/>
-      <source file='/home/adam.richardson/.local/share/libvirt/images/k3s-mother-002.qcow2'/>
+      <source file='/home/adam.richardson/.local/share/libvirt/images/k3s-master.qcow2'/>
       <target dev='vda' bus='virtio'/>
       <boot order='1'/>
       <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
@@ -131,13 +130,13 @@
       <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
     </controller>
     <interface type='user'>
-      <mac address='52:54:00:48:4f:86'/>
+      <mac address='52:54:00:23:e0:93'/>
       <model type='virtio'/>
       <link state='up'/>
       <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
     </interface>
     <interface type='bridge'>
-      <mac address='52:54:00:c8:f0:45'/>
+      <mac address='52:54:00:28:0a:0a'/>
       <source bridge='core_bridge'/>
       <model type='virtio'/>
       <link state='up'/>

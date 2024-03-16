@@ -59,11 +59,9 @@ manifest_sets:
     namespace: 'tigera-operator'
     install:
       - '{{ urls.calico }}/manifests/tigera-operator.yaml'
-    config: [ ]
     post_install_selectors:
       - selector: 'k8s-app=tigera-operator'
         timeout: '{{ timeouts.tigera }}'
-    post_config_selectors: [ ]
 
   - prefix: 'calico'
     namespace: 'calico-system'
@@ -72,7 +70,6 @@ manifest_sets:
       - '{{ urls.calico }}/manifests/calico.yaml'
       - '{{ urls.calico }}/manifests/calicoctl.yaml'
       - '{{ urls.calico }}/manifests/custom-resources.yaml'
-    config: [ ]
     post_install_selectors:
       - selector: 'k8s-app=calico-kube-controllers'
         timeout: '{{ timeouts.calico }}'
@@ -86,25 +83,18 @@ manifest_sets:
 
   - prefix: ''
     namespace: 'kube-system'
-    install: [ ]
-    config: [ ]
-    post_install_selectors: [ ]
     post_config_selectors: '{{ kube_selectors }}'
 
   - prefix: 'calico'
     namespace: 'calico-apiserver'
-    install: [ ]
-    config: [ ]
     post_install_selectors:
       - selector: 'k8s-app=calico-apiserver'
         timeout: '{{ timeouts.calico }}'
-    post_config_selectors: [ ]
 
   - prefix: 'longhorn'
     namespace: 'longhorn-system'
     install:
       - '{{ urls.longhorn }}/deploy/longhorn.yaml'
-    config: [ ]
     post_install_selectors:
       - selector: 'app=longhorn-driver-deployer'
         timeout: '{{ timeouts.longhorn }}'
@@ -126,7 +116,6 @@ manifest_sets:
       #   timeout: '{{ timeouts.longhorn }}'
       - selector: 'app=longhorn-ui'
         timeout: '{{ timeouts.longhorn }}'
-    post_config_selectors: [ ]
 
   - prefix: 'metallb'
     namespace: 'metallb-system'
@@ -135,23 +124,17 @@ manifest_sets:
     config:
       - 'metallb-pool.yaml.j2'
     post_install_selectors: '{{ metallb_data[metallb_mode].selectors }}'
-    post_config_selectors: [ ]
 
   - prefix: 'certmgr'
     namespace: 'cert-manager'
     install:
       - '{{ urls.certmgr }}/cert-manager.yaml'
-    config: [ ]
     post_install_selectors:
       - selector: 'app.kubernetes.io/instance=cert-manager'
-    post_config_selectors: [ ]
 
   - prefix: 'haproxy-ingress'
     namespace: 'haproxy-controller'
     install:
       - '{{ urls.haproxy }}/deploy/haproxy-ingress.yaml'
-    config: [ ]
-    post_install_selectors: [ ]
-    post_config_selectors: [ ]
 ...
 # vim: set filetype=yaml

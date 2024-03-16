@@ -1,0 +1,42 @@
+---
+- name: 'Write random token'
+  copy:
+    content: '{{ lookup("password",
+                        stg_random_spec,
+                        seed=(fqdn ~ now().microsecond))
+                 | password_hash("sha256")
+                 | b64encode }}'
+    dest: '{{ stg_random_token_file }}'
+    mode: '0400'
+    owner: 'root'
+    group: 'root'
+
+# TODO: figure out failed_when for k3s server --token-file ...
+- name: 'Generate server token from random token'
+  async: '{{ stg_token_timeout_s | int }}'
+  poll: 0
+  command:
+    argv:
+      - '{{ stg_k3s_binary }}'
+      - 'server'
+      - '--token-file'
+      - '{{ stg_random_token_file }}'
+
+- name: 'Wait for file to exist'
+  wait_for:
+    delay: 1  # give it a second
+    path: '{{ stg_output_token_file }}'
+    timeout: '{{ stg_token_timeout_s | int }}'
+
+- name: 'End the token generation process'
+  register: 'reg_pkill'
+  failed_when:
+    - 'reg_pkill.rc != 0'
+    - 'reg_pkill.stderr not in ""'
+    - 'e_nonzero_rc not in reg_pkill.msg'
+  command:
+    argv:
+      - '/bin/pkill'
+      - '{{ stg_k3s_binary | basename }}'
+...
+# vim: set filetype=yaml

@@ -1,6 +1,0 @@
----
-agent_labels:
-  - 'node-role.kubernetes.io/worker=true'
-  - 'node-type=worker'
-...
-# vim: set filetype=yaml

@@ -1,0 +1,4 @@
+---
+mti_k3s_token_file: '{{ k3s_token_file }}'
+...
+# vim: set filetype=yaml

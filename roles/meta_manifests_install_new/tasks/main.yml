@@ -3,6 +3,7 @@
   loop: '{{ manifest_sets }}'
   loop_control:
     loop_var: 'manifest_set'
+    label: 'Prefix: {{ manifest_set.prefix }}'
   include_tasks:
     file: 'loop.yml'
 ...

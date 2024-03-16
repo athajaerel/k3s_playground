@@ -1,0 +1,14 @@
+---
+- name: 'Copy token file from primary'
+  register: 'reg_token'
+  delegate_to: '{{ k3s_first_primary }}'
+  run_once: yes
+  slurp:
+    src: '{{ mti_k3s_token_file }}'
+
+- name: 'Set server_token fact'
+  set_fact:
+    server_token: '{{ (reg_token.content
+                       | b64decode).split("\n")[0] }}'
+...
+# vim: set filetype=yaml

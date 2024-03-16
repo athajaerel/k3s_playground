@@ -1,0 +1,20 @@
+---
+- name: 'Create service tree'
+  file:
+    path: '{{ ve_service_log_dir }}'
+    state: 'directory'
+
+- name: 'Template in runit service'
+  loop: '{{ ve_service_files }}'
+  template:
+    src: '{{ item.file[1:] }}.j2'
+    dest: '{{ item.file }}'
+    mode: '{{ item.mode | default("0644") }}'
+
+- name: 'Enable service'
+  file:
+    src: '{{ ve_service_dir }}'
+    dest: '/var/service/{{ ve_service_dir | basename }}'
+    state: 'link'
+...
+# vim: set filetype=yaml

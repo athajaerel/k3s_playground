@@ -1,14 +1,4 @@
 ---
-# could use the vip here?
-opts_common:
-  - 'agent'
-  - '--server'
-  - 'https://{{ k3s_first_primary }}.{{ domain }}:6443'
-  - '--token'
-  - '{{ reg_token.content | b64decode }}'
-
-opts_secondary: []
-
-is_primary: no
+k3s_service_opts: 'agent {{ ve_master_url }} {{ ve_master_token.strip() }}'
 ...
 # vim: set filetype=yaml

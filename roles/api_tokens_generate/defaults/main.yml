@@ -1,0 +1,8 @@
+---
+manifest_sets:
+  - prefix: 'kube-system'
+    namespace: 'kube-system'
+    install:
+      - 'api_tokens.yaml.j2'
+...
+# vim: set filetype=yaml

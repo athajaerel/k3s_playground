@@ -1,4 +1,1 @@
-OPTS="{{ (opts_common
-          + (
-             [] if is_primary
-                else opts_secondary)) | join(' ') }}"
+OPTS="{{ k3s_service_opts }}"

@@ -1,7 +1,0 @@
----
-random_spec: '/dev/null chars=ascii_letters,digits length=64'
-random_token_file: '/etc/k3s-token'
-
-token_timeout: 120
-...
-# vim: set filetype=yaml

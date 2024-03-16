@@ -1,0 +1,10 @@
+---
+stg_random_spec: '/dev/null chars=ascii_letters,digits length=64'
+
+stg_random_token_file: '/etc/k3s-token'
+stg_output_token_file: '{{ k3s_token_file }}'
+stg_k3s_binary: '{{ k3s_binary }}'
+
+stg_token_timeout_s: 120
+...
+# vim: set filetype=yaml

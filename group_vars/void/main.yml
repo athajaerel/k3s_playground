@@ -38,18 +38,9 @@ grub2_opts:
   - 'keymap=uk'
   - 'drm.debug=0x1e'
 
-k3s_service_dir: '/etc/sv/k3s'
-
 k3s_down_file: '{{ k3s_service_dir }}/down'
 
-k3s_service_files:
-  - file: '{{ k3s_service_dir }}/log/run'
-    mode: '0755'
-  - file: '{{ k3s_service_dir }}/finish'
-    mode: '0755'
-  - file: '{{ k3s_service_dir }}/conf'
-  - file: '{{ k3s_service_dir }}/run'
-    mode: '0755'
+k3s_service_dir: '/etc/sv/k3s'
 
 unneeded_services:
   - 'agetty-hvc0'

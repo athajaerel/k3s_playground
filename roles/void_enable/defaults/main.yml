@@ -1,0 +1,33 @@
+---
+ve_service_dir: '{{ k3s_service_dir }}'
+
+ve_service_log_dir: '{{ ve_service_dir }}/log'
+
+ve_service_files:
+ - file: '{{ ve_service_dir }}/log/run'
+   mode: '0755'
+ - file: '{{ ve_service_dir }}/finish'
+   mode: '0755'
+ - file: '{{ ve_service_dir }}/conf'
+ - file: '{{ ve_service_dir }}/run'
+   mode: '0755'
+
+# TODO: use vip instead of k3s_first_primary
+ve_master_domain: 'https://{{ k3s_first_primary }}.{{ domain }}'
+
+ve_master_common_args:
+ - '--disable=servicelb'
+ - '--disable=traefik'
+ - '--flannel-backend=none'
+ - '--disable-network-policy'
+ - '--cluster-cidr=192.168.0.0/16'
+ - '--write-kubeconfig-mode=0644'
+ - '--cluster-init'
+
+ve_master_common: '{{ ve_master_common_args | join(" ") }}'
+
+ve_master_url: '--server={{ ve_master_domain }}:6443'
+
+ve_master_token: '--token={{ server_token }}'
+...
+# vim: set filetype=yaml

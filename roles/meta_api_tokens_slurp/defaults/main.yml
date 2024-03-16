@@ -1,0 +1,10 @@
+---
+mats_tokens:
+  - namespace: 'kube-system'
+    token: 'node-api-viewer-token'
+    fact: 'node_token'
+  - namespace: 'kube-system'
+    token: 'pod-api-viewer-token'
+    fact: 'pod_token'
+...
+# vim: set filetype=yaml

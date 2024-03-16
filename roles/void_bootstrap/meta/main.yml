@@ -1,5 +1,0 @@
----
-dependencies:
-  - role: 'meta_token_read'
-...
-# vim: set filetype=yaml

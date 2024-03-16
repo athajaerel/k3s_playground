@@ -110,7 +110,7 @@
     - 'vm_snapshot_rollback'
 
 # Bootstrap --v
-- name: 'Generate random server token'
+- name: 'Generate server token'
   hosts: '{{ groups.k3s_primary_masters | first }}'
   gather_facts: no
   become: yes
@@ -120,10 +120,10 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'k3s_token_create'
+    - 'server_token_generate'
 
-- name: 'Bootstrap RHEL masters'
-  hosts: 'k3s_masters:&rhel'
+- name: 'Enable k3s (RHEL)'
+  hosts: 'rhel'
   gather_facts: no
   become: yes
   tags:
@@ -132,10 +132,10 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'rhel_bootstrap'
+    - 'rhel_enable'
 
-- name: 'Bootstrap Void masters'
-  hosts: 'k3s_masters:&void'
+- name: 'Enable k3s (Void)'
+  hosts: 'void'
   gather_facts: no
   become: yes
   tags:
@@ -144,22 +144,9 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'void_bootstrap'
+    - 'void_enable'
 
-- name: 'Reboot masters and sundries'
-  hosts: 'k3s_masters'
-  gather_facts: no
-  become: yes
-  tags:
-    - 'bootstrap'
-    - 'never'
-  handlers:
-    - import_tasks: 'handlers/main.yml'
-  roles:
-    - 'k3s_reboot_slow'
-    # - 'helm_install'      # not using Helm currently
-
-- name: 'Deploy core manifests'
+- name: 'Generate API tokens'
   hosts: '{{ groups.k3s_primary_masters | first }}'
   gather_facts: no
   become: yes
@@ -169,13 +156,41 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'k3s_install'       # install system manifests (and configs)
-    - 'k3s_patch'         # modify installed settings (kubectl patch)
-    # - 'do_nothing'        # these let me stop and start the roles
-    # - 'fail_egregiously'  # these let me stop and start the roles
+    - 'api_tokens_generate'
 
-- name: 'Bootstrap RHEL agents'
-  hosts: 'k3s_agents:&rhel'
+- name: 'Reboot masters'
+  hosts: 'k3s_primary_masters'
+  gather_facts: no
+  become: yes
+  vars:
+    pre_reboot_delay_s: 10
+    post_reboot_delay_s: 20
+  tags:
+    - 'bootstrap'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'cluster_reboot'
+
+- name: 'Reboot non-masters'
+  hosts: 'nodes:!k3s_primary_masters'
+  gather_facts: no
+  become: yes
+  vars:
+    pre_reboot_delay_s: 10
+    post_reboot_delay_s: 5
+    settle_delay_s: 300
+  tags:
+    - 'bootstrap'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'cluster_reboot'
+
+- name: 'Install and patch base manifests'
+  hosts: '{{ groups.k3s_primary_masters | first }}'
   gather_facts: no
   become: yes
   tags:
@@ -184,44 +199,9 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'rhel_bootstrap'
-
-- name: 'Bootstrap Void agents'
-  hosts: 'k3s_agents:&void'
-  gather_facts: no
-  become: yes
-  tags:
-    - 'bootstrap'
-    - 'never'
-  handlers:
-    - import_tasks: 'handlers/main.yml'
-  roles:
-    - 'void_bootstrap'
-
-- name: 'Reboot agents and sundries'
-  hosts: 'k3s_agents'
-  gather_facts: no
-  become: yes
-  tags:
-    - 'bootstrap'
-    - 'never'
-  handlers:
-    - import_tasks: 'handlers/main.yml'
-  roles:
-    - 'k3s_reboot_slow'
-    - 'k3s_labels_apply'
-
-#- name: 'Install user interface'
-#  hosts: 'interface'
-#  gather_facts: no
-#  become: yes
-#  tags:
-#    - 'bootstrap'
-#    - 'never'
-#  handlers:
-#    - import_tasks: 'handlers/main.yml'
-#  roles:
-#    - 'interface_install'
+    - 'do_nothing'        # these let me stop and start the roles
+    - 'k3s_install'
+    - 'k3s_patch'
 
 # Apps_install --v
 - name: 'Fetch application manifests'

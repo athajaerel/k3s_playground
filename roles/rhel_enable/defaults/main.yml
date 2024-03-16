@@ -1,0 +1,5 @@
+---
+re_service_files:
+ - '/etc/systemd/system/k3s.service'
+...
+# vim: set filetype=yaml

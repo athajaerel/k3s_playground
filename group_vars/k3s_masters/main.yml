@@ -11,18 +11,16 @@ manifests_path_prefix: '/home/ansible/manifests'
 
 calico_network: '192.168.0.0/16'
 
-opts_common:
-  - 'server'
-  - '--disable=servicelb'
-  - '--disable=traefik'
-  - '--flannel-backend=none'
-  - '--disable-network-policy'
-  - '--cluster-cidr={{ calico_network }}'
-  - '--write-kubeconfig-mode=0644'
-  - '--cluster-init'
+k3s_service_args:
+ - 'server'
+ - '{{ ve_master_common }}'
 
-opts_secondary:
-  - '--server=https://{{ primary_group[0] }}.{{ domain }}:6443'
-  - '--token={{ server_token }}'  # seems to have newlines at the end, so don't add after this
+k3s_secondary_args:
+ - '{{ ve_master_url }}'
+ - '{{ ve_master_token.strip() }}'
+
+k3s_service_opts: '{{ (k3s_service_args if is_primary
+                      else (k3s_service_args + k3s_secondary_args))
+                      | join(" ") }}'
 ...
 # vim: set filetype=yaml

@@ -156,6 +156,7 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
+    - 'node_wait'
     - 'api_tokens_generate'
 
 - name: 'Reboot masters'
@@ -172,6 +173,7 @@
     - import_tasks: 'handlers/main.yml'
   roles:
     - 'cluster_reboot'
+    - 'node_wait'
 
 - name: 'Reboot non-masters'
   hosts: 'nodes:!k3s_primary_masters'
@@ -188,6 +190,7 @@
     - import_tasks: 'handlers/main.yml'
   roles:
     - 'cluster_reboot'
+    - 'node_wait'
 
 - name: 'Install and patch base manifests'
   hosts: '{{ groups.k3s_primary_masters | first }}'

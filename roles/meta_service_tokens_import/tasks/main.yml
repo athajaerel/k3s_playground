@@ -17,7 +17,7 @@
   delegate_to: '{{ k3s_first_primary }}'
   run_once: yes
   loop: '{{ tokens_needed }}'
-  shell: "/usr/local/bin/kubectl describe secret -n {{ item.namespace }} {{ item.name }} | awk {{ awk_token_parse }}"
+  shell: "{{ k3s_binary_dir }}/kubectl describe secret -n {{ item.namespace }} {{ item.name }} | awk {{ awk_token_parse }}"
 
 #- name: 'debug'
 #  delegate_to: '{{ k3s_first_primary }}'

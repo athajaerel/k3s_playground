@@ -75,7 +75,7 @@
 
 - name: 'Generate bash completions'
   args:
-    creates: '/etc/profile.d/bbsh_completion_kubectl.sh'
+    # creates: '/etc/profile.d/bbsh_completion_kubectl.sh'
     executable: '/bin/bash'
   script: 'scripts/generate_kubectl_bash_completion.bash'
 ...

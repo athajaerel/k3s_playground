@@ -11,6 +11,7 @@ distro_pkgs:
   - 'open-iscsi'
   - 'jq'
   - 'curl'
+  - 'acl'
 
 service_command: '/usr/bin/sv'
 iscsi_iname_command: '/usr/bin/iscsi-iname'

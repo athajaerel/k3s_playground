@@ -6,6 +6,7 @@ k3s_clobber_files_distro:
 distro_pkgs:
   - 'util-linux-user'
   - 'iscsi-initiator-utils'
+  - 'acl'
 
 service_command: 'systemctl'
 iscsi_iname_command: '/usr/sbin/iscsi-iname'

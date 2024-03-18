@@ -43,7 +43,7 @@ Of course the message must be encapsulated in quotes, or you will only send the 
 
 ## Design Notes
 
-Clone rhel86-playground nine times:
+Clone rhel86-playground eight times:
   - k3s-mother-01
   - k3s-mother-02
   - k3s-mother-03
@@ -52,7 +52,6 @@ Clone rhel86-playground nine times:
   - k3s-child-03
   - k3s-child-04
   - k3s-child-05
-  - k3s-child-06
 
 Change UUIDs:
   - ifcfg-enp10s0 [actually, don't think we need to configure a UUID for these?]

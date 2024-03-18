@@ -1,6 +1,5 @@
 <domain type='kvm'>
-  <name>k3s-mother-003.k3s.lab</name>
-  <uuid>a27cdf07-ca1c-4736-97cf-4dc89c106a13</uuid>
+  <name>k3s-child-002.k3s.lab</name>
   <metadata>
     <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
       <libosinfo:os id="http://redhat.com/rhel/8.6"/>
@@ -35,17 +34,10 @@
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2' discard='unmap'/>
-      <source file='/home/adam.richardson/.local/share/libvirt/images/k3s-mother-003.qcow2'/>
+      <source file='/home/adam.richardson/.local/share/libvirt/images/k3s-child-002.qcow2'/>
       <target dev='vda' bus='virtio'/>
       <boot order='1'/>
       <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
-    </disk>
-    <disk type='file' device='cdrom'>
-      <driver name='qemu' type='raw'/>
-      <target dev='sda' bus='sata'/>
-      <readonly/>
-      <boot order='2'/>
-      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='usb' index='0' model='qemu-xhci' ports='15'>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
@@ -131,16 +123,14 @@
       <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
     </controller>
     <interface type='user'>
-      <mac address='52:54:00:d6:e7:b7'/>
+      <mac address='52:54:00:96:f8:4d'/>
       <model type='virtio'/>
-      <link state='up'/>
       <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
     </interface>
     <interface type='bridge'>
-      <mac address='52:54:00:88:cf:d0'/>
+      <mac address='52:54:00:01:40:c5'/>
       <source bridge='core_bridge'/>
       <model type='virtio'/>
-      <link state='up'/>
       <address type='pci' domain='0x0000' bus='0x0a' slot='0x00' function='0x0'/>
     </interface>
     <serial type='pty'>

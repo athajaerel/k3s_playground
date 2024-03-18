@@ -14,26 +14,5 @@
     prompt: |
       This might take a while. Pausing for {{ delay_text }}.
     seconds: '{{ settle_delay_s | int }}'
-
-# TODO: see what effect async and poll have on this task, maybe use
-# it more
-# TODO: figure out failed_when condition for kubectl wait
-# Nodes won't go to Ready state without a CNI installed, but we can
-# check they exist. Didn't know that was necessary.
-- name: 'Wait for all nodes to exist'
-  register: 'reg_nodes'
-  failed_when:
-    - 'reg_nodes is failed
-       or fqdn not in (reg_nodes.json | json_query("items[*].metadata.name"))'
-  retries: 100
-  delay: 30
-  until: 'reg_nodes is success'
-  delegate_to: '{{ k3s_first_primary }}'
-  uri:
-    url: 'https://{{ k3s_first_primary }}:6443/api/v1/nodes'
-    validate_certs: no
-    headers:
-      Authorization: 'Bearer {{ node_token }}'
-    return_content: yes
 ...
 # vim: set filetype=yaml

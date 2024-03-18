@@ -2,7 +2,7 @@
 - name: 'Check kubectl exists'
   register: 'reg_kubectl'
   stat:
-    path: '/usr/local/bin/kubectl'
+    path: '{{ k3s_binary_dir }}/kubectl'
 
 - name: 'When command exists...'
   when: 'reg_kubectl.stat.exists'

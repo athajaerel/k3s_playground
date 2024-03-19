@@ -75,6 +75,8 @@
     regexp: '^{{ regex_prefix }}((:?(?!{{ regex_negative_lookahead }}).)*?){{ regex_suffix }}$'
     replace: '\1{{ replace_internal }}\4'
 
+# This one has a variety of ways to fail, and it's not even using command
+# module. :/ TODO: Possibly replace with script?
 - name: 'Create local repo mountpoint'
   register: 'reg_mkdir'
   vars:
@@ -83,6 +85,9 @@
     - 'reg_mkdir.module_stdout is defined'
     - 'reg_mkdir.rc != 0'
     - 'e_mkdir_readonly not in reg_mkdir.module_stdout'
+    - 'e_mkdir_readonly not in reg_mkdir.module_stderr'
+    - 'e_mkdir_exists not in reg_mkdir.module_stdout'
+    - 'e_mkdir_exists not in reg_mkdir.module_stderr'
   file:
     path: '/mnt/disc'
     state: 'directory'

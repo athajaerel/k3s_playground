@@ -21,6 +21,8 @@ e_selinux_notexists: 'does not exist'
 
 e_mkdir_readonly: 'Read-only file system'
 
+e_mkdir_exists: 'File exists'
+
 e_nonzero_rc: 'non-zero return code'
 
 e_ns_already: 'Error from server (AlreadyExists): namespaces'

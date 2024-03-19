@@ -65,7 +65,7 @@
     # - 'do_nothing'        # these let me stop and start the roles
     # - 'fail_egregiously'  # these let me stop and start the roles
 
-- name: 'Auto-snapshot'
+- name: 'Post-install auto-snapshot'
   gather_facts: no
   hosts: 'vm_guests'   #    .
   connection: 'local'  #   /!\
@@ -203,6 +203,22 @@
   roles:
     - 'k3s_install'
     - 'k3s_patch'
+
+- name: 'Post-bootstrap auto-snapshot'
+  gather_facts: no
+  hosts: 'vm_guests'   #    .
+  connection: 'local'  #   /!\
+  run_once: no         #  '~~~`
+  become: no
+  vars:
+    snapshot_name: 'post-bootstrap'
+  tags:
+    - 'bootstrap'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'vm_snapshot_create'
 
 # Apps_install --v
 - name: 'Fetch application manifests'

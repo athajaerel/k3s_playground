@@ -4,7 +4,7 @@ keepalived_vip_prefix: '{{ network | ipv4(keepalived_vip_fourth_byte) | ipv4("pr
 keepalived_notify_to: 'admin@{{ domain }}'
 keepalived_notify_from: '{{ inventory_hostname }}@{{ domain }}'
 
-primary_group: '{{ groups["k3s_primary_masters"] | list }}'
+primary_group: '{{ groups.k3s_primary_masters | list }}'
 is_primary: '{{ (inventory_hostname in primary_group) | bool }}'
 
 manifests_path_prefix: '/home/ansible/manifests'
@@ -13,11 +13,11 @@ calico_network: '192.168.0.0/16'
 
 k3s_service_args:
  - 'server'
- - '{{ ve_master_common }}'
+ - '{{ k3s_master_common }}'
 
 k3s_secondary_args:
- - '{{ ve_master_url }}'
- - '{{ ve_master_token.strip() }}'
+ - '{{ k3s_master_url }}'
+ - '{{ k3s_master_token.strip() }}'
 
 k3s_service_opts: '{{ (k3s_service_args if is_primary
                       else (k3s_service_args + k3s_secondary_args))

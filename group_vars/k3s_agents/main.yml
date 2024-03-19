@@ -1,4 +1,4 @@
 ---
-k3s_service_opts: 'agent {{ ve_master_url }} {{ ve_master_token.strip() }}'
+k3s_service_opts: 'agent {{ k3s_master_url }} {{ k3s_master_token.strip() }}'
 ...
 # vim: set filetype=yaml

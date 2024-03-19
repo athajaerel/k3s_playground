@@ -33,6 +33,24 @@ k3s_scripts:
   - '{{ k3s_binary_dir }}/k3s-killall.sh'
   - '{{ k3s_binary_dir }}/k3s-uninstall.sh'
 
+# TODO: use vip instead of k3s_first_primary
+k3s_master_domain: 'https://{{ k3s_first_primary }}.{{ domain }}'
+
+k3s_master_common_args:
+ - '--disable=servicelb'
+ - '--disable=traefik'
+ - '--flannel-backend=none'
+ - '--disable-network-policy'
+ - '--cluster-cidr=192.168.0.0/16'
+ - '--write-kubeconfig-mode=0644'
+ - '--cluster-init'
+
+k3s_master_common: '{{ k3s_master_common_args | join(" ") }}'
+
+k3s_master_url: '--server={{ k3s_master_domain }}:6443'
+
+k3s_master_token: '--token={{ server_token }}'
+
 kube_metrics_reader_name: 'metrics-reader'
 
 # TODO: generate and apply in service? or use dns name? put into DNS? hosts file? To think about. Yeah, probably easiest to put this into the name system once and then not need to worry about it. Assuming the same IP is assigned at every cluster start, of course.

@@ -1,7 +1,7 @@
 ---
 - name: 'Create service tree'
   file:
-    path: '{{ ve_service_log_dir }}'
+    path: '{{ k3s_service_dir }}/log'
     state: 'directory'
 
 - name: 'Template in runit service'
@@ -13,8 +13,8 @@
 
 - name: 'Enable service'
   file:
-    src: '{{ ve_service_dir }}'
-    dest: '/var/service/{{ ve_service_dir | basename }}'
+    src: '{{ k3s_service_dir }}'
+    dest: '/var/service/{{ k3s_service_dir | basename }}'
     state: 'link'
 ...
 # vim: set filetype=yaml

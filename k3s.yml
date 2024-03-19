@@ -156,7 +156,7 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'node_wait'
+    - 'node_wait_tokenless'
     - 'api_tokens_generate'
 
 - name: 'Reboot masters'
@@ -173,7 +173,7 @@
     - import_tasks: 'handlers/main.yml'
   roles:
     - 'cluster_reboot'
-    - 'node_wait'
+    - 'node_wait_tokenless'
 
 - name: 'Reboot non-masters'
   hosts: 'nodes:!k3s_primary_masters'
@@ -182,7 +182,6 @@
   vars:
     pre_reboot_delay_s: 10
     post_reboot_delay_s: 5
-    settle_delay_s: 300
   tags:
     - 'bootstrap'
     - 'never'
@@ -190,7 +189,7 @@
     - import_tasks: 'handlers/main.yml'
   roles:
     - 'cluster_reboot'
-    - 'node_wait'
+    - 'node_wait_tokenless'
 
 - name: 'Install and patch base manifests'
   hosts: '{{ groups.k3s_primary_masters | first }}'
@@ -202,7 +201,6 @@
   handlers:
     - import_tasks: 'handlers/main.yml'
   roles:
-    - 'do_nothing'        # these let me stop and start the roles
     - 'k3s_install'
     - 'k3s_patch'
 

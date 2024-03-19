@@ -3,23 +3,21 @@
 # it more
 # Nodes won't go to Ready state without a CNI installed, but we can
 # check they exist. Didn't know that was necessary.
+# Wait for node without using the API, because that requires tokens
+# which don't exist yet
 - name: 'Wait for all nodes to exist'
   register: 'reg_nodes'
-  failed_when:
-    - 'reg_nodes is failed
-       or reg_nodes.rc != 0
-       or fqdn not in (reg_nodes.json | json_query("items[*].metadata.name"))'
   retries: 100
-  delay: 30
+  delay: 20
   until:
     - 'reg_nodes is success'
-    - 'reg_nodes.rc == 0'
   delegate_to: '{{ k3s_first_primary }}'
-  uri:
-    url: 'https://{{ k3s_first_primary }}:6443/api/v1/nodes'
-    validate_certs: no
-    headers:
-      Authorization: 'Bearer {{ node_token }}'
-    return_content: yes
+  vars:
+    cmd:
+      - 'scripts/node_wait_tokenless.bash'
+      - '{{ fqdn }}'
+  args:
+    executable: '/bin/bash'
+  script: '{{ cmd | join(" ") }}'
 ...
 # vim: set filetype=yaml

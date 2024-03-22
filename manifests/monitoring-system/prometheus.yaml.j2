@@ -35,7 +35,7 @@ data:
         tls_config:
           insecure_skip_verify: true
         static_configs:
-          - targets: ["{{ kube_metrics_address }}:443"]
+          - targets: ["metrics-server.kube-system:443"]
 
 ---
 apiVersion: v1

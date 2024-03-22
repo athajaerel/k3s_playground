@@ -1,5 +1,5 @@
 ---
 dependencies:
-  - role: 'meta_api_tokens_slurp'
+  - role: 'meta_service_tokens_import'
 ...
 # vim: set filetype=yaml

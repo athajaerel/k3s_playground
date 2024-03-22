@@ -1,13 +1,13 @@
 ---
 tokens_needed:
   - key: 'node_token'
-    name: 'node-api-viewer-token'
+    token: 'node-api-viewer-token'
     namespace: 'kube-system'
   - key: 'pod_token'
-    name: 'pod-api-viewer-token'
+    token: 'pod-api-viewer-token'
     namespace: 'kube-system'
   - key: 'kube_metrics_reader_token'
-    name: 'metrics-read-token'
+    token: 'metrics-read-token'
     namespace: 'monitoring-system'
 ...
 # vim: set filetype=yaml

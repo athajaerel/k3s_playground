@@ -1,0 +1,25 @@
+---
+- name: 'Get cluster info'
+  register: 'reg_info'
+  delegate_to: '{{ k3s_first_primary }}'
+  run_once: yes
+  vars:
+    cmd:
+      - 'scripts/cluster_describe.bash'
+  args:
+    executable: '/bin/bash'
+  script: '{{ cmd | join(" ") }}'
+
+- name: 'Template in kubeconfig'
+  vars:
+    cluster_info: '{{ reg_info.stdout_lines[0] }}'
+    cluster_name: '{{ cluster_info.cluster_name }}'
+    cluster_ca_cert: '{{ cluster_info.cluster_ca_cert }}'
+    sa_secret_token: '{{ cluster_info.sa_secret_token }}'
+  loop:
+    - '/etc/rancher/k3s/k3s.yaml'
+  template:
+    src: '{{ item[1:] }}.j2'
+    dest: '{{ item }}'
+...
+# vim: set filetype=yaml

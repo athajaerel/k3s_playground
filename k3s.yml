@@ -191,6 +191,18 @@
     - 'cluster_reboot'
     - 'node_wait_tokenless'
 
+- name: 'Install kubeconfigs'
+  hosts: '{{ groups.k3s_agents }}'
+  gather_facts: no
+  become: yes
+  tags:
+    - 'bootstrap'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'agent_configure'
+
 - name: 'Install and patch base manifests'
   hosts: '{{ groups.k3s_primary_masters | first }}'
   gather_facts: no

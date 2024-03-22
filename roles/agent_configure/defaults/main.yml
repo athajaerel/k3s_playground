@@ -1,0 +1,11 @@
+---
+manifest_sets:
+  - prefix: 'tokens'
+    namespace: 'kube-system'
+    install:
+      - 'admin_token.yaml.j2'
+
+cluster_admin_user: 'cluster-admin'
+cluster_endpoint: 'https://{{ k3s_first_primary }}.{{ domain }}:6443'
+...
+# vim: set filetype=yaml

@@ -52,8 +52,5 @@ k3s_master_url: '--server={{ k3s_master_domain }}:6443'
 k3s_master_token: '--token={{ server_token }}'
 
 kube_metrics_reader_name: 'metrics-reader'
-
-# TODO: generate and apply in service? or use dns name? put into DNS? hosts file? To think about. Yeah, probably easiest to put this into the name system once and then not need to worry about it. Assuming the same IP is assigned at every cluster start, of course.
-kube_metrics_address: '10.43.75.46'  # clusterIP of "metrics-server" # home: 10.43.10.60
 ...
 # vim: set filetype=yaml

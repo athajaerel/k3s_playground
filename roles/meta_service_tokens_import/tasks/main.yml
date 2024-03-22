@@ -12,12 +12,17 @@
 # tokens
 - name: 'Get tokens'
   register: 'reg_tokens'
+  loop: '{{ tokens_needed }}'
   vars:
-    awk_token_parse: "'/^token:/ {print $2}'"
+    cmd:
+      - 'scripts/api_token_view.bash'
+      - '{{ item.namespace }}'
+      - '{{ item.token }}'
   delegate_to: '{{ k3s_first_primary }}'
   run_once: yes
-  loop: '{{ tokens_needed }}'
-  shell: "{{ k3s_binary_dir }}/kubectl describe secret -n {{ item.namespace }} {{ item.name }} | awk {{ awk_token_parse }}"
+  args:
+    executable: '/bin/bash'
+  script: '{{ cmd | join(" ") }}'
 
 #- name: 'debug'
 #  delegate_to: '{{ k3s_first_primary }}'

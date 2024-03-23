@@ -1,24 +1,22 @@
 ---
 - name: 'Restart keepalived'
   become: yes
-  # service:
-  #   name: 'keepalived'
-  #   state: 'restarted'
-  command:
-    argv:
-      - '{{ service_command }}'
-      - 'restart'
+  vars:
+    cmd:
+      - 'scripts/service_restart.bash'
       - 'keepalived'
+  args:
+    executable: '/bin/bash'
+  script: '{{ cmd | join(" ") }}'
 
 - name: 'Restart sshd'
   become: yes
-  # service:
-  #   name: 'sshd'
-  #   state: 'restarted'
-  command:
-    argv:
-      - '{{ service_command }}'
-      - 'restart'
+  vars:
+    cmd:
+      - 'scripts/service_restart.bash'
       - 'sshd'
+  args:
+    executable: '/bin/bash'
+  script: '{{ cmd | join(" ") }}'
 ...
 # vim: set filetype=yaml

@@ -1,6 +1,4 @@
 ---
-# /etc/rancher/k3s/k3s.yaml ?
-
 - name: 'Disable swap'
   replace:
     path: '/etc/fstab'
@@ -23,9 +21,13 @@
   script: '{{ cmd | join(" ") }}'
 
 - name: 'Template in configs'
+  vars:
+    public_time_servers:
+      - 'pool.ntp.org'
   loop:
     - '/etc/iscsi/initiatorname.iscsi'
     - '/etc/iscsi/iscsid.conf'
+    - '/etc/chrony/chrony.conf'
   template:
     src: '{{ item[1:] }}.j2'
     dest: '{{ item }}'

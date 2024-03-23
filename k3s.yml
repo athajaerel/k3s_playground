@@ -257,7 +257,7 @@
     - import_tasks: 'handlers/main.yml'
   roles:
     - 'apps_install'      # install app manifests (and configs)
-    - 'apps_patch'        # modify installed settings (kubectl patch)
+    - 'apps_patch'        # modify installed settings (kube-ctl patch)
     # - 'do_nothing'        # these let me stop and start the roles
     # - 'fail_egregiously'  # these let me stop and start the roles
 

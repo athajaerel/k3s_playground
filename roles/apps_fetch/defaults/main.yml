@@ -11,6 +11,9 @@ apps_images:
   # - 'docker.elastic.co/elasticsearch/elasticsearch:{{ elasticsearch_version }}'
   - 'docker.elastic.co/kibana/kibana:{{ elasticsearch_version }}'
 
+  # OpenLDAP
+  - 'docker.io/bitnami/openldap:{{ openldap_tag }}'
+
   # Prometheus
   - 'prom/prometheus:{{ prometheus_tag }}'
 

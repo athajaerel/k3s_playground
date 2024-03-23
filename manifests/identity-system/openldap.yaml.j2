@@ -1,0 +1,115 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: identity-system
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: openldap
+  namespace: identity-system
+data:
+  adminpassword: {{ openldap_admin_pw | b64encode }} # YWRtaW5wYXNzd29yZA==
+  users: {{ openldap_users | b64encode }} # dXNlcjAxLHVzZXIwMg==
+  passwords: {{ openldap_passwords | b64encode }} # cGFzc3dvcmQwMSxwYXNzd29yZDAy
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: openldap
+  namespace: identity-system
+spec:
+  storageClassName: {{ app_storage_class }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ openldap_disk_size_gb }}Gi
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: openldap
+  namespace: identity-system
+  labels:
+    app.kubernetes.io/name: openldap
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openldap
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: openldap
+    spec:
+      securityContext:
+        runAsUser: {{ openldap_uid }} # 1001
+        fsGroup: {{ openldap_gid }} # 1001
+      containers:
+        - name: openldap
+          image: docker.io/bitnami/openldap:{{ openldap_tag }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: LDAP_ADMIN_USERNAME
+              value: "{{ openldap_admin_user }}"
+            - name: LDAP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: adminpassword
+                  name: openldap
+            - name: LDAP_USERS
+              valueFrom:
+                secretKeyRef:
+                  key: users
+                  name: openldap
+            - name: LDAP_PASSWORDS
+              valueFrom:
+                secretKeyRef:
+                  key: passwords
+                  name: openldap
+            - name: LDAP_ROOT
+              value: {{ openldap_root_dn }}
+            - name: LDAP_ADMIN_DN
+              value: cn={{ openldap_admin_user }},{{ openldap_root_dn }}
+          ports:
+            - name: tcp-ldap
+              containerPort: {{ openldap_port }}
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        app: openldap
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: {{ app_storage_class }}
+      resources:
+        requests:
+          storage: {{ openldap_disk_size_gb }}Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openldap
+  namespace: identity-system
+  labels:
+    app.kubernetes.io/name: openldap
+spec:
+  type: LoadBalancer
+  loadBalancerIP: {{ loadbalancer_pool_network | ipv4(openldap_fourth_byte) | ipv4("address") }}
+  ports:
+    - name: tcp-ldap
+      port: {{ openldap_port }}
+      targetPort: tcp-ldap
+  selector:
+    app.kubernetes.io/name: openldap
+...

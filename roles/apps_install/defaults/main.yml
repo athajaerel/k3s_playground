@@ -1,6 +1,14 @@
 ---
 # can "wait for" all sorts: nodes, pods, services, etc.
 manifest_sets:
+  # OpenLDAP
+  - prefix: 'openldap'
+    namespace: 'identity-system'
+    install:
+      - 'openldap.yaml.j2'
+    post_install_selectors:
+      - selector: 'app.kubernetes.io/name=openldap'
+
   # Prometheus
   - prefix: 'prometheus'
     namespace: 'monitoring-system'

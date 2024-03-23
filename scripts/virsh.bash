@@ -7,4 +7,3 @@ HOSTS='k3s-mother-01 k3s-mother-02 k3s-mother-03 k3s-child-01 k3s-child-02 k3s-c
 for HOST in ${HOSTS}; do
 	virsh ${ACTION} ${HOST}.${DOMAIN}
 done
-

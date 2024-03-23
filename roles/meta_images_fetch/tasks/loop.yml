@@ -33,6 +33,11 @@
       - '/dev/shm/{{ tarfile }}'
 
 - name: 'Copy image into cluster'
+  register: 'reg_images'
+  retries: 10
+  delay: 5
+  until:
+    - 'reg_images is success'
   copy:
     src: '/dev/shm/{{ tarfile }}'
     dest: '/var/lib/rancher/k3s/agent/images/'

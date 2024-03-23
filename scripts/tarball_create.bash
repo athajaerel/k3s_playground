@@ -1,4 +1,4 @@
 #!/bin/bash
 set -euxo pipefail
 
-tar cpzf "$1" -C "$2" ${@:3}
+/usr/bin/tar cpzf "$1" -C "$2" ${@:3}

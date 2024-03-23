@@ -1,0 +1,13 @@
+---
+- name: 'Stop cluster'
+  vars:
+    cmd:
+      - 'scripts/virsh_control.bash'
+      - 'shutdown'
+      - '{{ item }}.{{ domain }}'
+  loop: '{{ groups.nodes }}'
+  args:
+    executable: '/bin/bash'
+  script: '{{ cmd | join(" ") }}'
+...
+# vim: set filetype=yaml

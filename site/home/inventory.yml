@@ -48,7 +48,7 @@ k3s_agents:
       ip_fourth_byte: '13'
     k3s-child-04:
       ip_fourth_byte: '14'
-    k3s-child-05:
-      ip_fourth_byte: '15'
+    # k3s-child-05:
+    #   ip_fourth_byte: '15'
 ...
 # vim: set filetype=yaml

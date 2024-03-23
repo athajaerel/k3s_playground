@@ -6,9 +6,10 @@ You need some VMs prepared with passwordless SSH login for user ansible set up. 
 
 To run:
 
-$ ansible-playbook k3s.yml -i site/whatever --tags=choose_a_tag --ask-vault-password
+    $ ansible-playbook k3s.yml -i site/whatever \
+    --tags=choose_a_tag --ask-vault-password
 
-(Vault password is now required, password is 'password' for this demo system.)
+(Vault password is only required for apps_install, password is 'password' for this demo system.)
 
 Tags must be specified as all plays have the 'never' tag.
 
@@ -24,6 +25,8 @@ Current tags:
 - rolling_restart
 - rolling_service_restart
 - destroy_cluster
+- start_cluster
+- stop_cluster
 
 To set up a cluster, run install, bootstrap and apps_install in that order.
 
@@ -31,13 +34,19 @@ To test the cluster, run smoke_test.
 
 To delete the cluster, run destroy_cluster.
 
+To start the cluster, run start_cluster.
+
+To stop the cluster, run stop_cluster.
+
 To do a rolling restart of the cluster, run rolling_restart. To just rolling restart the k3s service, run rolling_service_restart.
 
 To take a snapshot, run snapshot. To revert to the current snapshot, run revert_snapshot.
 
 The allwall tag is to send a message to all consoles in the cluster, viz:
 
-    ansible-playbook -i site/work k3s.yml --tags allwall -e'msg="This is my test message. Restart of subradiante in 10 microfleems."'
+    ansible-playbook -i site/work k3s.yml --tags allwall \
+    -e'msg="This is my test message. Restart of \
+    subradiante in 10 microfleems."'
 
 Of course the message must be encapsulated in quotes, or you will only send the first word.
 

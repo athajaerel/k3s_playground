@@ -324,5 +324,33 @@
     - import_tasks: 'handlers/main.yml'
   roles:
     - 'k3s_destroy_all'
+
+- name: 'Stop k3s cluster'
+  gather_facts: no
+  hosts: 'all'         #    .
+  connection: 'local'  #   /!\
+  run_once: yes        #  '~~~`
+  become: no
+  tags:
+    - 'stop_cluster'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'k3s_stop_all'
+
+- name: 'Start k3s cluster'
+  gather_facts: no
+  hosts: 'all'         #    .
+  connection: 'local'  #   /!\
+  run_once: yes        #  '~~~`
+  become: no
+  tags:
+    - 'start_cluster'
+    - 'never'
+  handlers:
+    - import_tasks: 'handlers/main.yml'
+  roles:
+    - 'k3s_start_all'
 ...
 # vim: set filetype=yaml
